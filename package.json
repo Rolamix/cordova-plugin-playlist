@@ -1,0 +1,70 @@
+{
+  "name": "cordova-plugin-audio-player",
+  "description": "A Cordova plugin for Android and iOS with native support for audio playlists, background support, and lock screen controls",
+  "version": "0.5.0",
+  "homepage": "https://github.com/Rolamix/cordova-plugin-audio-player#readme",
+  "author": "Patrick <patrick@rolamix.com>",
+  "license": "MIT",
+  "types": "./types/index.d.ts",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Rolamix/cordova-plugin-audio-player.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Rolamix/cordova-plugin-audio-player/issues"
+  },
+  "cordova": {
+    "id": "cordova-plugin-audio-player",
+    "platforms": [
+      "android",
+      "ios"
+    ]
+  },
+  "scripts": {
+    "build": "npx browserslist && babel src/js --out-dir www",
+    "build:watch": "nodemon -w ./src/js -e js -x npm run build",
+    "precommit-msg": "echo 'Pre-commit checks... make sure you built!!' && exit 0",
+    "lint": "eslint src/js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "ecosystem:cordova",
+    "cordova-ios",
+    "cordova-android",
+    "cordova",
+    "android",
+    "ios",
+    "audio",
+    "player",
+    "avqueueplayer",
+    "exomedia",
+    "native",
+    "audio",
+    "background",
+    "audio",
+    "lock",
+    "screen",
+    "controls"
+  ],
+  "engines": {
+    "cordovaDependencies": {
+      "0.5.0": { "cordova": ">=7.1.0", "cordova-android": ">=6.4.0", "cordova-ios": ">=4.3.0" }
+    }
+  },
+  "browserslist": "ios_saf >= 9.3, chrome >= 49",
+  "devDependencies": {
+    "@babel/cli": "^7.0.0-beta.42",
+    "@babel/core": "^7.0.0-beta.42",
+    "@babel/preset-env": "^7.0.0-beta.42",
+    "babel-eslint": "^8.2.2",
+    "eslint": "^4.19.1",
+    "eslint-config-airbnb": "^16.1.0",
+    "eslint-plugin-import": "^2.9.0",
+    "jasmine-node": "^1.14.5",
+    "nodemon": "^1.17.2",
+    "pluginpub": "^0.0.9"
+  },
+  "dependencies": {
+    "babel-plugin-add-header-comment": "^1.0.3"
+  }
+}

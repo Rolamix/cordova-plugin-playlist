@@ -4,6 +4,7 @@ A Cordova plugin for Android and iOS with native support for audio playlists, ba
 ## 0. Index
 
 1. [Background](#1-background)
+2. [Notes](#2-notes)
 2. [Installation](#2-installation)
 3. [Usage](#3-usage)
 4. [Todo](#4-todo)
@@ -24,10 +25,16 @@ Both Android and iOS have special support for playlist-based playback, and the n
 * Compatible with [Cordova Plugman](https://github.com/apache/cordova-plugman).
 * For Android and iOS
 
-**NOTE**: This plugin does NOT display track cover art on the lock screen controls on iOS. Usage of the media image object on iOS is historically buggy and can cause memory leaks. See the [Todo](#4-todo) section. This is fully support on Android, however.
+## 2. Notes
 
 ### On *Android*, utilizes a wrapper over ExoPlayer called ExoMedia. ExoPlayer is a powerful, high-quality player for Android provided by Google
 ### On iOS, utilizes a customized AVQueuePlayer in order to provide feedback about track changes, buffering, etc.
+
+* This plugin intentionally does not display track cover art on the lock screen controls on iOS. Usage of the media image object on iOS is known to cause memory leaks. See the [Todo](#4-todo) section. The Swift version of that object does not (seem to) contain this memory leak, and rewriting this plugin to use Swift 4 is on the [Todo](#4-todo) list. This is fully supported on Android, however.
+
+* This plugin is not designed to play mixable, rapid-fire, low-latency audio, as you would use in a game. A more appropriate cordova plugin for that use case is [cordova-plugin-nativeaudio](https://github.com/floatinghotpot/cordova-plugin-nativeaudio)
+
+* Cannot mix audio; again the NativeAudio plugin is probably more appropriate. This is due to supporting the lock screen and command center controls: only an app in command of audio can do this, otherwise the controls have no meaning. I would like to add an option to do this, it should be fairly straightforward; at the cost of not supporting the OS-level controls for that invokation.
 
 ## 2. Installation
 
@@ -37,7 +44,7 @@ As with most cordova plugins...
 cordova plugin add cordova-plugin-audio-player
 ```
 
-Rather than oblige all developers to include background permissions, add the following to your config.xml if you wish to support continuing to play audio in the background:
+Rather than oblige all developers to include background permissions, add the following to your `config.xml` if you wish to support continuing to play audio in the background:
 
 ### Android - inside `<platform name="android">`:
 ```
@@ -55,7 +62,7 @@ Rather than oblige all developers to include background permissions, add the fol
 </config-file>
 ```
 
-Android normally will give you ~2-3 minutes of background playback before killing your audio. Adding the WAKE_LOCK permission allows the plugin to utilize additional permissions to continue playing. 
+Android normally will give you ~2-3 minutes of background playback before killing your audio. Adding the WAKE_LOCK permission allows the plugin to utilize additional permissions to continue playing.
 
 iOS will immediately stop playback when the app goes into the background if you do not include the `audio` `UIBackgroundMode`. iOS has an additional requirement that audio playback must never stop; when it does, the audio session will be terminated and playback cannot continue without user interaction.
 
@@ -65,9 +72,12 @@ Coming...
 ## 4. Todo
 
 There's so much more to do on this plugin. Some items I would like to see added if anyone wants to help:
+* [JS] Add typescript to the src JS files so that the types don't have to be manually updated.
+* [iOS, Android] Add support for recording, similar to what is provided by `cordova-plugin-media`
 * [iOS] Safely implement cover art for cover images displayed on the command/lock screen controls
 * [iOS] Write this plugin in Swift instead of Objective-C. I didn't have time to learn Swift when I needed this.
 * [iOS] Utilize [AudioPlayer](https://github.com/delannoyk/AudioPlayer) instead of directly implementing AVQueuePlayer. `AudioPlayer` includes some smart network recovery features
+* Or, just add the smart network recovery features
 * [iOS, Android] Add support for single-item repeat
 * [iOS, Android] Add a full example
 
