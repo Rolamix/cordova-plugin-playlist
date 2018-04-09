@@ -3,6 +3,7 @@
     ["@babel/preset-env", { "modules": "commonjs", "useBuiltIns": "usage", "debug": true }]
   ],
   "plugins": [
+    "transform-class-properties",
     ["add-header-comment", {
       "files": {
         "src/js/RmxAudioPlayer.js": {

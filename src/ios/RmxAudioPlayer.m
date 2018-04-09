@@ -22,6 +22,7 @@ static char kPlayerItemTimeRangesContext;
 @property (nonatomic) NSUInteger* currentIndex;
 @property () float rate;
 @property () float volume;
+@property () BOOL loop;
 @property (nonatomic) BOOL isAtEnd;
 @property (nonatomic) BOOL isAtBeginning;
 @property (nonatomic) BOOL isPlaying;
@@ -38,6 +39,7 @@ static char kPlayerItemTimeRangesContext;
     _updatedNowPlayingInfo = nil;
     self.rate = 1.0f;
     self.volume = 0.5f;
+    self.loop = false;
 
     [self activateAudioSession];
     [self observeLifeCycle];
@@ -59,6 +61,12 @@ static char kPlayerItemTimeRangesContext;
  *
  *
  */
+- (void) initialize:(CDVInvokedUrlCommand*) command {
+  NSDictionary* options = [command.arguments objectAtIndex:0];
+  // We don't do anything with these yet.
+  CDVPluginResult* result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary:options];
+  [self.commandDelegate sendPluginResult:result callbackId:command.callbackId];
+}
 
 - (void) setPlaylistItems:(CDVInvokedUrlCommand *) command {
   NSMutableArray* items = [command.arguments objectAtIndex:0];
@@ -238,6 +246,15 @@ static char kPlayerItemTimeRangesContext;
 - (void) setPlaybackVolume:(CDVInvokedUrlCommand *) command {
   NSNumber* argVal = [command argumentAtIndex:0 withDefault:[NSNumber numberWithFloat:self.volume]];
   self.volume = argVal.floatValue;
+
+  CDVPluginResult* result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
+  [self.commandDelegate sendPluginResult:result callbackId:command.callbackId];
+}
+
+
+- (void) setLoopAll:(CDVInvokedUrlCommand *) command {
+  NSNumber* loop = [command argumentAtIndex:0 withDefault:[NSNumber numberWithFloat:self.loop]];
+  self.loop = loop >= 1 ? YES : NO;
 
   CDVPluginResult* result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
   [self.commandDelegate sendPluginResult:result callbackId:command.callbackId];
@@ -499,12 +516,13 @@ static char kPlayerItemTimeRangesContext;
     [[self avQueuePlayer] removeAllItems];
     _wasPlayingInterrupted = NO;
 
+    [self onStatus:RMXSTATUS_PLAYLIST_CLEARED trackId:@"INVALID" param:nil];
+
     // a.t.m there's no way for this to be triggered from within the plugin,
     // but it might get added at some point.
     if (isCommand) {
         NSString * action = @"music-controls-clear";
         NSLog(@"%@", action);
-        [self onStatus:RMXSTATUS_PLAYLIST_CLEARED trackId:@"INVALID" param:nil];
     }
 }
 
@@ -712,9 +730,9 @@ static char kPlayerItemTimeRangesContext;
     float duration = CMTimeGetSeconds(currentItem.duration);
 
     if (updateTrackData) {
-        _updatedNowPlayingInfo[MPMediaItemPropertyArtist] = @"Linkin Park";
-        _updatedNowPlayingInfo[MPMediaItemPropertyTitle] = @"Numb";
-        _updatedNowPlayingInfo[MPMediaItemPropertyAlbumTitle] = @"Hot Fuss";
+        _updatedNowPlayingInfo[MPMediaItemPropertyArtist] = currentItem.artist;
+        _updatedNowPlayingInfo[MPMediaItemPropertyTitle] = currentItem.title;
+        _updatedNowPlayingInfo[MPMediaItemPropertyAlbumTitle] = currentItem.album;
     }
 
     _updatedNowPlayingInfo[MPMediaItemPropertyPlaybackDuration] = [NSNumber numberWithFloat:duration];
@@ -740,7 +758,9 @@ static char kPlayerItemTimeRangesContext;
       @"currentItem": playerItem,
       @"currentIndex": self.currentIndex,
       @"isAtEnd": self.isAtEnd,
-      @"isAtBeginning": self.isAtBeginning
+      @"isAtBeginning": self.isAtBeginning,
+      @"hasNext": !self.isAtEnd,
+      @"hasPrevious": !self.isAtBeginning
     };
     [self onStatus:RMXSTATUS_TRACK_CHANGED trackId:playerItem.trackId param:info];
 
@@ -751,6 +771,8 @@ static char kPlayerItemTimeRangesContext;
 
         if (self.loop) {
             [[self avQueuePlayer] play];
+        } else {
+          [self onStatus:RMXSTATUS_STOPPED trackId:@"INVALID" param:nil];
         }
     }
 }
@@ -869,9 +891,11 @@ static char kPlayerItemTimeRangesContext;
 
     NSDictionary* bufferInfo = [self getTrackBufferInfo:currentItem];
     float position = [self getTrackCurrentTime:currentItem];
-    float playbackPercent = (position / [bufferInfo[@"bufferPercent"] floatValue]) * 100.0;
+    float playbackPercent = (position / [bufferInfo[@"duration"] floatValue]) * 100.0;
 
     NSDictionary *info = @{
+        @"trackId": currentItem.trackId,
+        @"currentIndex": self.currentIndex,
         @"status": status,
         @"currentPosition": @(position),
         @"duration": bufferInfo[@"duration"],
@@ -1059,7 +1083,7 @@ static char kPlayerItemTimeRangesContext;
   // Subscribe to the AVPlayerItem's PlaybackStalledNotification notification.
   [listener addObserver:self selector:@selector(itemStalledPlaying:) name:AVPlayerItemPlaybackStalledNotification object:playerItem];
 
-  [self onStatus:RMXSTATUS_ITEM_ADDED trackId:playerItem.trackId param:playerItem];
+  [self onStatus:RMXSTATUS_ITEM_ADDED trackId:playerItem.trackId param:[playerItem toDict]];
   [self onStatus:RMXSTATUS_LOADING trackId:playerItem.trackId param:nil];
 }
 
@@ -1071,7 +1095,7 @@ static char kPlayerItemTimeRangesContext;
   [[NSNotificationCenter defaultCenter] removeObserver:self name:AVPlayerItemDidPlayToEndTimeNotification object:playerItem];
   [[NSNotificationCenter defaultCenter] removeObserver:self name:AVPlayerItemPlaybackStalledNotification object:playerItem];
 
-  [self onStatus:RMXSTATUS_ITEM_REMOVED trackId:playerItem.trackId param:playerItem];
+  [self onStatus:RMXSTATUS_ITEM_REMOVED trackId:playerItem.trackId param:[playerItem toDict]];
 }
 
 - (void) activateAudioSession

@@ -28,6 +28,8 @@
     AudioTrack* track = [AudioTrack playerItemWithURL:assetUrlObj];
 
     track.trackId = trackId;
+    track.assetUrl = assetUrl;
+    // track.albumArt = trackInfo[@"albumArt"];
     track.artist = trackInfo[@"artist"];
     track.album = trackInfo[@"album"];
     track.title = trackInfo[@"title"];
@@ -39,6 +41,19 @@
 +(NSURL*)getUrlForAsset:(NSString*)assetUrl
 {
     return [NSURL URLWithString:assetUrl];
+}
+
+-(NSDictionary*)toDict {
+  NSDictionary* info = @{
+    @"trackId": self.trackId,
+    @"assetUrl": self.assetUrl,
+    // @"albumArt": self.albumArt,
+    @"artist": self.artist,
+    @"album": self.album,
+    @"title": self.title
+  };
+
+  return info;
 }
 
 - (void)dealloc {

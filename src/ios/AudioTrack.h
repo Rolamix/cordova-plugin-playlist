@@ -21,6 +21,7 @@
 @property (nonatomic, strong) NSString* title;
 
 +(AudioTrack*)initWithDictionary:(NSDictionary*)trackInfo;
+-(NSDictionary*)toDict;
 
 @end
 

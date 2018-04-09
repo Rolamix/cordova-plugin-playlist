@@ -27,8 +27,8 @@ Both Android and iOS have special support for playlist-based playback, and the n
 
 ## 2. Notes
 
-### On *Android*, utilizes a wrapper over ExoPlayer called ExoMedia. ExoPlayer is a powerful, high-quality player for Android provided by Google
-### On iOS, utilizes a customized AVQueuePlayer in order to provide feedback about track changes, buffering, etc.
+### On *Android*, utilizes a wrapper over ExoPlayer called [ExoMedia](https://github.com/brianwernick/ExoMedia). ExoPlayer is a powerful, high-quality player for Android provided by Google
+### On iOS, utilizes a customized AVQueuePlayer in order to provide feedback about track changes, buffering, etc.; given that AVQueuePlayer can keep the audio session running between songs.
 
 * This plugin intentionally does not display track cover art on the lock screen controls on iOS. Usage of the media image object on iOS is known to cause memory leaks. See the [Todo](#4-todo) section. The Swift version of that object does not (seem to) contain this memory leak, and rewriting this plugin to use Swift 4 is on the [Todo](#4-todo) list. This is fully supported on Android, however.
 

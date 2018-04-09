@@ -15,15 +15,28 @@
     <engine name="cordova-ios" version=">=4.5.0"/>
 	</engines>
 
-	<js-module src="www/RmxAudioPlayer.js" name="RmxAudioPlayer">
-		<clobbers target="RmxAudioPlayer" />
+	<js-module src="www/RmxAudioPlayer.js" name="AudioPlayer">
+		<clobbers target="AudioPlayer" />
+	</js-module>
+
+  <js-module src="www/Constants.js" name="AudioPlayerConstants">
+		<runs />
 	</js-module>
 
 	<!-- android -->
 	<platform name="android">
+    <hook type="after_prepare" src="scripts/android_after_plugin_install.js" />
+    <hook type="after_plugin_install" src="scripts/android_after_plugin_install.js"/>
+    <hook type="before_plugin_uninstall" src="scripts/android_before_plugin_uninstall.js" />
+
+    <info>
+        cordova-plugin-audio-player adds a MainApplication.java file to your Android project and an Application to your app.
+        If your app cannot use this, do not install this plugin.
+    </info>
+
 		<config-file target="res/xml/config.xml" parent="/*">
 			<feature name="RmxAudioPlayer" >
-				<param name="android-package" value="com.rolamix.plugins.RmxAudioPlayerHandler"/>
+				<param name="android-package" value="com.rolamix.plugins.audioplayer.AudioPlayerPlugin"/>
         <param name="onload" value="true" />
 			</feature>
 		</config-file>
@@ -34,15 +47,43 @@
       <!-- <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" /> -->
     </config-file>
 
+    <config-file target="AndroidManifest.xml" parent="/manifest/application">
+      <service android:name="com.rolamix.plugins.audioplayer.service.MediaService"></service>
+    </config-file>
+
+    <!-- ExoMedia requires an application to instantiate the playlist service.
+         This is because even when the cordova activity goes out of scope
+         (e.g. minimize the app), the notification callbacks need to continue running.
+         This can be done with activities & binder services, but the ExoMedia author chose not to.. -->
+    <edit-config file="AndroidManifest.xml" mode="merge" target="/manifest/application">
+        <application android:name=".MainApplication" />
+    </edit-config>
+
     <dependency id="cordova-support-google-services" version="~1.1.0"/>
 
-    <framework src="com.android.support:support-v4:27.0.2" />
-    <framework src="com.android.support:appcompat-v7:27.0.2" />
-    <framework src="com.devbrackets.android:exomedia:4.1.0" />
-    <framework src="com.devbrackets.android:playlistcore:2.0.0" />
-    <framework src="audio-player.gradle" custom="true" type="gradleReference"/>
+    <framework src="com.android.support:support-v4:27.+" />
+    <framework src="com.android.support:support-media-compat:27.+" />
+    <framework src="src/android/audio-player.gradle" custom="true" type="gradleReference"/>
 
-		<source-file src="src/android/MusicControlsBroadcastReceiver.java" target-dir="src/com/rolamix/plugins" />
+    <resource-file src="src/android/res/drawable/img_playlist_notif_default.png" target="res/drawable/img_playlist_notif_default.png" />
+    <resource-file src="src/android/res/drawable/img_playlist_artwork_default.png" target="res/drawable/img_playlist_artwork_default.png" />
+
+    <source-file src="src/android/java/data/AudioTrack.java" target-dir="src/com/rolamix/plugins/audioplayer/data/" />
+    <source-file src="src/android/java/manager/PlaylistManager.java" target-dir="src/com/rolamix/plugins/audioplayer/manager/" />
+    <source-file src="src/android/java/manager/MediaControlsListener.java" target-dir="src/com/rolamix/plugins/audioplayer/manager/" />
+    <source-file src="src/android/java/playlist/AudioApi.java" target-dir="src/com/rolamix/plugins/audioplayer/playlist/" />
+    <source-file src="src/android/java/playlist/AudioPlaylistHandler.java" target-dir="src/com/rolamix/plugins/audioplayer/playlist/" />
+    <source-file src="src/android/java/playlist/BaseMediaApi.java" target-dir="src/com/rolamix/plugins/audioplayer/playlist/" />
+    <source-file src="src/android/java/service/MediaImageProvider.java" target-dir="src/com/rolamix/plugins/audioplayer/service/" />
+    <source-file src="src/android/java/service/MediaService.java" target-dir="src/com/rolamix/plugins/audioplayer/service/" />
+    <source-file src="src/android/java/AudioPlayerPlugin.java" target-dir="src/com/rolamix/plugins/audioplayer/" />
+    <source-file src="src/android/java/RakeR.java" target-dir="src/com/rolamix/plugins/audioplayer/" />
+    <source-file src="src/android/java/MainApplication.java" target-dir="src/com/rolamix/plugins/audioplayer/" />
+    <source-file src="src/android/java/OnStatusCallback.java" target-dir="src/com/rolamix/plugins/audioplayer/" />
+    <source-file src="src/android/java/OnStatusReportListener.java" target-dir="src/com/rolamix/plugins/audioplayer/" />
+    <source-file src="src/android/java/PluginCallback.java" target-dir="src/com/rolamix/plugins/audioplayer/" />
+    <source-file src="src/android/java/RmxAudioPlayer.java" target-dir="src/com/rolamix/plugins/audioplayer/" />
+		<source-file src="src/android/java/RmxConstants.java" target-dir="src/com/rolamix/plugins/audioplayer/" />
 	</platform>
 
 	<!-- ios -->

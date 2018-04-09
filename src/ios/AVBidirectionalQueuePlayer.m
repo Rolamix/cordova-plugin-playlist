@@ -70,11 +70,11 @@
     // It should be noted that if the player is on its first item, this function will do nothing. It will
     // not restart the item or anything like that; if you want that functionality you can implement it
     // yourself fairly easily using the isAtBeginning method to test if the player is at its start.
-    NSUInteger tempNowPlayingIndex = [_itemsForPlayer indexOfObject: self.currentItem];
+    NSUInteger tempNowPlayingIndex = [_itemsForPlayer indexOfObject:self.currentItem];
 
     if (tempNowPlayingIndex > 0 && tempNowPlayingIndex != NSNotFound){
         float currentrate = self.rate;
-        if (currentrate > 0) {
+        if (currentrate != 0.0f) {
             [self pause];
         }
 
@@ -106,7 +106,7 @@
         self.rate = currentrate;
     } else if (tempNowPlayingIndex == 0) {
         float currentrate = self.rate;
-        if (currentrate > 0) {
+        if (currentrate != 0.0f) {
             [self pause];
         }
         [self seekToTime:kCMTimeZero toleranceBefore:kCMTimeZero toleranceAfter:kCMTimeZero];
@@ -120,11 +120,7 @@
     // This function simply returns whether or not the AVBidirectionalQueuePlayer is at the first item. This is
     // useful for implementing custom behavior if the user tries to play a previous item at the start of
     // the queue (such as restarting the item).
-    if ([self currentIndex] == 0) {
-        return YES;
-    } else {
-        return NO;
-    }
+    return [self currentIndex] == 0;
 }
 
 -(BOOL)isAtEnd
