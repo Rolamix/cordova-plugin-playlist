@@ -9,7 +9,7 @@ import com.devbrackets.android.playlistcore.api.MediaPlayerApi;
 import com.devbrackets.android.playlistcore.listener.MediaStatusListener;
 import org.jetbrains.annotations.NotNull;
 
-import com.rolamix.plugins.audioplayer.playlist.data.AudioTrack;
+import com.rolamix.plugins.audioplayer.data.AudioTrack;
 
 public abstract class BaseMediaApi implements MediaPlayerApi<AudioTrack>,
         OnPreparedListener,
@@ -18,10 +18,10 @@ public abstract class BaseMediaApi implements MediaPlayerApi<AudioTrack>,
         OnSeekCompletionListener,
         OnBufferUpdateListener {
 
-    protected boolean prepared;
-    protected int bufferPercent;
+    boolean prepared;
+    int bufferPercent;
 
-    protected MediaStatusListener<AudioTrack> mediaStatusListener;
+    private MediaStatusListener<AudioTrack> mediaStatusListener;
 
     @Override
     public void setMediaStatusListener(@NotNull MediaStatusListener<AudioTrack> listener) {
@@ -39,7 +39,9 @@ public abstract class BaseMediaApi implements MediaPlayerApi<AudioTrack>,
     public boolean onError(Exception e) {
         if (mediaStatusListener != null) {
           mediaStatusListener.onError(this);
-      }
+          return true;
+        }
+        return false;
     }
 
     @Override

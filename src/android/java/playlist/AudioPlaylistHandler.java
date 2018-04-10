@@ -2,9 +2,11 @@ package com.rolamix.plugins.audioplayer.playlist;
 
 import android.app.Service;
 import android.content.Context;
+import android.util.Log;
 
 import com.devbrackets.android.playlistcore.api.PlaylistItem;
 import com.devbrackets.android.playlistcore.api.MediaPlayerApi;
+import com.devbrackets.android.playlistcore.data.MediaProgress;
 import com.devbrackets.android.playlistcore.manager.BasePlaylistManager;
 import com.devbrackets.android.playlistcore.components.audiofocus.AudioFocusProvider;
 import com.devbrackets.android.playlistcore.components.audiofocus.DefaultAudioFocusProvider;
@@ -97,7 +99,7 @@ public class AudioPlaylistHandler<I extends PlaylistItem, M extends BasePlaylist
                 notificationProvider != null ? notificationProvider : new DefaultPlaylistNotificationProvider(context),
                 mediaSessionProvider != null ? mediaSessionProvider : new DefaultMediaSessionProvider(context, serviceClass),
                 mediaControlsProvider != null ? mediaControlsProvider : new DefaultMediaControlsProvider(context),
-                audioFocusProvider != null ? audioFocusProvider : new DefaultAudioFocusProvider<I>(context),
+                audioFocusProvider != null ? audioFocusProvider : new DefaultAudioFocusProvider<>(context),
                 listener);
         }
     }

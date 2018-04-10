@@ -15,7 +15,7 @@ import com.google.android.exoplayer2.upstream.cache.LeastRecentlyUsedCacheEvicto
 import com.google.android.exoplayer2.upstream.cache.SimpleCache;
 import okhttp3.OkHttpClient;
 
-import com.rolamix.plugins.audioplayer.PlaylistManager;
+import com.rolamix.plugins.audioplayer.manager.PlaylistManager;
 
 public class MainApplication extends Application {
     @Nullable

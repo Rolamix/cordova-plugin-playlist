@@ -5,7 +5,8 @@ import com.devbrackets.android.playlistcore.annotation.SupportedMediaType;
 import com.devbrackets.android.playlistcore.api.PlaylistItem;
 
 import android.support.annotation.NonNull;
-import android.net.*;
+import android.support.annotation.Nullable;
+
 import org.json.*;
 
 public class AudioTrack implements PlaylistItem {
@@ -24,12 +25,16 @@ public class AudioTrack implements PlaylistItem {
 
     public JSONObject toDict() {
       JSONObject info = new JSONObject();
-      info.set("trackId", getTrackId());
-      info.set("assetUrl", getMediaUrl());
-      info.set("albumArt", getThumbnailUrl());
-      info.set("artist", getArtist());
-      info.set("album", getAlbum());
-      info.set("title", getTitle());
+      try {
+          info.put("trackId", getTrackId());
+          info.put("assetUrl", getMediaUrl());
+          info.put("albumArt", getThumbnailUrl());
+          info.put("artist", getArtist());
+          info.put("album", getAlbum());
+          info.put("title", getTitle());
+      } catch (JSONException e) {
+          // I can think of no reason this would ever fail
+      }
       return info;
     }
 
@@ -43,6 +48,7 @@ public class AudioTrack implements PlaylistItem {
         return getTrackId().hashCode();
     }
 
+    @Nullable
     public String getTrackId() {
       String trackId = this.config.optString("trackId");
       if (trackId.equals("")) { return null; }

@@ -1,33 +1,17 @@
 package com.rolamix.plugins.audioplayer;
 
-import com.rolamix.plugins.audioplayer.manager.PlaylistManager;
-import com.rolamix.plugins.audioplayer.manager.OnStatusCallback;
-
-import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.Manifest;
-import android.os.Build;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Iterator;
 import java.util.ArrayList;
-import java.util.List;
 
 import org.apache.cordova.CallbackContext;
 import org.apache.cordova.CordovaPlugin;
-// import org.apache.cordova.CordovaResourceApi;
-import org.apache.cordova.CordovaInterface;
-import org.apache.cordova.CordovaWebView;
 import org.apache.cordova.PluginResult;
-import org.apache.cordova.LOG;
 
-import com.devbrackets.android.playlistcore.listener.PlaylistListener;
-import com.devbrackets.android.playlistcore.listener.ProgressListener;
+import com.devbrackets.android.playlistcore.data.MediaProgress;
+import com.rolamix.plugins.audioplayer.data.AudioTrack;
 
 /**
  *
@@ -44,13 +28,12 @@ public class AudioPlayerPlugin extends CordovaPlugin implements RmxConstants, On
   // PlaylistCore requires this but we don't use it
   // It would be used to switch between playlists. I guess we could
   // support that in the future, might be cool.
-  private static final int PLAYLIST_ID = 32;
   private OnStatusCallback statusCallback;
   private RmxAudioPlayer audioPlayerImpl;
 
   @Override
   public void pluginInitialize() {
-    audioPlayerImpl = new RmxAudioPlayer(this);
+    audioPlayerImpl = new RmxAudioPlayer(this, cordova);
   }
 
   @Override
@@ -80,7 +63,7 @@ public class AudioPlayerPlugin extends CordovaPlugin implements RmxConstants, On
       audioPlayerImpl.getPlaylistManager().setAllItems(trackItems);
 
       for (AudioTrack playerItem : trackItems) {
-        if (track.getTrackId() != null) {
+        if (playerItem.getTrackId() != null) {
           onStatus(RmxAudioStatusMessage.RMXSTATUS_ITEM_ADDED, playerItem.getTrackId(), playerItem.toDict());
         }
       }
@@ -91,11 +74,11 @@ public class AudioPlayerPlugin extends CordovaPlugin implements RmxConstants, On
 
     if (ADD_PLAYLIST_ITEM.equals(action)) {
       JSONObject item = args.optJSONObject(0);
-      AudioTrack track = getTrackItem(item);
-      audioPlayerImpl.getPlaylistManager().addItem(track);
+      AudioTrack playerItem = getTrackItem(item);
+      audioPlayerImpl.getPlaylistManager().addItem(playerItem); // makes its own check for null
 
-      if (track.getTrackId() != null) {
-        onStatus(RmxAudioStatusMessage.RMXSTATUS_ITEM_ADDED, track.getTrackId(), playerItem.toDict());
+      if (playerItem.getTrackId() != null) {
+        onStatus(RmxAudioStatusMessage.RMXSTATUS_ITEM_ADDED, playerItem.getTrackId(), playerItem.toDict());
       }
       new PluginCallback(callbackContext).send(PluginResult.Status.OK);
       return true;
@@ -107,7 +90,7 @@ public class AudioPlayerPlugin extends CordovaPlugin implements RmxConstants, On
       audioPlayerImpl.getPlaylistManager().addAllItems(trackItems);
 
       for (AudioTrack playerItem : trackItems) {
-        if (track.getTrackId() != null) {
+        if (playerItem.getTrackId() != null) {
           onStatus(RmxAudioStatusMessage.RMXSTATUS_ITEM_ADDED, playerItem.getTrackId(), playerItem.toDict());
         }
       }
@@ -119,14 +102,14 @@ public class AudioPlayerPlugin extends CordovaPlugin implements RmxConstants, On
     if (REMOVE_PLAYLIST_ITEM.equals(action)) {
       int trackIndex = args.optInt(0, -1);
       String trackId = args.optString(1, "");
-      boolean success = audioPlayerImpl.getPlaylistManager().removeItem(trackIndex, trackId);
+      AudioTrack item = audioPlayerImpl.getPlaylistManager().removeItem(trackIndex, trackId);
 
-      if (track.getTrackId() != null && success) {
-        onStatus(RmxAudioStatusMessage.RMXSTATUS_ITEM_REMOVED, track.getTrackId(), playerItem.toDict());
+      if (item != null) {
+        onStatus(RmxAudioStatusMessage.RMXSTATUS_ITEM_REMOVED, item.getTrackId(), item.toDict());
       }
 
-      PluginResult.Status status = success ? PluginResult.Status.OK : PluginResult.Status.ERROR;
-      PluginResult result = new PluginResult(status, success);
+      PluginResult.Status status = item != null ? PluginResult.Status.OK : PluginResult.Status.ERROR;
+      PluginResult result = new PluginResult(status, item != null);
       new PluginCallback(callbackContext).send(result);
       return true;
     }
@@ -138,12 +121,15 @@ public class AudioPlayerPlugin extends CordovaPlugin implements RmxConstants, On
       if (items != null) {
         for (int index = 0; index < items.length(); index++) {
           JSONObject entry = items.optJSONObject(index);
-          if (entry == null) { continue; }
+          if (entry == null) {
+            continue;
+          }
           int trackIndex = entry.optInt("trackIndex", -1);
           String trackId = entry.optString("trackId", "");
-          if (audioPlayerImpl.getPlaylistManager().removeItem(trackIndex, trackId)) {
-            if (track.getTrackId() != null) {
-              onStatus(RmxAudioStatusMessage.RMXSTATUS_ITEM_REMOVED, track.getTrackId(), playerItem.toDict());
+          AudioTrack removedItem = audioPlayerImpl.getPlaylistManager().removeItem(trackIndex, trackId);
+          if (removedItem != null) {
+            if (removedItem.getTrackId() != null) {
+              onStatus(RmxAudioStatusMessage.RMXSTATUS_ITEM_REMOVED, removedItem.getTrackId(), removedItem.toDict());
             }
             removed++;
           }
@@ -163,15 +149,18 @@ public class AudioPlayerPlugin extends CordovaPlugin implements RmxConstants, On
       return true;
     }
 
-
     // Playback
     if (PLAY.equals(action)) {
       // Hmmm.
       // audioPlayerImpl.getPlaylistManager().getPlaylistHandler().play();
       // audioPlayerImpl.getPlaylistManager().invokePausePlay();
-      MediaProgress progress =  audioPlayerImpl.getPlaylistManager().getCurrentProgress();
+      long position = 0;
+      MediaProgress progress = audioPlayerImpl.getPlaylistManager().getCurrentProgress();
+      if (progress != null) {
+        position = progress.getPosition();
+      }
       // This may not do the right thing, we may need to use 0, not getPosition
-      audioPlayerImpl.getPlaylistManager().beginPlayback(progress.getPosition(), false);
+      audioPlayerImpl.getPlaylistManager().beginPlayback(position, false);
       new PluginCallback(callbackContext).send(PluginResult.Status.OK);
       return true;
     }
@@ -186,7 +175,7 @@ public class AudioPlayerPlugin extends CordovaPlugin implements RmxConstants, On
 
     if (PLAY_BY_ID.equals(action)) {
       String trackId = args.optString(0);
-      if (trackId != "") {
+      if (!"".equals((trackId))) {
         // alternatively we could search for the item and set the current index to that item.
         int code = trackId.hashCode();
         audioPlayerImpl.getPlaylistManager().setCurrentItem(code);
@@ -220,13 +209,17 @@ public class AudioPlayerPlugin extends CordovaPlugin implements RmxConstants, On
     // On iOS, it uses seconds as floats, e.g. 63.3 seconds. So we need to convert here.
 
     if (SEEK.equals(action)) {
-      MediaProgress progress =  audioPlayerImpl.getPlaylistManager().getCurrentProgress();
-      float currPos = progress.getPosition() / 1000f;
-      double positionD = args.optDouble(0, currPos) * 1000.0;
-      int position = positionD.intValue();
+      long position = 0;
+      MediaProgress progress = audioPlayerImpl.getPlaylistManager().getCurrentProgress();
+      if (progress != null) {
+        position = progress.getPosition();
+      }
+      float currPos = position / 1000f;
+      Double positionD = args.optDouble(0, currPos) * 1000.0;
+      int positionVal = positionD.intValue();
 
       audioPlayerImpl.getPlaylistManager().invokeSeekStarted();
-      audioPlayerImpl.getPlaylistManager().invokeSeekEnded(position);
+      audioPlayerImpl.getPlaylistManager().invokeSeekEnded(positionVal);
       new PluginCallback(callbackContext).send(PluginResult.Status.OK);
       return true;
     }
@@ -238,14 +231,14 @@ public class AudioPlayerPlugin extends CordovaPlugin implements RmxConstants, On
     }
 
     if (SET_PLAYBACK_RATE.equals(action)) {
-      float speed = args.optDouble(0, audioPlayerImpl.getPlaylistManager().getPlaybackSpeed());
+      float speed = (float) args.optDouble(0, audioPlayerImpl.getPlaylistManager().getPlaybackSpeed());
       audioPlayerImpl.getPlaylistManager().setPlaybackSpeed(speed);
       new PluginCallback(callbackContext).send(PluginResult.Status.OK);
       return true;
     }
 
     if (SET_PLAYBACK_VOLUME.equals(action)) {
-      float volume = args.optDouble(0, audioPlayerImpl.getVolume());
+      float volume = (float) args.optDouble(0, audioPlayerImpl.getVolume());
       audioPlayerImpl.setVolume(volume);
       new PluginCallback(callbackContext).send(PluginResult.Status.OK);
       return true;
@@ -257,8 +250,6 @@ public class AudioPlayerPlugin extends CordovaPlugin implements RmxConstants, On
       new PluginCallback(callbackContext).send(PluginResult.Status.OK);
       return true;
     }
-
-
 
     // Getters
     if (GET_PLAYBACK_RATE.equals(action)) {
@@ -275,8 +266,12 @@ public class AudioPlayerPlugin extends CordovaPlugin implements RmxConstants, On
     }
 
     if (GET_PLAYBACK_POSITION.equals(action)) {
-      MediaProgress progress =  audioPlayerImpl.getPlaylistManager().getCurrentProgress();
-      PluginResult result = new PluginResult(PluginResult.Status.OK, progress.getPosition() / 1000.0f);
+      long position = 0;
+      MediaProgress progress = audioPlayerImpl.getPlaylistManager().getCurrentProgress();
+      if (progress != null) {
+        position = progress.getPosition();
+      }
+      PluginResult result = new PluginResult(PluginResult.Status.OK, position / 1000.0f);
       new PluginCallback(callbackContext).send(result);
       return true;
     }
@@ -319,13 +314,15 @@ public class AudioPlayerPlugin extends CordovaPlugin implements RmxConstants, On
     return null;
   }
 
-  private List<AudioTrack> getTrackItems(JSONArray items) {
-    ArrayList<AudioTrack> trackItems = new ArrayList();
+  private ArrayList<AudioTrack> getTrackItems(JSONArray items) {
+    ArrayList<AudioTrack> trackItems = new ArrayList<>();
     if (items != null && items.length() > 0) {
-      for(int index = 0; index < items.length(); index++) {
+      for (int index = 0; index < items.length(); index++) {
         JSONObject obj = items.optJSONObject(index);
         AudioTrack track = getTrackItem(obj);
-        if (track == null) { continue; }
+        if (track == null) {
+          continue;
+        }
         trackItems.add(track);
       }
     }
@@ -334,14 +331,14 @@ public class AudioPlayerPlugin extends CordovaPlugin implements RmxConstants, On
 
   @Override
   public void onPause(boolean multitasking) {
-      super.onPause(multitasking);
-      audioPlayerImpl.pause();
+    super.onPause(multitasking);
+    audioPlayerImpl.pause();
   }
 
   @Override
   public void onResume(boolean multitasking) {
-      super.onResume(multitasking);
-      audioPlayerImpl.resume();
+    super.onResume(multitasking);
+    audioPlayerImpl.resume();
   }
 
   @Override
@@ -358,17 +355,21 @@ public class AudioPlayerPlugin extends CordovaPlugin implements RmxConstants, On
 
   private void destroyResources() {
     audioPlayerImpl.pause();
-    playlistManager.clearItems();
+    audioPlayerImpl.getPlaylistManager().clearItems();
   }
 
   public void onError(RmxAudioErrorType errorCode, String trackId, String message) {
-    if (!statusCallback) { return; }
+    if (statusCallback == null) {
+      return;
+    }
     JSONObject errorObj = OnStatusCallback.createErrorWithCode(errorCode, message);
     onStatus(RmxAudioStatusMessage.RMXSTATUS_ERROR, trackId, errorObj);
   }
 
   public void onStatus(RmxAudioStatusMessage what, String trackId, JSONObject param) {
-    if (!statusCallback) { return; }
+    if (statusCallback == null) {
+      return;
+    }
     statusCallback.onStatus(what, trackId, param);
   }
 }

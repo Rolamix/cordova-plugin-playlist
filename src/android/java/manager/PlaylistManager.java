@@ -5,15 +5,13 @@ import java.util.List;
 import java.util.ArrayList;
 import android.app.Application;
 import android.util.Log;
-import android.support.annotation.NonNull;
 import android.support.annotation.FloatRange;
 import android.support.annotation.IntRange;
+import android.support.annotation.Nullable;
 
 import com.devbrackets.android.playlistcore.manager.ListPlaylistManager;
 import com.devbrackets.android.playlistcore.manager.BasePlaylistManager;
-//import com.devbrackets.android.playlistcore.components.playlisthandler.PlaylistHandler;
 import com.devbrackets.android.playlistcore.api.MediaPlayerApi;
-import com.devbrackets.android.playlistcore.listener.PlaybackStatusListener;
 import com.devbrackets.android.exomedia.listener.OnErrorListener;
 
 import com.rolamix.plugins.audioplayer.data.AudioTrack;
@@ -27,7 +25,7 @@ import com.rolamix.plugins.audioplayer.service.MediaService;
 public class PlaylistManager extends ListPlaylistManager<AudioTrack> implements OnErrorListener {
 
     private static final String TAG = "PlaylistManager";
-    private List<AudioTrack> mediaItems = new ArrayList<>();
+    private List<AudioTrack> AudioTracks = new ArrayList<>();
 
     private boolean mediaServiceStarted = false;
     private float volumeLeft = 1.0f;
@@ -35,6 +33,8 @@ public class PlaylistManager extends ListPlaylistManager<AudioTrack> implements 
     private float playbackSpeed = 1.0f;
     private boolean loop = false;
     private boolean shouldStopPlaylist = false;
+    private boolean previousInvoked = false;
+    private boolean nextInvoked = false;
 
     private WeakReference<MediaControlsListener> mediaControlsListener = new WeakReference<>(null);
     private WeakReference<OnErrorListener> errorListener = new WeakReference<>(null);
@@ -42,7 +42,7 @@ public class PlaylistManager extends ListPlaylistManager<AudioTrack> implements 
 
     public PlaylistManager(Application application) {
         super(application, MediaService.class);
-        this.setParameters(mediaItems, -1);
+        this.setParameters(AudioTracks, -1);
     }
 
     public void onMediaServiceInit(boolean hasInit) {
@@ -74,7 +74,7 @@ public class PlaylistManager extends ListPlaylistManager<AudioTrack> implements 
         return true;
     }
 
-    public boolean isShouldStopPlaylist() {
+    private boolean isShouldStopPlaylist() {
       return shouldStopPlaylist;
     }
 
@@ -101,7 +101,7 @@ public class PlaylistManager extends ListPlaylistManager<AudioTrack> implements 
     }
 
     @Override
-    public MediaItem getCurrentItem() {
+    public AudioTrack getCurrentItem() {
         boolean isAtEnd = getCurrentPosition() + 1 == getItemCount();
         boolean isConstrained = getCurrentPosition() >= 0 && getCurrentPosition() < getItemCount();
 
@@ -115,7 +115,7 @@ public class PlaylistManager extends ListPlaylistManager<AudioTrack> implements 
     }
 
     @Override
-    public MediaItem previous() {
+    public AudioTrack previous() {
         setCurrentPosition(Math.max(0, getCurrentPosition() -1));
         AudioTrack prevItem = getCurrentItem();
 
@@ -131,7 +131,7 @@ public class PlaylistManager extends ListPlaylistManager<AudioTrack> implements 
     }
 
     @Override
-    public MediaItem next() {
+    public AudioTrack next() {
         if (isNextAvailable()) {
             setCurrentPosition(Math.min(getCurrentPosition() + 1, getItemCount()));
         } else {
@@ -153,7 +153,7 @@ public class PlaylistManager extends ListPlaylistManager<AudioTrack> implements 
         if (!nextInvoked) { // this command came from the notification, not the user
             Log.i(TAG, "PlaylistManager.next: invoked via service.");
             if (mediaControlsListener.get() != null) {
-              mediaControlsListener.get().onNext(prevItem, getCurrentPosition());
+              mediaControlsListener.get().onNext(nextItem, getCurrentPosition());
             }
         }
         nextInvoked = false;
@@ -177,40 +177,40 @@ public class PlaylistManager extends ListPlaylistManager<AudioTrack> implements 
 
     public void addItem(AudioTrack item) {
         if (item == null) { return; }
-        mediaItems.add(item);
-        setItems(mediaItems);
+        AudioTracks.add(item);
+        setItems(AudioTracks);
     }
 
     public void addAllItems(List<AudioTrack> items) {
         AudioTrack currentItem = getCurrentItem(); // may be null
-        mediaItems.addAll(items);
-        setItems(mediaItems); // not *strictly* needed since they share the reference, but for good measure..
-        setCurrentPosition(mediaItems.indexOf(currentItem));
+        AudioTracks.addAll(items);
+        setItems(AudioTracks); // not *strictly* needed since they share the reference, but for good measure..
+        setCurrentPosition(AudioTracks.indexOf(currentItem));
     }
 
-    public boolean removeItem(int index, @Nullable String itemId) {
+    public AudioTrack removeItem(int index, @Nullable String itemId) {
         AudioTrack currentItem = getCurrentItem(); // may be null
-        boolean removed = false;
+        AudioTrack foundItem = null;
 
-        if (index >= 0 && index < mediaItems.size()) {
-            mediaItems.remove(index);
-            removed = true;
+        if (index >= 0 && index < AudioTracks.size()) {
+            foundItem = AudioTracks.get(index);
+            AudioTracks.remove(index);
         } else if (itemId != null && !"".equals(itemId)) {
             int itemPos = getPositionForItem(itemId.hashCode());
             if (itemPos != BasePlaylistManager.INVALID_POSITION) {
-                mediaItems.remove(itemPos);
-                removed = true;
+                foundItem = AudioTracks.get(itemPos);
+                AudioTracks.remove(itemPos);
             }
         }
 
-        setItems(mediaItems);
-        setCurrentPosition(mediaItems.indexOf(currentItem));
-        return removed;
+        setItems(AudioTracks);
+        setCurrentPosition(AudioTracks.indexOf(currentItem));
+        return foundItem;
     }
 
     public void clearItems() {
-        mediaItems.clear();
-        setItems(mediaItems);
+        AudioTracks.clear();
+        setItems(AudioTracks);
         setCurrentPosition(BasePlaylistManager.INVALID_POSITION);
     }
 

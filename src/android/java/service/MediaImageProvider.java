@@ -18,7 +18,7 @@ import org.jetbrains.annotations.Nullable;
 // we can use R directly. Otherwise, we'd have to use the cordova activity,
 // but that would be a bit odd since this belongs to a service running
 // outside that activity. I'm not sure if that would work.
-// import __PACKAGE_NAME__.R;
+// import com.rolamix.rolamixapp.R;
 import com.rolamix.plugins.audioplayer.FakeR;
 import com.rolamix.plugins.audioplayer.data.AudioTrack;
 
@@ -29,12 +29,12 @@ public class MediaImageProvider implements ImageProvider<AudioTrack> {
     }
 
     @NotNull
-    private FakeR fakeR;
-
-    @NotNull
     private RequestManager glide;
     @NonNull
     private OnImageUpdatedListener listener;
+
+    @NonNull
+    private FakeR fakeR;
 
     @NonNull
     private NotificationImageTarget notificationImageTarget = new NotificationImageTarget();
@@ -43,13 +43,15 @@ public class MediaImageProvider implements ImageProvider<AudioTrack> {
 
     @NonNull
     private Bitmap defaultNotificationImage;
+    @NonNull
+    private Bitmap defaultArtworkImage;
 
     @Nullable
     private Bitmap notificationImage;
     @Nullable
     private Bitmap artworkImage;
 
-    public MediaImageProvider(@NonNull Context context, @NonNull OnImageUpdatedListener listener) {
+    MediaImageProvider(@NonNull Context context, @NonNull OnImageUpdatedListener listener) {
         glide = Glide.with(context.getApplicationContext());
         fakeR = new FakeR(context.getApplicationContext());
         this.listener = listener;
@@ -62,12 +64,14 @@ public class MediaImageProvider implements ImageProvider<AudioTrack> {
 
     @Override
     public int getNotificationIconRes() {
-        return R.mipmap.icon; // this comes from cordova itself.
+        // return R.mipmap.icon; // this comes from cordova itself.
+        return fakeR.getId("mipmap", "icon");
     }
 
     @Override
     public int getRemoteViewIconRes() {
-        return R.mipmap.icon;
+        // return R.mipmap.icon;
+        return fakeR.getId("mipmap", "icon");
     }
 
     @Nullable

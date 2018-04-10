@@ -1,5 +1,6 @@
 package com.rolamix.plugins.audioplayer;
 
+import android.util.Log;
 import org.apache.cordova.CallbackContext;
 import org.apache.cordova.PluginResult;
 import org.json.*;
@@ -7,13 +8,17 @@ import org.json.*;
 public class PluginCallback {
     private CallbackContext callbackContext;
 
-    public PluginCallback(CallbackContext callbackContext) {
+    PluginCallback(CallbackContext callbackContext) {
         this.callbackContext = callbackContext;
     }
 
     public void sendError(String message) {
       JSONObject params = new JSONObject();
-      params.put("message", message);
+      try {
+          params.put("message", message);
+      } catch (JSONException e) {
+          Log.e("PluginCallback", "sendError: Error generating JSON object: " + e.toString());
+      }
       send(PluginResult.Status.ERROR, params);
     }
 

@@ -1,5 +1,6 @@
 package com.rolamix.plugins.audioplayer.playlist;
-import com.rolamix.plugins.audioplayer.playlist.data.AudioTrack;
+
+import com.rolamix.plugins.audioplayer.data.AudioTrack;
 
 import android.content.Context;
 import android.media.AudioManager;
@@ -17,7 +18,6 @@ import java.lang.ref.WeakReference;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.ArrayList;
 import org.jetbrains.annotations.NotNull;
-import org.apache.cordova.LOG;
 
 public class AudioApi extends BaseMediaApi {
     @NonNull
@@ -37,7 +37,7 @@ public class AudioApi extends BaseMediaApi {
 
         // If you have not included the WAKE_LOCK permission in your project,
         // the following lines have no effect.
-        int wakeMode = PowerManager.PARTIAL_WAKE_LOCK | PowerManager.PROXIMITY_SCREEN_OFF_WAKE_LOCK;
+        int wakeMode = PowerManager.PARTIAL_WAKE_LOCK; // | PowerManager.PROXIMITY_SCREEN_OFF_WAKE_LOCK;
         audioPlayer.setWakeMode(context, wakeMode);
         audioPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
     }
@@ -112,12 +112,12 @@ public class AudioApi extends BaseMediaApi {
     }
 
     @Override
-    public boolean handlesItem(@NotNull MediaItem item) {
+    public boolean handlesItem(@NotNull AudioTrack item) {
         return item.getMediaType() == BasePlaylistManager.AUDIO;
     }
 
     @Override
-    public void playItem(@NotNull MediaItem item) {
+    public void playItem(@NotNull AudioTrack item) {
         try {
             prepared = false;
             bufferPercent = 0;
