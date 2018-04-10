@@ -55,6 +55,10 @@
          This is because even when the cordova activity goes out of scope
          (e.g. minimize the app), the notification callbacks need to continue running.
          This can be done with activities & binder services, but the ExoMedia author chose not to.. -->
+    <!-- The use of "/manifest/application/" as the target is very specific; as far as I can tell
+         no other plugin uses the trailing slash for that path, and there is a bug in cordova
+         where plugins that use the same path are automatically reported as conflicting, even
+         if their attributes don't actually conflict. So I picked a path that is correct but should be unique. -->
     <edit-config file="AndroidManifest.xml" mode="merge" target="/manifest/application/">
       <application android:name=".MainApplication" />
     </edit-config>
