@@ -80,7 +80,6 @@
     <source-file src="src/android/java/MainApplication.java" target-dir="src/com/rolamix/plugins/audioplayer/" />
     <source-file src="src/android/java/AudioPlayerPlugin.java" target-dir="src/com/rolamix/plugins/audioplayer/" />
     <source-file src="src/android/java/FakeR.java" target-dir="src/com/rolamix/plugins/audioplayer/" />
-    <source-file src="src/android/java/MainApplication.java" target-dir="src/com/rolamix/plugins/audioplayer/" />
     <source-file src="src/android/java/OnStatusCallback.java" target-dir="src/com/rolamix/plugins/audioplayer/" />
     <source-file src="src/android/java/OnStatusReportListener.java" target-dir="src/com/rolamix/plugins/audioplayer/" />
     <source-file src="src/android/java/PluginCallback.java" target-dir="src/com/rolamix/plugins/audioplayer/" />
