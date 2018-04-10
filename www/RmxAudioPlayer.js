@@ -15,10 +15,7 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
 
 var exec = cordova.require('cordova/exec');
 
-var channel = cordova.require('cordova/channel'); // for debug, add these immediately after initializing the class.
-// "https://rolamix-usercontent.s3.us-east-2.amazonaws.com/band-audios/5a4eec1e7b9b120ef9c8d528/coYiT0UlNJtnSv.mp3"
-// "https://rolamix-usercontent.s3.us-east-2.amazonaws.com/band-audios/5a5d72f3617acf0e90de39b3/qeQM8hfanV143Q.mp3"
-
+var channel = cordova.require('cordova/channel');
 /**
  * AudioPlayer class implementation. A singleton of this class is exported for use by Cordova,
  * but nothing stops you from creating another instance. Keep in mind that the native players
