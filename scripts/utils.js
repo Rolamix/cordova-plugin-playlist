@@ -20,8 +20,7 @@ function getProjectName(context) { // eslint-disable-line no-unused-vars
 }
 
 // ~Duplicate of 'cordova-lib/src/cordova/util.js' but they do not expose that module..
-function getProjectConfig() {
-  const { projectRoot } = context.opts;
+function getProjectConfig(projectRoot) {
   const rootPath = path.join(projectRoot, 'config.xml');
   const wwwPath = path.join(projectRoot, 'www', 'config.xml');
   if (fs.existsSync(rootPath)) {
