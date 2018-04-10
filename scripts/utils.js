@@ -129,7 +129,7 @@ function updateAndroidManifestApplication(context, value) {
   if (value && appNode.$['android:name']) {
     // eslint-disable-next-line
     const message = `AudioPlayerPlugin: Refusing to overwrite AndroidManifest application name (android:name), non-empty value: ${appNode.$['android:name']}`;
-    throw new Error(message);
+    console.warn(message);
   }
   if (value) {
     appNode.$['android:name'] = value;
