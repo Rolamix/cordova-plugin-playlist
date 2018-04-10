@@ -2,7 +2,6 @@ const path = require('path');
 const fs = require('fs-extra');
 const semver = require('semver');
 
-const cdv6PathSegments = ['src'];
 const cdv7PathSegments = ['app', 'src', 'main', 'java'];
 
 function getProjectName(context) { // eslint-disable-line no-unused-vars
@@ -46,8 +45,7 @@ function getAndroidVersion(context) {
 
 function getAndroidJavaSrcPath(context) {
   const { projectRoot } = context.opts;
-  const isCordovaAndroid7orMore = semver.satisfies(getAndroidVersion(context), '>=7.0.0');
-  const targetSegments = isCordovaAndroid7orMore ? cdv7PathSegments : cdv6PathSegments;
+  const targetSegments = cdv7PathSegments;
   const platformTarget = path.resolve(projectRoot, 'platforms', 'android');
   const javaTargetPath = path.resolve(platformTarget, ...targetSegments);
   return javaTargetPath;
