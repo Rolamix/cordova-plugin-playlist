@@ -47,6 +47,8 @@ module.exports = function androidAfterPluginInstall(context) {
     const mainAppSource = path.resolve(installedPluginPath, 'MainApplication.java');
     const mainAppTarget = path.resolve(javaTargetPath, packagePath, `${projectName}.java`);
     if (fs.existsSync(mainAppSource)) {
+      console.log('Moving MainApplication.java from ', '\n\t', mainAppSource, '\n', 'to', '\n\t', mainAppTarget);
+
       if (fs.existsSync(mainAppTarget)) {
         let message = `MainApplication.java target already exists, refusing to overwrite: ${mainAppTarget}`;
         message += 'This is a permanent error so that you have the opportunity to resolve the conflict.';

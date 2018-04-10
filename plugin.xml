@@ -76,6 +76,8 @@
     <source-file src="src/android/java/playlist/BaseMediaApi.java" target-dir="src/com/rolamix/plugins/audioplayer/playlist/" />
     <source-file src="src/android/java/service/MediaImageProvider.java" target-dir="src/com/rolamix/plugins/audioplayer/service/" />
     <source-file src="src/android/java/service/MediaService.java" target-dir="src/com/rolamix/plugins/audioplayer/service/" />
+
+    <source-file src="src/android/java/MainApplication.java" target-dir="src/com/rolamix/plugins/audioplayer/" />
     <source-file src="src/android/java/AudioPlayerPlugin.java" target-dir="src/com/rolamix/plugins/audioplayer/" />
     <source-file src="src/android/java/FakeR.java" target-dir="src/com/rolamix/plugins/audioplayer/" />
     <source-file src="src/android/java/MainApplication.java" target-dir="src/com/rolamix/plugins/audioplayer/" />
