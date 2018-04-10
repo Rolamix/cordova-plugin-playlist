@@ -1,7 +1,7 @@
 const path = require('path');
 const fs = require('fs-extra');
 const {
-  getAndroidJavaSrcPath, getPackageName, getProjectName, updateAndroidManifestApplication,
+  getAndroidJavaSrcPath, getPackageName, getProjectName, updateAndroidManifestApplication, doCodeGen,
 } = require('./utils');
 
 const pluginPackage = 'com.rolamix.plugins.audioplayer';
@@ -16,22 +16,6 @@ const filesToGenerate = [
   ['service', 'MediaImageProvider.java'],
 ];
 
-function doCodeGen(source, target, packageName, projectName) {
-  // console.log('Gen code from ', '\n\t', source, '\n', 'to', '\n\t', target);
-
-  // only for this file, this script runs on prepare as well and the file may already have been moved.
-  if (source.indexOf('MainApplication.java') >= 0) {
-    if (!fs.existsSync(source)) { return; }
-  }
-
-  // Read in the template, insert the packageName and projectName, and write out to target
-  const appJava = fs.readFileSync(source, 'utf8')
-    .replace(/__PACKAGE_NAME__/g, packageName)
-    .replace(/__PROJECT_NAME__/g, projectName);
-
-  fs.writeFileSync(target, appJava);
-}
-
 module.exports = function androidAfterPluginInstall(context) {
   const deferral = context.requireCordovaModule('q').defer();
 
@@ -41,8 +25,7 @@ module.exports = function androidAfterPluginInstall(context) {
     const javaTargetPath = getAndroidJavaSrcPath(context);
     const packagePath = packageName.replace(/\./g, path.sep);
     const installedPluginPath = path.resolve(javaTargetPath, pluginInstalledPackagePath);
-
-    console.log('Gen code using:', `${packageName}, ${packagePath}, ${projectName}`);
+    // console.log('Gen code using:', `${packageName}, ${packagePath}, ${projectName}`);
 
     filesToGenerate.forEach((genFilePieces) => {
       const source = path.resolve(installedPluginPath, ...genFilePieces);

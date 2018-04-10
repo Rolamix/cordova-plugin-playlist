@@ -95,6 +95,22 @@ function getPackageName(context) {
   return packageName;
 }
 
+function doCodeGen(source, target, packageName, projectName) {
+  // console.log('Gen code from ', '\n\t', source, '\n', 'to', '\n\t', target);
+
+  // only for this file, this script runs on prepare as well and the file may already have been moved.
+  if (source.indexOf('MainApplication.java') >= 0) {
+    if (!fs.existsSync(source)) { return; }
+  }
+
+  // Read in the template, insert the packageName and projectName, and write out to target
+  const appJava = fs.readFileSync(source, 'utf8')
+    .replace(/__PACKAGE_NAME__/g, packageName)
+    .replace(/__PROJECT_NAME__/g, projectName);
+
+  fs.writeFileSync(target, appJava);
+}
+
 function getAndroidManifest(context) {
   const { projectRoot } = context.opts;
   const platformTarget = path.resolve(projectRoot, 'platforms', 'android');
@@ -132,4 +148,5 @@ module.exports = {
   getAndroidJavaSrcPath,
   getPackageName,
   getProjectName,
+  doCodeGen,
 };
