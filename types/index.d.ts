@@ -1,17 +1,11 @@
-// Type definitions for cordova-plugin-audio-player
-// Project: https://github.com/Rolamix/cordova-plugin-audio-player
-// Definitions by: codinronan <https://github.com/codinronan>
-
-declare namespace RmxAudioPlayer {
-
-  interface RmxAudioPlayerStatic {
-		init(options: InitOptions): AudioPlayer
-		new (options: InitOptions): AudioPlayer
-  }
-
-}
-
-interface Window {
-	RmxAudioPlayer: RmxAudioPlayer.AudioPlayer
-}
-declare var RmxAudioPlayer: RmxAudioPlayer.AudioPlayer;
+import { RmxAudioErrorType, RmxAudioStatusMessage } from './Constants';
+import { RmxAudioPlayer } from './RmxAudioPlayer';
+declare const _default: {
+    RmxAudioErrorType: typeof RmxAudioErrorType;
+    RmxAudioErrorTypeDescriptions: string[];
+    RmxAudioStatusMessage: typeof RmxAudioStatusMessage;
+    RmxAudioStatusMessageDescriptions: string[];
+    AudioPlayer: RmxAudioPlayer;
+    RmxAudioPlayer: typeof RmxAudioPlayer;
+};
+export default _default;

@@ -2,16 +2,26 @@
 /* globals window */
 
 import {
-  RmxAudioErrorType,
-  RmxAudioErrorTypeDescriptions,
   RmxAudioStatusMessage,
   RmxAudioStatusMessageDescriptions,
 } from './Constants';
+
+import {
+  AudioPlayerEventHandler,
+  AudioPlayerEventHandlers,
+  AudioPlayerOptions,
+  AudioTrack,
+  AudioTrackRemoval,
+  OnStatusCallback,
+  SuccessCallback,
+  ErrorCallback,
+} from './interfaces';
 
 /*!
  * Module dependencies.
  */
 
+declare var cordova: any;
 const exec = cordova.require('cordova/exec');
 const channel = cordova.require('cordova/channel');
 
@@ -19,7 +29,17 @@ const channel = cordova.require('cordova/channel');
 // "https://rolamix-usercontent.s3.us-east-2.amazonaws.com/band-audios/5a4eec1e7b9b120ef9c8d528/coYiT0UlNJtnSv.mp3"
 // "https://rolamix-usercontent.s3.us-east-2.amazonaws.com/band-audios/5a5d72f3617acf0e90de39b3/qeQM8hfanV143Q.mp3"
 
-class AudioPlayer {
+
+/**
+ * AudioPlayer class implementation. A singleton of this class is exported for use by Cordova,
+ * but nothing stops you from creating another instance. Keep in mind that the native players
+ * are in fact singletons, so the only thing the separate instance gives you would be
+ * separate onStatus callback streams.
+ */
+export class RmxAudioPlayer {
+  handlers: AudioPlayerEventHandlers = {};
+  options: AudioPlayerOptions | null = null;
+
   constructor() {
     this.handlers = {};
   }
@@ -28,7 +48,7 @@ class AudioPlayer {
    * Player interface
    */
 
-  init = (successCallback, errorCallback, options) => {
+  init = (successCallback: SuccessCallback, errorCallback: ErrorCallback, options: AudioPlayerOptions) => {
     // we don't use this for now.
     this.options = options || null;
     exec(successCallback, errorCallback, 'RmxAudioPlayer', 'initialize', [options]);
@@ -38,27 +58,27 @@ class AudioPlayer {
    * Playlist item management
    */
 
-  setPlaylistItems = (successCallback, errorCallback, items) => {
+  setPlaylistItems = (successCallback: SuccessCallback, errorCallback: ErrorCallback, items: AudioTrack[]) => {
     exec(successCallback, errorCallback, 'RmxAudioPlayer', 'setPlaylistItems', [items]);
   }
 
-  addItem = (successCallback, errorCallback, trackItem) => {
+  addItem = (successCallback: SuccessCallback, errorCallback: ErrorCallback, trackItem: AudioTrack) => {
     exec(successCallback, errorCallback, 'RmxAudioPlayer', 'addItem', [trackItem]);
   }
 
-  addAllItems = (successCallback, errorCallback, trackItems) => {
-    exec(successCallback, errorCallback, 'RmxAudioPlayer', 'addAllItems', [trackItems]);
+  addAllItems = (successCallback: SuccessCallback, errorCallback: ErrorCallback, items: AudioTrack[]) => {
+    exec(successCallback, errorCallback, 'RmxAudioPlayer', 'addAllItems', [items]);
   }
 
-  removeItem = (successCallback, errorCallback, trackItem) => {
-    exec(successCallback, errorCallback, 'RmxAudioPlayer', 'removeItem', [trackItem]);
+  removeItem = (successCallback: SuccessCallback, errorCallback: ErrorCallback, removeItem: AudioTrackRemoval) => {
+    exec(successCallback, errorCallback, 'RmxAudioPlayer', 'removeItem', [removeItem.trackIndex, removeItem.trackId]);
   }
 
-  removeItems = (successCallback, errorCallback, trackItems) => {
-    exec(successCallback, errorCallback, 'RmxAudioPlayer', 'removeItems', [trackItems]);
+  removeItems = (successCallback: SuccessCallback, errorCallback: ErrorCallback, items: AudioTrackRemoval[]) => {
+    exec(successCallback, errorCallback, 'RmxAudioPlayer', 'removeItems', [items]);
   }
 
-  clearAllItems = (successCallback, errorCallback) => {
+  clearAllItems = (successCallback: SuccessCallback, errorCallback: ErrorCallback) => {
     exec(successCallback, errorCallback, 'RmxAudioPlayer', 'clearAllItems', []);
   }
 
@@ -66,47 +86,47 @@ class AudioPlayer {
    * Playback management
    */
 
-  play = (successCallback, errorCallback) => {
+  play = (successCallback: SuccessCallback, errorCallback: ErrorCallback) => {
     exec(successCallback, errorCallback, 'RmxAudioPlayer', 'play', []);
   }
 
-  playTrackByIndex = (successCallback, errorCallback, index) => {
+  playTrackByIndex = (successCallback: SuccessCallback, errorCallback: ErrorCallback, index: number) => {
     exec(successCallback, errorCallback, 'RmxAudioPlayer', 'playTrackByIndex', [index]);
   }
 
-  playTrackById = (successCallback, errorCallback, trackId) => {
+  playTrackById = (successCallback: SuccessCallback, errorCallback: ErrorCallback, trackId: string) => {
     exec(successCallback, errorCallback, 'RmxAudioPlayer', 'playTrackById', [trackId]);
   }
 
-  pause = (successCallback, errorCallback) => {
+  pause = (successCallback: SuccessCallback, errorCallback: ErrorCallback) => {
     exec(successCallback, errorCallback, 'RmxAudioPlayer', 'pause', []);
   }
 
-  skipForward = (successCallback, errorCallback) => {
+  skipForward = (successCallback: SuccessCallback, errorCallback: ErrorCallback) => {
     exec(successCallback, errorCallback, 'RmxAudioPlayer', 'skipForward', []);
   }
 
-  skipBack = (successCallback, errorCallback) => {
+  skipBack = (successCallback: SuccessCallback, errorCallback: ErrorCallback) => {
     exec(successCallback, errorCallback, 'RmxAudioPlayer', 'skipBack', []);
   }
 
-  seekTo = (successCallback, errorCallback, position) => {
+  seekTo = (successCallback: SuccessCallback, errorCallback: ErrorCallback, position: number) => {
     exec(successCallback, errorCallback, 'RmxAudioPlayer', 'seekTo', [position]);
   }
 
-  seekToQueuePosition = (successCallback, errorCallback, position) => {
+  seekToQueuePosition = (successCallback: SuccessCallback, errorCallback: ErrorCallback, position: number) => {
     exec(successCallback, errorCallback, 'RmxAudioPlayer', 'seekToQueuePosition', [position]);
   }
 
-  setPlaybackRate = (successCallback, errorCallback, rate) => {
+  setPlaybackRate = (successCallback: SuccessCallback, errorCallback: ErrorCallback, rate: number) => {
     exec(successCallback, errorCallback, 'RmxAudioPlayer', 'setPlaybackRate', [rate]);
   }
 
-  setVolume = (successCallback, errorCallback, volume) => {
+  setVolume = (successCallback: SuccessCallback, errorCallback: ErrorCallback, volume: number) => {
     exec(successCallback, errorCallback, 'RmxAudioPlayer', 'setPlaybackVolume', [volume]);
   }
 
-  setLoop = (successCallback, errorCallback, loop) => {
+  setLoop = (successCallback: SuccessCallback, errorCallback: ErrorCallback, loop: boolean) => {
     exec(successCallback, errorCallback, 'RmxAudioPlayer', 'setLoopAll', [!!loop]);
   }
 
@@ -114,27 +134,27 @@ class AudioPlayer {
    * Get accessors
    */
 
-  getPlaybackRate = (successCallback, errorCallback) => {
+  getPlaybackRate = (successCallback: SuccessCallback, errorCallback: ErrorCallback) => {
     exec(successCallback, errorCallback, 'RmxAudioPlayer', 'getPlaybackRate', []);
   }
 
-  getVolume = (successCallback, errorCallback) => {
+  getVolume = (successCallback: SuccessCallback, errorCallback: ErrorCallback) => {
     exec(successCallback, errorCallback, 'RmxAudioPlayer', 'getPlaybackVolume', []);
   }
 
-  getPosition = (successCallback, errorCallback) => {
+  getPosition = (successCallback: SuccessCallback, errorCallback: ErrorCallback) => {
     exec(successCallback, errorCallback, 'RmxAudioPlayer', 'getPlaybackPosition', []);
   }
 
-  getCurrentBuffer = (successCallback, errorCallback) => {
+  getCurrentBuffer = (successCallback: SuccessCallback, errorCallback: ErrorCallback) => {
     exec(successCallback, errorCallback, 'RmxAudioPlayer', 'getCurrentBuffer', []);
   }
 
-  getTotalDuration = (successCallback, errorCallback) => {
+  getTotalDuration = (successCallback: SuccessCallback, errorCallback: ErrorCallback) => {
     exec(successCallback, errorCallback, 'RmxAudioPlayer', 'getTotalDuration', []);
   }
 
-  getQueuePosition = (successCallback, errorCallback) => {
+  getQueuePosition = (successCallback: SuccessCallback, errorCallback: ErrorCallback) => {
     exec(successCallback, errorCallback, 'RmxAudioPlayer', 'getQueuePosition', []);
   }
 
@@ -143,20 +163,21 @@ class AudioPlayer {
    * Status event handling
    */
 
-  onStatus(trackId, type, value) {
+  onStatus(trackId: string, type: RmxAudioStatusMessage, value: any) {
     const status = { type, trackId, value };
-    console.log(`RmxAudioPlayer.onStatus: ${RmxAudioStatusMessageDescriptions[type]}: ${value}`);
+    console.log(`RmxAudioPlayer.onStatus: ${RmxAudioStatusMessageDescriptions[type]} [${trackId}]: ${value}`);
     this.emit('status', status);
   }
 
-  on(eventName, callback) {
+  on(eventName: "status", callback: OnStatusCallback): void;
+  on(eventName: string, callback: AudioPlayerEventHandler) {
     if (!Object.prototype.hasOwnProperty.call(this.handlers, eventName)) {
       this.handlers[eventName] = [];
     }
     this.handlers[eventName].push(callback);
   }
 
-  off(eventName, handle) {
+  off(eventName: string, handle: AudioPlayerEventHandler) {
     if (Object.prototype.hasOwnProperty.call(this.handlers, eventName)) {
       const handleIndex = this.handlers[eventName].indexOf(handle);
       if (handleIndex >= 0) {
@@ -165,8 +186,8 @@ class AudioPlayer {
     }
   }
 
-  emit(...args) {
-    const eventName = args.shift();
+  emit(...args: any[]) {
+    const eventName: string = args.shift();
     if (!Object.prototype.hasOwnProperty.call(this.handlers, eventName)) {
       return false;
     }
@@ -183,14 +204,14 @@ class AudioPlayer {
   }
 }
 
-const playerInstance = new AudioPlayer();
+const playerInstance = new RmxAudioPlayer();
 
 // Initialize the plugin to send and receive messages
 
 channel.createSticky('onRmxAudioPlayerReady');
 channel.waitForInitialization('onRmxAudioPlayerReady');
 
-function onNativeStatus(msg) {
+function onNativeStatus(msg: any) {
   if (msg.action === 'status') {
     playerInstance.onStatus(msg.status.trackId, msg.status.msgType, msg.status.value);
   } else {
@@ -204,17 +225,8 @@ channel.onCordovaReady.subscribe(() => {
 });
 
 /*!
- * AudioPlayer Plugin.
+ * AudioPlayer Plugin instance.
  */
 
-module.exports = {
-
-  /**
-   * AudioPlayer instance.
-   */
-  AudioPlayer: playerInstance,
-  AudioErrorType: RmxAudioErrorType,
-  AudioErrorTypeDescriptions: RmxAudioErrorTypeDescriptions,
-  AudioStatusMessage: RmxAudioStatusMessage,
-  AudioStatusMessageDescriptions: RmxAudioStatusMessageDescriptions,
-};
+export const AudioPlayer = playerInstance;
+export default playerInstance; // keep typescript happy

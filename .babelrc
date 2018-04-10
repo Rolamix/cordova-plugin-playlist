@@ -1,9 +1,11 @@
 {
   "presets": [
-    ["@babel/preset-env", { "modules": "commonjs", "useBuiltIns": "usage", "debug": true }]
+    ["@babel/env", { "modules": "commonjs", "useBuiltIns": "usage", "debug": true }],
+    "@babel/typescript"
   ],
   "plugins": [
-    "transform-class-properties",
+    "@babel/proposal-class-properties",
+    "@babel/proposal-object-rest-spread",
     ["add-header-comment", {
       "files": {
         "src/js/RmxAudioPlayer.js": {

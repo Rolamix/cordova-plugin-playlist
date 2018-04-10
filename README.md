@@ -72,7 +72,6 @@ Coming...
 ## 4. Todo
 
 There's so much more to do on this plugin. Some items I would like to see added if anyone wants to help:
-* [JS] Add typescript to the src JS files so that the types don't have to be manually updated.
 * [iOS, Android] Add support for recording, similar to what is provided by `cordova-plugin-media`
 * [iOS] Safely implement cover art for cover images displayed on the command/lock screen controls
 * [iOS] Write this plugin in Swift instead of Objective-C. I didn't have time to learn Swift when I needed this.
