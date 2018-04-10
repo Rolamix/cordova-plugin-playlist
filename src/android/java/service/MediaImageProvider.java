@@ -18,7 +18,7 @@ import org.jetbrains.annotations.Nullable;
 // we can use R directly. Otherwise, we'd have to use the cordova activity,
 // but that would be a bit odd since this belongs to a service running
 // outside that activity. I'm not sure if that would work.
-// import com.rolamix.rolamixapp.R;
+// import __PACKAGE_NAME__.R;
 import com.rolamix.plugins.audioplayer.FakeR;
 import com.rolamix.plugins.audioplayer.data.AudioTrack;
 

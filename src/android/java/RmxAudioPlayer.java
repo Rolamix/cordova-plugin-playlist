@@ -9,7 +9,7 @@ import org.apache.cordova.CordovaInterface;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import com.rolamix.rolamixapp.MainApplication;
+import __PACKAGE_NAME__.MainApplication;
 import com.rolamix.plugins.audioplayer.data.AudioTrack;
 import com.rolamix.plugins.audioplayer.manager.PlaylistManager;
 import com.rolamix.plugins.audioplayer.manager.MediaControlsListener;

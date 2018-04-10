@@ -1,6 +1,6 @@
 package com.rolamix.plugins.audioplayer.service;
 
-import com.rolamix.rolamixapp.MainApplication;
+import __PACKAGE_NAME__.MainApplication;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
