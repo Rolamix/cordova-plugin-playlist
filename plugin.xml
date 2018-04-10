@@ -59,9 +59,9 @@
          no other plugin uses the trailing slash for that path, and there is a bug in cordova
          where plugins that use the same path are automatically reported as conflicting, even
          if their attributes don't actually conflict. So I picked a path that is correct but should be unique. -->
-    <edit-config file="AndroidManifest.xml" mode="merge" target="/manifest/application/">
+    <!-- <edit-config file="AndroidManifest.xml" mode="merge" target="/manifest/application/">
       <application android:name=".MainApplication" />
-    </edit-config>
+    </edit-config> -->
 
     <dependency id="cordova-support-google-services" version="~1.1.0"/>
 
