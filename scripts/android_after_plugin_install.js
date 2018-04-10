@@ -1,6 +1,8 @@
 const path = require('path');
 const fs = require('fs-extra');
-const { getAndroidJavaSrcPath, getPackageName, getProjectName } = require('./utils');
+const {
+  getAndroidJavaSrcPath, getPackageName, getProjectName, updateAndroidManifestApplication,
+} = require('./utils');
 
 const pluginPackage = 'com.rolamix.plugins.audioplayer';
 const pluginInstalledPackagePath = pluginPackage.replace(/\./g, path.sep);
@@ -15,7 +17,7 @@ const filesToGenerate = [
 ];
 
 function doCodeGen(source, target, packageName, projectName) {
-  console.log('Gen code from ', '\n\t', source, '\n', 'to', '\n\t', target);
+  // console.log('Gen code from ', '\n\t', source, '\n', 'to', '\n\t', target);
 
   // only for this file, this script runs on prepare as well and the file may already have been moved.
   if (source.indexOf('MainApplication.java') >= 0) {
@@ -61,6 +63,9 @@ module.exports = function androidAfterPluginInstall(context) {
       }
       fs.moveSync(mainAppSource, mainAppTarget, { overwrite: false });
     }
+
+    // Now write the main application entry to the android manifest.
+    updateAndroidManifestApplication(context, '.MainApplication');
 
     deferral.resolve();
   } catch (ex) {

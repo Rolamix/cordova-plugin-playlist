@@ -1,8 +1,41 @@
 const path = require('path');
 const fs = require('fs-extra');
 const semver = require('semver');
+const xml2js = require('xml2js');
 
 const cdv7PathSegments = ['app', 'src', 'main', 'java'];
+
+function readXml(filePath) {
+  let parsedData = '';
+  try {
+    const xmlData = fs.readFileSync(filePath);
+    const xmlParser = new xml2js.Parser();
+    xmlParser.parseString(xmlData, (err, data) => {
+      if (!err && data) {
+        parsedData = data;
+      }
+    });
+  } catch (err) {
+    throw new Error(`AudioPlayer plugin: failed to read file: ${filePath}`);
+  }
+
+  return parsedData;
+}
+
+function writeXml(filePath, content) {
+  const xmlBuilder = new xml2js.Builder();
+  const changedXmlData = xmlBuilder.buildObject(content);
+  let isSaved = false;
+
+  try {
+    fs.writeFileSync(filePath, changedXmlData);
+    isSaved = true;
+  } catch (err) {
+    throw new Error(`AudioPlayer plugin: failed to write file: ${filePath}`);
+  }
+
+  return isSaved;
+}
 
 function getProjectName(context) { // eslint-disable-line no-unused-vars
   // I'd like to use this, but there are some issues around this that need to be addressed.
@@ -62,7 +95,38 @@ function getPackageName(context) {
   return packageName;
 }
 
+function getAndroidManifest(context) {
+  const { projectRoot } = context.opts;
+  const platformTarget = path.resolve(projectRoot, 'platforms', 'android');
+  const manifestPath = path.join(platformTarget, 'app', 'src', 'main', 'AndroidManifest.xml');
+  const manifest = readXml(manifestPath);
+
+  return {
+    path: manifestPath,
+    contents: manifest,
+  };
+}
+
+function updateAndroidManifestApplication(context, value) {
+  const manifest = getAndroidManifest(context);
+  const appNode = manifest.contents.manifest.application[0]; // corresponds to /manifest/application/ xml path
+  if (value && appNode.$['android:name']) {
+    // eslint-disable-next-line
+    const message = `AudioPlayerPlugin: Refusing to overwrite AndroidManifest application name (android:name), non-empty value: ${appNode.$['android:name']}`;
+    throw new Error(message);
+  }
+  if (value) {
+    appNode.$['android:name'] = value;
+  } else {
+    delete appNode.$['android:name'];
+  }
+
+  writeXml(manifest.path, manifest.contents);
+}
+
 module.exports = {
+  getAndroidManifest,
+  updateAndroidManifestApplication,
   getProjectConfig,
   getAndroidVersion,
   getAndroidJavaSrcPath,

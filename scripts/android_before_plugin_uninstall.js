@@ -1,6 +1,8 @@
 const path = require('path');
 const fs = require('fs-extra');
-const { getAndroidJavaSrcPath, getPackageName, getProjectName } = require('./utils');
+const {
+  getAndroidJavaSrcPath, getPackageName, getProjectName, updateAndroidManifestApplication,
+} = require('./utils');
 
 // this script needs to put back the MainApplication file that was moved.
 // Cordova needs to be able to remove the file, unfortunately. It seems to keep track
@@ -23,6 +25,10 @@ module.exports = function androidAfterPluginRemove(context) {
     if (fs.existsSync(mainAppTarget)) {
       fs.unlinkSync(mainAppTarget);
     }
+
+    // And remove the main application from the AndroidManifest.
+    updateAndroidManifestApplication(context, null);
+
     deferral.resolve();
   } catch (ex) {
     console.warn(ex);
