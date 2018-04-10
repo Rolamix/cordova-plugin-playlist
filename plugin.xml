@@ -16,7 +16,7 @@
 	</engines>
 
 	<js-module src="www/RmxAudioPlayer.js" name="AudioPlayer">
-		<clobbers target="AudioPlayer" />
+		<clobbers target="window.plugins.AudioPlayer" />
 	</js-module>
 
   <js-module src="www/Constants.js" name="AudioPlayerConstants">
