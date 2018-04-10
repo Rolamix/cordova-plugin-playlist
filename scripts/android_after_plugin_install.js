@@ -14,7 +14,7 @@ const filesToGenerate = [
   ['service', 'MediaImageProvider.java'],
 ];
 
-function doCodeGen(source: string, target, packageName, projectName) {
+function doCodeGen(source, target, packageName, projectName) {
   console.log('Gen code from ', '\n\t', source, '\n', 'to', '\n\t', target);
 
   // only for this file, this script runs on prepare as well and the file may already have been moved.
