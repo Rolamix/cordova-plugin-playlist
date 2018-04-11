@@ -19,7 +19,7 @@
 		<clobbers target="window.plugins.AudioPlayer" />
 	</js-module>
 
-  <js-module src="www/Constants.js" name="AudioPlayerConstants">
+  <js-module src="www/Constants.js" name="Constants">
 		<runs />
 	</js-module>
 
