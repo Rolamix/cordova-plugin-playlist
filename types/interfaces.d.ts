@@ -4,6 +4,7 @@ export interface AudioPlayerEventHandlers {
     [key: string]: AudioPlayerEventHandler[];
 }
 export interface AudioPlayerOptions {
+    verbose?: boolean;
 }
 export interface AudioTrack {
     trackId: string;

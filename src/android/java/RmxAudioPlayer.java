@@ -41,6 +41,8 @@ public class RmxAudioPlayer implements PlaybackStatusListener<AudioTrack>,
   private PlaylistManager playlistManager;
   private OnStatusReportListener statusListener;
 
+  private int lastBufferPercent = 0;
+
   public RmxAudioPlayer(@NonNull OnStatusReportListener statusListener, @NonNull CordovaInterface cordova) {
     // AudioPlayerPlugin and RmxAudioPlayer are separate classes in order to increase
     // the portability of this code.
@@ -87,26 +89,30 @@ public class RmxAudioPlayer implements PlaybackStatusListener<AudioTrack>,
   @Override
   public void onPrevious(AudioTrack currentItem, int currentIndex) {
     JSONObject param = new JSONObject();
+    String trackId = currentItem == null ? "NONE" : currentItem.getTrackId();
+
     try {
         param.put("currentIndex", currentIndex);
-        param.put("currentItem", currentItem);
+        param.put("currentItem", currentItem != null ? currentItem.toDict() : null);
     } catch (JSONException e) {
         Log.i(TAG, "Error generating onPrevious status message: " + e.toString());
     }
 
-    onStatus(RmxAudioStatusMessage.RMX_STATUS_SKIP_BACK, currentItem.getTrackId(), param);
+    onStatus(RmxAudioStatusMessage.RMX_STATUS_SKIP_BACK, trackId, param);
   }
 
   @Override
   public void onNext(AudioTrack currentItem, int currentIndex) {
     JSONObject param = new JSONObject();
+    String trackId = currentItem == null ? "NONE" : currentItem.getTrackId();
+
     try {
         param.put("currentIndex", currentIndex);
-        param.put("currentItem", currentItem);
+        param.put("currentItem", currentItem != null ? currentItem.toDict() : null);
     } catch (JSONException e) {
         Log.i(TAG, "Error generating onNext status message: " + e.toString());
     }
-    onStatus(RmxAudioStatusMessage.RMX_STATUS_SKIP_FORWARD, currentItem.getTrackId(), param);
+    onStatus(RmxAudioStatusMessage.RMX_STATUS_SKIP_FORWARD, trackId, param);
   }
 
   @Override
@@ -125,7 +131,7 @@ public class RmxAudioPlayer implements PlaybackStatusListener<AudioTrack>,
       // this is the first place that valid duration is seen. Immediately before, we get the PLAYING status change,
       // and before that, it announces PREPARING twice and all values are 0.
 
-      JSONObject trackStatus = getPlayerStatus();
+      JSONObject trackStatus = getPlayerStatus(item);
       onStatus(RmxAudioStatusMessage.RMXSTATUS_CANPLAY, item.getTrackId(), trackStatus);
       onStatus(RmxAudioStatusMessage.RMXSTATUS_DURATION, item.getTrackId(), trackStatus);
   }
@@ -134,12 +140,17 @@ public class RmxAudioPlayer implements PlaybackStatusListener<AudioTrack>,
   public void onItemPlaybackEnded(AudioTrack item) {
       String title = item != null ? item.getTitle() : "(null)";
       String trackId = item != null ? item.getTrackId() : null;
-      Log.i(TAG, "onItemPlaybackEnded: ==> " + title);
 
-      JSONObject trackStatus = getPlayerStatus();
+      AudioTrack nextItem = playlistManager.getCurrentItem();
+      String currTitle = nextItem != null ? nextItem.getTitle() : "(null)";
+      String currTrackId = nextItem != null ? nextItem.getTrackId() : null;
+
+      Log.i(TAG, "onItemPlaybackEnded: ==> " + title + "," + trackId + " ==> next item: " + currTitle + "," + currTrackId);
+
+      JSONObject trackStatus = getPlayerStatus(item);
       onStatus(RmxAudioStatusMessage.RMXSTATUS_COMPLETED, trackId, trackStatus);
 
-      if (!playlistManager.isNextAvailable()) {
+      if (nextItem == null) { // if (!playlistManager.isNextAvailable()) {
         onStatus(RmxAudioStatusMessage.RMXSTATUS_PLAYLIST_COMPLETED, "INVALID", null);
       }
   }
@@ -152,11 +163,10 @@ public class RmxAudioPlayer implements PlaybackStatusListener<AudioTrack>,
 
   @Override
   public boolean onPlaylistItemChanged(@Nullable AudioTrack currentItem, boolean hasNext, boolean hasPrevious) {
-      if (currentItem == null || currentItem.getTrackId() == null) { return false; }
-
       JSONObject info = new JSONObject();
+      String trackId = currentItem == null ? "NONE" : currentItem.getTrackId();
       try {
-          info.put("currentItem", currentItem.toDict());
+          info.put("currentItem", currentItem != null ? currentItem.toDict() : null);
           info.put("currentIndex", playlistManager.getCurrentPosition());
           info.put("isAtEnd", !hasNext);
           info.put("isAtBeginning", !hasPrevious);
@@ -166,7 +176,7 @@ public class RmxAudioPlayer implements PlaybackStatusListener<AudioTrack>,
           Log.e(TAG, "Error creating onPlaylistItemChanged message: " + e.toString());
       }
 
-      onStatus(RmxAudioStatusMessage.RMXSTATUS_TRACK_CHANGED, currentItem.getTrackId(), info);
+      onStatus(RmxAudioStatusMessage.RMXSTATUS_TRACK_CHANGED, trackId, info);
       return true;
   }
 
@@ -178,8 +188,8 @@ public class RmxAudioPlayer implements PlaybackStatusListener<AudioTrack>,
       // sending a seek command produces SEEKING here
       // RETRIEVING is never sent.
 
-      JSONObject trackStatus = getPlayerStatus();
       AudioTrack currentItem = playlistManager.getCurrentItem();
+      JSONObject trackStatus = getPlayerStatus(currentItem);
 
       switch (playbackState) {
           case STOPPED:
@@ -229,30 +239,37 @@ public class RmxAudioPlayer implements PlaybackStatusListener<AudioTrack>,
       // Order matters here. We must update the item's duration and buffer before pulling the track status,
       // because those values are adjusted to account for the buffering-reset in ExoPlayer.
       AudioTrack currentItem = playlistManager.getCurrentItem();
+      PlaybackState playbackState = playlistManager.getCurrentPlaybackState();
+
       if (currentItem != null) { // I mean, this call makes no sense otherwise..
         currentItem.setDuration(progress.getDuration());
         currentItem.setBufferPercent(progress.getBufferPercent());
         currentItem.setBufferPercentFloat(progress.getBufferPercentFloat());
 
-        JSONObject trackStatus = getPlayerStatus();
+        JSONObject trackStatus = getPlayerStatus(currentItem);
 
-        if (progress.getBufferPercent() >= 100f) {
-          // Unlike iOS this will get raised continuously.
-          // Extracting the source event from playlistcore would be really hard.
-          onStatus(RmxAudioStatusMessage.RMXSTATUS_LOADED, currentItem.getTrackId(), trackStatus);
-        } else {
-          onStatus(RmxAudioStatusMessage.RMXSTATUS_BUFFERING, currentItem.getTrackId(), trackStatus);
+        if (progress.getBufferPercent() != lastBufferPercent) {
+            if (progress.getBufferPercent() >= 100f) {
+                // Unlike iOS this will get raised continuously.
+                // Extracting the source event from playlistcore would be really hard.
+                onStatus(RmxAudioStatusMessage.RMXSTATUS_LOADED, currentItem.getTrackId(), trackStatus);
+            }
+
+            onStatus(RmxAudioStatusMessage.RMXSTATUS_BUFFERING, currentItem.getTrackId(), trackStatus);
+            lastBufferPercent = progress.getBufferPercent();
         }
 
-        onStatus(RmxAudioStatusMessage.RMXSTATUS_PLAYBACK_POSITION, currentItem.getTrackId(), trackStatus);
+        if (playbackState == PlaybackState.PLAYING || playbackState == PlaybackState.SEEKING || playbackState == PlaybackState.PREPARING) {
+            onStatus(RmxAudioStatusMessage.RMXSTATUS_PLAYBACK_POSITION, currentItem.getTrackId(), trackStatus);
+        }
       }
 
       return true;
   }
 
-  public JSONObject getPlayerStatus() {
+  public JSONObject getPlayerStatus(@Nullable AudioTrack statusItem) {
     // TODO: Make this its own object.
-    AudioTrack currentItem = playlistManager.getCurrentItem();
+    AudioTrack currentItem = statusItem != null ? statusItem : playlistManager.getCurrentItem();
     PlaybackState playbackState = playlistManager.getCurrentPlaybackState();
     MediaProgress progress = playlistManager.getCurrentProgress();
 
@@ -289,11 +306,6 @@ public class RmxAudioPlayer implements PlaybackStatusListener<AudioTrack>,
         duration = currentItem.getDuration(); // progress.
     }
 
-    if (duration <= 0) {
-      duration = 1; // avoid divide by zero
-      position = 0;
-    }
-
     JSONObject trackStatus = new JSONObject();
     try {
         trackStatus.put("trackId", trackId);
@@ -301,8 +313,9 @@ public class RmxAudioPlayer implements PlaybackStatusListener<AudioTrack>,
         trackStatus.put("status", status);
         trackStatus.put("currentPosition", position / 1000f);
         trackStatus.put("duration", duration / 1000f);
-        trackStatus.put("playbackPercent", (position / duration) * 100.0f);
+        trackStatus.put("playbackPercent", duration > 0 ? (((double)position / (double)duration) * 100.0d) : 0);
         trackStatus.put("bufferPercent", bufferPercent);
+        trackStatus.put("bufferPercentFloat", bufferPercentFloat);
         trackStatus.put("bufferStart", 0f);
         trackStatus.put("bufferEnd", (bufferPercentFloat * duration) / 1000.0f);
     } catch (JSONException e) {
@@ -313,10 +326,12 @@ public class RmxAudioPlayer implements PlaybackStatusListener<AudioTrack>,
   }
 
   public void pause() {
+    Log.i(TAG, "Pausing, removing event listeners");
     removePlaylistListeners();
   }
 
   public void resume() {
+    Log.i(TAG, "Resumed, wiring up event listeners");
     getPlaylistManager();
     registerPlaylistListeners();
     //Makes sure to retrieve the current playback information

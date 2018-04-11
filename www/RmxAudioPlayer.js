@@ -7,6 +7,10 @@ exports.default = exports.AudioPlayer = exports.RmxAudioPlayer = void 0;
 
 var _Constants = require("./Constants");
 
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; var ownKeys = Object.keys(source); if (typeof Object.getOwnPropertySymbols === 'function') { ownKeys = ownKeys.concat(Object.getOwnPropertySymbols(source).filter(function (sym) { return Object.getOwnPropertyDescriptor(source, sym).enumerable; })); } ownKeys.forEach(function (key) { _defineProperty(target, key, source[key]); }); } return target; }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
@@ -16,13 +20,14 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
 var exec = cordova.require('cordova/exec');
 
 var channel = cordova.require('cordova/channel');
+
+var log = console;
 /**
  * AudioPlayer class implementation. A singleton of this class is exported for use by Cordova,
  * but nothing stops you from creating another instance. Keep in mind that the native players
  * are in fact singletons, so the only thing the separate instance gives you would be
  * separate onStatus callback streams.
  */
-
 
 var RmxAudioPlayer =
 /*#__PURE__*/
@@ -42,15 +47,16 @@ function () {
       configurable: true,
       enumerable: true,
       writable: true,
-      value: null
+      value: {
+        verbose: false
+      }
     });
     Object.defineProperty(this, "init", {
       configurable: true,
       enumerable: true,
       writable: true,
       value: function value(successCallback, errorCallback, options) {
-        // we don't use this for now.
-        _this.options = options || {};
+        _this.options = _objectSpread({}, _this.options, options);
         exec(successCallback, errorCallback, 'RmxAudioPlayer', 'initialize', [options]);
       }
     });
@@ -257,7 +263,11 @@ function () {
         trackId,
         value
       };
-      console.log(`RmxAudioPlayer.onStatus: ${_Constants.RmxAudioStatusMessageDescriptions[type]}(${type}) [${trackId}]: `, value);
+
+      if (this.options.verbose) {
+        log.log(`RmxAudioPlayer.onStatus: ${_Constants.RmxAudioStatusMessageDescriptions[type]}(${type}) [${trackId}]: `, value);
+      }
+
       this.emit('status', status);
     }
   }, {
@@ -320,7 +330,7 @@ function onNativeStatus(msg) {
   if (msg.action === 'status') {
     playerInstance.onStatus(msg.status.trackId, msg.status.msgType, msg.status.value);
   } else {
-    throw new Error(`Unknown media action ${msg.action}`);
+    throw new Error(`Unknown audio player action ${msg.action}`);
   }
 }
 

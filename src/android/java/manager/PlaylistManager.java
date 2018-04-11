@@ -209,6 +209,9 @@ public class PlaylistManager extends ListPlaylistManager<AudioTrack> implements 
     }
 
     public void clearItems() {
+        if (this.getPlaylistHandler() != null) {
+          this.getPlaylistHandler().stop();
+        }
         AudioTracks.clear();
         setItems(AudioTracks);
         setCurrentPosition(BasePlaylistManager.INVALID_POSITION);

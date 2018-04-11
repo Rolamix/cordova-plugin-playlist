@@ -1,7 +1,7 @@
 {
   "name": "cordova-plugin-audio-player",
   "description": "A Cordova plugin for Android and iOS with native support for audio playlists, background support, and lock screen controls",
-  "version": "0.5.0",
+  "version": "0.5.2",
   "homepage": "https://github.com/Rolamix/cordova-plugin-audio-player#readme",
   "author": "Patrick <patrick@rolamix.com>",
   "license": "MIT",
@@ -21,7 +21,7 @@
     ]
   },
   "scripts": {
-    "build": "npx browserslist && tsc --emitDeclarationOnly && babel src/js --out-dir www --extensions \".ts,.tsx\"",
+    "build": "npm run lint && npx browserslist && tsc --emitDeclarationOnly && babel src/js --out-dir www --extensions \".ts,.tsx\"",
     "build:watch": "nodemon -w ./src/js -e js -x npm run build",
     "precommit-msg": "echo 'Pre-commit checks... make sure you built!!' && exit 0",
     "lint": "eslint src/js",

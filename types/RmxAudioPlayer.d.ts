@@ -8,7 +8,7 @@ import { AudioPlayerEventHandler, AudioPlayerEventHandlers, AudioPlayerOptions, 
  */
 export declare class RmxAudioPlayer {
     handlers: AudioPlayerEventHandlers;
-    options: AudioPlayerOptions | null;
+    options: AudioPlayerOptions;
     constructor();
     /**
      * Player interface

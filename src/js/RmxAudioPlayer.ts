@@ -24,6 +24,7 @@ import {
 declare var cordova: any;
 const exec = cordova.require('cordova/exec');
 const channel = cordova.require('cordova/channel');
+const log = console;
 
 /**
  * AudioPlayer class implementation. A singleton of this class is exported for use by Cordova,
@@ -33,7 +34,7 @@ const channel = cordova.require('cordova/channel');
  */
 export class RmxAudioPlayer {
   handlers: AudioPlayerEventHandlers = {};
-  options: AudioPlayerOptions | null = null;
+  options: AudioPlayerOptions = { verbose: false };
 
   constructor() {
     this.handlers = {};
@@ -44,8 +45,7 @@ export class RmxAudioPlayer {
    */
 
   init = (successCallback: SuccessCallback, errorCallback: ErrorCallback, options: AudioPlayerOptions) => {
-    // we don't use this for now.
-    this.options = options || {};
+    this.options = {...this.options, ...options};
     exec(successCallback, errorCallback, 'RmxAudioPlayer', 'initialize', [options]);
   }
 
@@ -160,7 +160,9 @@ export class RmxAudioPlayer {
 
   onStatus(trackId: string, type: RmxAudioStatusMessage, value: any) {
     const status = { type, trackId, value };
-    console.log(`RmxAudioPlayer.onStatus: ${RmxAudioStatusMessageDescriptions[type]}(${type}) [${trackId}]: `, value);
+    if (this.options.verbose) {
+      log.log(`RmxAudioPlayer.onStatus: ${RmxAudioStatusMessageDescriptions[type]}(${type}) [${trackId}]: `, value);
+    }
     this.emit('status', status);
   }
 
@@ -210,7 +212,7 @@ function onNativeStatus(msg: any) {
   if (msg.action === 'status') {
     playerInstance.onStatus(msg.status.trackId, msg.status.msgType, msg.status.value);
   } else {
-    throw new Error(`Unknown media action ${msg.action}`);
+    throw new Error(`Unknown audio player action ${msg.action}`);
   }
 }
 

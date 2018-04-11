@@ -9,7 +9,7 @@ export interface AudioPlayerEventHandlers {
 }
 
 export interface AudioPlayerOptions {
-
+  verbose?: boolean;
 }
 
 export interface AudioTrack {

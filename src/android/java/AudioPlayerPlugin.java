@@ -1,5 +1,6 @@
 package com.rolamix.plugins.audioplayer;
 
+import android.util.Log;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -280,7 +281,7 @@ public class AudioPlayerPlugin extends CordovaPlugin implements RmxConstants, On
     }
 
     if (GET_BUFFER_STATUS.equals(action)) {
-      PluginResult result = new PluginResult(PluginResult.Status.OK, audioPlayerImpl.getPlayerStatus());
+      PluginResult result = new PluginResult(PluginResult.Status.OK, audioPlayerImpl.getPlayerStatus(null));
       new PluginCallback(callbackContext).send(result);
       return true;
     }
@@ -335,18 +336,21 @@ public class AudioPlayerPlugin extends CordovaPlugin implements RmxConstants, On
   @Override
   public void onPause(boolean multitasking) {
     super.onPause(multitasking);
+    Log.d(TAG, "Plugin paused");
     audioPlayerImpl.pause();
   }
 
   @Override
   public void onResume(boolean multitasking) {
     super.onResume(multitasking);
+    Log.d(TAG, "Plugin resumed");
     audioPlayerImpl.resume();
   }
 
   @Override
   public void onReset() {
     super.onReset();
+    Log.d(TAG, "Plugin reset");
     destroyResources();
   }
 
@@ -357,7 +361,7 @@ public class AudioPlayerPlugin extends CordovaPlugin implements RmxConstants, On
   }
 
   private void destroyResources() {
-    audioPlayerImpl.pause();
+    // audioPlayerImpl.pause();
     audioPlayerImpl.getPlaylistManager().clearItems();
   }
 
