@@ -49,5 +49,30 @@ exports.RmxAudioStatusMessage = RmxAudioStatusMessage;
 })(RmxAudioStatusMessage || (exports.RmxAudioStatusMessage = RmxAudioStatusMessage = {}));
 
 ;
-var RmxAudioStatusMessageDescriptions = ['No Status', 'Plugin Registered', 'Plugin Initialized', 'Error', 'Loading', 'CanPlay', 'Loaded', 'Stalled', 'Buffering', 'Playing', 'Paused', 'Playback Position Changed', 'Seeked', 'Playback Completed', 'Duration Changed', 'Stopped', 'Skip Forward', 'Skip Backward', 'Track Changed', 'Playlist Completed', 'Track Added', 'Track Removed', 'Playlist Cleared', 'DEBUG_View_Disappeared'];
+var RmxAudioStatusMessageDescriptions = {
+  0: 'No Status',
+  1: 'Plugin Registered',
+  2: 'Plugin Initialized',
+  5: 'Error',
+  10: 'Loading',
+  11: 'CanPlay',
+  15: 'Loaded',
+  20: 'Stalled',
+  25: 'Buffering',
+  30: 'Playing',
+  35: 'Paused',
+  40: 'Playback Position Changed',
+  45: 'Seeked',
+  50: 'Playback Completed',
+  55: 'Duration Changed',
+  60: 'Stopped',
+  90: 'Skip Forward',
+  95: 'Skip Backward',
+  100: 'Track Changed',
+  105: 'Playlist Completed',
+  110: 'Track Added',
+  115: 'Track Removed',
+  120: 'Playlist Cleared',
+  200: 'DEBUG_View_Disappeared'
+};
 exports.RmxAudioStatusMessageDescriptions = RmxAudioStatusMessageDescriptions;

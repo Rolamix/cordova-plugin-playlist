@@ -32,4 +32,29 @@ export declare enum RmxAudioStatusMessage {
     RMXSTATUS_PLAYLIST_CLEARED = 120,
     RMXSTATUS_VIEWDISAPPEAR = 200,
 }
-export declare const RmxAudioStatusMessageDescriptions: string[];
+export declare const RmxAudioStatusMessageDescriptions: {
+    0: string;
+    1: string;
+    2: string;
+    5: string;
+    10: string;
+    11: string;
+    15: string;
+    20: string;
+    25: string;
+    30: string;
+    35: string;
+    40: string;
+    45: string;
+    50: string;
+    55: string;
+    60: string;
+    90: string;
+    95: string;
+    100: string;
+    105: string;
+    110: string;
+    115: string;
+    120: string;
+    200: string;
+};

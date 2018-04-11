@@ -257,7 +257,7 @@ function () {
         trackId,
         value
       };
-      console.log(`RmxAudioPlayer.onStatus: ${_Constants.RmxAudioStatusMessageDescriptions[type]} [${trackId}]: `, value);
+      console.log(`RmxAudioPlayer.onStatus: ${_Constants.RmxAudioStatusMessageDescriptions[type]}(${type}) [${trackId}]: `, value);
       this.emit('status', status);
     }
   }, {

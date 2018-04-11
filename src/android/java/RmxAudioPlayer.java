@@ -156,7 +156,7 @@ public class RmxAudioPlayer implements PlaybackStatusListener<AudioTrack>,
 
       JSONObject info = new JSONObject();
       try {
-          info.put("currentItem", currentItem);
+          info.put("currentItem", currentItem.toDict());
           info.put("currentIndex", playlistManager.getCurrentPosition());
           info.put("isAtEnd", !hasNext);
           info.put("isAtBeginning", !hasPrevious);
