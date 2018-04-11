@@ -13,6 +13,7 @@
 // AVPlayerItem already includes duration, error, status
 @interface AudioTrack : AVPlayerItem
 
+@property (nonatomic, strong) BOOL isStream;
 @property (nonatomic, strong) NSString* trackId;
 @property (nonatomic, strong) NSURL* assetUrl;
 @property (nonatomic, strong) NSURL* albumArt;

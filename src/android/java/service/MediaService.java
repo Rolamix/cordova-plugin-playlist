@@ -22,8 +22,6 @@ public class MediaService extends BasePlaylistService<AudioTrack, PlaylistManage
     @Override
     public void onCreate() {
         super.onCreate();
-        Log.i("MediaService", "Created");
-
         // Adds the audio player implementation, otherwise there's nothing to play media with
         AudioApi newAudio = new AudioApi(getApplicationContext());
         newAudio.addErrorListener(getPlaylistManager());

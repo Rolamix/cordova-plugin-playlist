@@ -13,6 +13,7 @@ export interface AudioPlayerOptions {
 }
 
 export interface AudioTrack {
+  isStream?: boolean;
   trackId: string;
   assetUrl: string;
   albumArt: string;

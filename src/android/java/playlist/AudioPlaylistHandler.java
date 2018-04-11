@@ -68,6 +68,20 @@ public class AudioPlaylistHandler<I extends PlaylistItem, M extends BasePlaylist
         super.onCompletion(mediaPlayer);
     }
 
+    @Override
+    public void togglePlayPause() {
+        I track = getCurrentPlaylistItem();
+        if (isPlaying()) {
+            if (track instanceof AudioTrack && ((AudioTrack) track).getIsStream()) {
+                stop();
+            } else {
+                pause(false);
+            }
+        } else {
+            play();
+        }
+    }
+
 
     public static class Builder<I extends PlaylistItem, M extends BasePlaylistManager<I>> {
 

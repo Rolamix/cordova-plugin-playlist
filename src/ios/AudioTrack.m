@@ -19,7 +19,7 @@
 {
     NSString* trackId = trackInfo[@"trackId"];
     NSString* assetUrl = trackInfo[@"assetUrl"];
-    // NSString* albumArt = trackInfo[@"albumArt"];
+    NSString* isStreamStr = trackInfo[@"isStream"];
 
     if (trackId == nil || [trackId isEqualToString:@""]) { return nil; }
     if (assetUrl == nil) { return nil; }
@@ -27,9 +27,10 @@
     NSURL* assetUrlObj = [self getUrlForAsset:assetUrl];
     AudioTrack* track = [AudioTrack playerItemWithURL:assetUrlObj];
 
+    track.isStream = [isStreamStr isEqualToString:@"true"] ? YES : NO;;
     track.trackId = trackId;
     track.assetUrl = assetUrl;
-    // track.albumArt = trackInfo[@"albumArt"];
+    track.albumArt = trackInfo[@"albumArt"];
     track.artist = trackInfo[@"artist"];
     track.album = trackInfo[@"album"];
     track.title = trackInfo[@"title"];
@@ -45,9 +46,10 @@
 
 -(NSDictionary*)toDict {
   NSDictionary* info = @{
+    @"isStream": self.isStream,
     @"trackId": self.trackId,
     @"assetUrl": self.assetUrl,
-    // @"albumArt": self.albumArt,
+    @"albumArt": self.albumArt,
     @"artist": self.artist,
     @"album": self.album,
     @"title": self.title

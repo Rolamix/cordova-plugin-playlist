@@ -27,6 +27,7 @@ public class AudioTrack implements PlaylistItem {
       JSONObject info = new JSONObject();
       try {
           info.put("trackId", getTrackId());
+          info.put("isStream", getIsStream());
           info.put("assetUrl", getMediaUrl());
           info.put("albumArt", getThumbnailUrl());
           info.put("artist", getArtist());
@@ -46,6 +47,10 @@ public class AudioTrack implements PlaylistItem {
         // Alternatively, simply use PlaylistManager.setCurrentPosition which uses index directly.
         // Probably easier in almost all cases.
         return getTrackId().hashCode();
+    }
+
+    public boolean getIsStream() {
+        return this.config.optBoolean("isStream", false);
     }
 
     @Nullable

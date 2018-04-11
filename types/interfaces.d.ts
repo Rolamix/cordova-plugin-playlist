@@ -7,6 +7,7 @@ export interface AudioPlayerOptions {
     verbose?: boolean;
 }
 export interface AudioTrack {
+    isStream?: boolean;
     trackId: string;
     assetUrl: string;
     albumArt: string;
