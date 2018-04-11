@@ -50,7 +50,7 @@ function () {
       writable: true,
       value: function value(successCallback, errorCallback, options) {
         // we don't use this for now.
-        _this.options = options || null;
+        _this.options = options || {};
         exec(successCallback, errorCallback, 'RmxAudioPlayer', 'initialize', [options]);
       }
     });
@@ -257,7 +257,7 @@ function () {
         trackId,
         value
       };
-      console.log(`RmxAudioPlayer.onStatus: ${_Constants.RmxAudioStatusMessageDescriptions[type]} [${trackId}]: ${value}`);
+      console.log(`RmxAudioPlayer.onStatus: ${_Constants.RmxAudioStatusMessageDescriptions[type]} [${trackId}]: `, value);
       this.emit('status', status);
     }
   }, {

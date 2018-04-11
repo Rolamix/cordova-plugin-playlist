@@ -160,7 +160,7 @@ export class RmxAudioPlayer {
 
   onStatus(trackId: string, type: RmxAudioStatusMessage, value: any) {
     const status = { type, trackId, value };
-    console.log(`RmxAudioPlayer.onStatus: ${RmxAudioStatusMessageDescriptions[type]} [${trackId}]: ${value}`);
+    console.log(`RmxAudioPlayer.onStatus: ${RmxAudioStatusMessageDescriptions[type]} [${trackId}]: `, value);
     this.emit('status', status);
   }
 
