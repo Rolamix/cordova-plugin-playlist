@@ -289,6 +289,11 @@ public class RmxAudioPlayer implements PlaybackStatusListener<AudioTrack>,
         duration = currentItem.getDuration(); // progress.
     }
 
+    if (duration <= 0) {
+      duration = 1; // avoid divide by zero
+      position = 0;
+    }
+
     JSONObject trackStatus = new JSONObject();
     try {
         trackStatus.put("trackId", trackId);
