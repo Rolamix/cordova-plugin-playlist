@@ -113,7 +113,9 @@ public class AudioTrack implements PlaylistItem {
     }
 
     public void setBufferPercentFloat(float buff) {
-      bufferPercentFloat = Math.max(bufferPercentFloat, buff);
+      // There is a bug in MediaProgress where if bufferPercent == 100 it sets bufferPercentFloat
+      // to 100 instead of to 1.
+      bufferPercentFloat = Math.min(Math.max(bufferPercentFloat, buff), 1f);
     }
 
     public int getBufferPercent() {

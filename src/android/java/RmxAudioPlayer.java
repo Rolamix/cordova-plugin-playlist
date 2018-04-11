@@ -42,6 +42,7 @@ public class RmxAudioPlayer implements PlaybackStatusListener<AudioTrack>,
   private OnStatusReportListener statusListener;
 
   private int lastBufferPercent = 0;
+  private boolean trackLoaded = false;
 
   public RmxAudioPlayer(@NonNull OnStatusReportListener statusListener, @NonNull CordovaInterface cordova) {
     // AudioPlayerPlugin and RmxAudioPlayer are separate classes in order to increase
@@ -131,24 +132,24 @@ public class RmxAudioPlayer implements PlaybackStatusListener<AudioTrack>,
       // this is the first place that valid duration is seen. Immediately before, we get the PLAYING status change,
       // and before that, it announces PREPARING twice and all values are 0.
 
-      JSONObject trackStatus = getPlayerStatus(item);
-      onStatus(RmxAudioStatusMessage.RMXSTATUS_CANPLAY, item.getTrackId(), trackStatus);
-      onStatus(RmxAudioStatusMessage.RMXSTATUS_DURATION, item.getTrackId(), trackStatus);
+//      JSONObject trackStatus = getPlayerStatus(item);
+//      onStatus(RmxAudioStatusMessage.RMXSTATUS_CANPLAY, item.getTrackId(), trackStatus);
+//      onStatus(RmxAudioStatusMessage.RMXSTATUS_DURATION, item.getTrackId(), trackStatus);
   }
 
   @Override
   public void onItemPlaybackEnded(AudioTrack item) {
-      String title = item != null ? item.getTitle() : "(null)";
-      String trackId = item != null ? item.getTrackId() : null;
-
       AudioTrack nextItem = playlistManager.getCurrentItem();
-      String currTitle = nextItem != null ? nextItem.getTitle() : "(null)";
-      String currTrackId = nextItem != null ? nextItem.getTrackId() : null;
+      // String title = item != null ? item.getTitle() : "(null)";
+      // String currTitle = nextItem != null ? nextItem.getTitle() : "(null)";
+      // String currTrackId = nextItem != null ? nextItem.getTrackId() : null;
+      // Log.i(TAG, "onItemPlaybackEnded: ==> " + title + "," + trackId + " ==> next item: " + currTitle + "," + currTrackId);
 
-      Log.i(TAG, "onItemPlaybackEnded: ==> " + title + "," + trackId + " ==> next item: " + currTitle + "," + currTrackId);
-
-      JSONObject trackStatus = getPlayerStatus(item);
-      onStatus(RmxAudioStatusMessage.RMXSTATUS_COMPLETED, trackId, trackStatus);
+      if (item != null) {
+          String trackId = item.getTrackId();
+          JSONObject trackStatus = getPlayerStatus(item);
+          onStatus(RmxAudioStatusMessage.RMXSTATUS_COMPLETED, trackId, trackStatus);
+      }
 
       if (nextItem == null) { // if (!playlistManager.isNextAvailable()) {
         onStatus(RmxAudioStatusMessage.RMXSTATUS_PLAYLIST_COMPLETED, "INVALID", null);
@@ -175,6 +176,9 @@ public class RmxAudioPlayer implements PlaybackStatusListener<AudioTrack>,
       } catch (JSONException e) {
           Log.e(TAG, "Error creating onPlaylistItemChanged message: " + e.toString());
       }
+
+      lastBufferPercent = 0;
+      trackLoaded = false;
 
       onStatus(RmxAudioStatusMessage.RMXSTATUS_TRACK_CHANGED, trackId, info);
       return true;
@@ -255,6 +259,12 @@ public class RmxAudioPlayer implements PlaybackStatusListener<AudioTrack>,
                 onStatus(RmxAudioStatusMessage.RMXSTATUS_LOADED, currentItem.getTrackId(), trackStatus);
             }
 
+            if (!trackLoaded) {
+                onStatus(RmxAudioStatusMessage.RMXSTATUS_CANPLAY, currentItem.getTrackId(), trackStatus);
+                onStatus(RmxAudioStatusMessage.RMXSTATUS_DURATION, currentItem.getTrackId(), trackStatus);
+                trackLoaded = true;
+            }
+
             onStatus(RmxAudioStatusMessage.RMXSTATUS_BUFFERING, currentItem.getTrackId(), trackStatus);
             lastBufferPercent = progress.getBufferPercent();
         }
@@ -291,14 +301,14 @@ public class RmxAudioPlayer implements PlaybackStatusListener<AudioTrack>,
     int bufferPercent = 0;
     long duration = 0;
     long position = 0;
-    if (progress != null) {
+
+    // The media players hold onto their current playback position between songs,
+    // despite my efforts to reset it. So we will just filter out this state.
+    if (progress != null && !status.equals("loading")) {
         position = progress.getPosition();
     }
 
     // the position and duration vals are in milliseconds.
-    // buffer percent is a whole number (11 = 11%) and percent float is the fraction (0.11)
-    // String info = progress.getPosition() + "," + progress.getDuration() + "," + progress.getBufferPercent() + "," + progress.getBufferPercentFloat();
-    // Log.i("AudioPlayerActiv/opu", info);
     if (currentItem != null) {
         trackId = currentItem.getTrackId();
         bufferPercentFloat = currentItem.getBufferPercentFloat(); // progress.
@@ -311,13 +321,12 @@ public class RmxAudioPlayer implements PlaybackStatusListener<AudioTrack>,
         trackStatus.put("trackId", trackId);
         trackStatus.put("currentIndex", playlistManager.getCurrentPosition());
         trackStatus.put("status", status);
-        trackStatus.put("currentPosition", position / 1000f);
-        trackStatus.put("duration", duration / 1000f);
-        trackStatus.put("playbackPercent", duration > 0 ? (((double)position / (double)duration) * 100.0d) : 0);
+        trackStatus.put("currentPosition", position / 1000.0);
+        trackStatus.put("duration", duration / 1000.0);
+        trackStatus.put("playbackPercent", duration > 0 ? (((double)position / duration) * 100.0) : 0);
         trackStatus.put("bufferPercent", bufferPercent);
-        trackStatus.put("bufferPercentFloat", bufferPercentFloat);
-        trackStatus.put("bufferStart", 0f);
-        trackStatus.put("bufferEnd", (bufferPercentFloat * duration) / 1000.0f);
+        trackStatus.put("bufferStart", 0.0);
+        trackStatus.put("bufferEnd", (bufferPercentFloat * duration) / 1000.0);
     } catch (JSONException e) {
         Log.e(TAG, "Error generating player status: " + e.toString());
     }
