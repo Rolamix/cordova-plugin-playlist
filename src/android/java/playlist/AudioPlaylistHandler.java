@@ -1,5 +1,8 @@
 package com.rolamix.plugins.audioplayer.playlist;
 
+import com.rolamix.plugins.audioplayer.data.AudioTrack;
+
+import android.support.annotation.Nullable;
 import android.app.Service;
 import android.content.Context;
 import android.util.Log;
@@ -7,6 +10,7 @@ import android.util.Log;
 import com.devbrackets.android.playlistcore.api.PlaylistItem;
 import com.devbrackets.android.playlistcore.api.MediaPlayerApi;
 import com.devbrackets.android.playlistcore.data.MediaProgress;
+import com.devbrackets.android.playlistcore.data.PlaybackState;
 import com.devbrackets.android.playlistcore.manager.BasePlaylistManager;
 import com.devbrackets.android.playlistcore.components.audiofocus.AudioFocusProvider;
 import com.devbrackets.android.playlistcore.components.audiofocus.DefaultAudioFocusProvider;
@@ -19,7 +23,6 @@ import com.devbrackets.android.playlistcore.components.notification.DefaultPlayl
 import com.devbrackets.android.playlistcore.components.notification.PlaylistNotificationProvider;
 import com.devbrackets.android.playlistcore.components.playlisthandler.DefaultPlaylistHandler;
 
-import org.jetbrains.annotations.Nullable;
 
 public class AudioPlaylistHandler<I extends PlaylistItem, M extends BasePlaylistManager<I>>
             extends DefaultPlaylistHandler<I, M> {
@@ -72,16 +75,20 @@ public class AudioPlaylistHandler<I extends PlaylistItem, M extends BasePlaylist
     public void togglePlayPause() {
         I track = getCurrentPlaylistItem();
         if (isPlaying()) {
+            pause(false);
+
+            // For streams, immediately seek to 0, which for a stream actually means
+            // "start at the current location in the stream when you play again"
+            // Without this, the stream buffer grows out of control, and worse, playback
+            // continues where you paused. Accidentally pause for 12 hours? Yeah, you just
+            // blew out the memory on your device (or forced the player into an undefined state)
             if (track instanceof AudioTrack && ((AudioTrack) track).getIsStream()) {
-                stop();
-            } else {
-                pause(false);
+                performSeek(0, false);
             }
         } else {
             play();
         }
     }
-
 
     public static class Builder<I extends PlaylistItem, M extends BasePlaylistManager<I>> {
 
@@ -117,5 +124,4 @@ public class AudioPlaylistHandler<I extends PlaylistItem, M extends BasePlaylist
                 listener);
         }
     }
-
 }

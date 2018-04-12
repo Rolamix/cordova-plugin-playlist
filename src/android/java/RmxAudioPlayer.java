@@ -297,6 +297,7 @@ public class RmxAudioPlayer implements PlaybackStatusListener<AudioTrack>,
     }
 
     String trackId = "";
+    boolean isStream = false;
     float bufferPercentFloat = 0;
     int bufferPercent = 0;
     long duration = 0;
@@ -310,6 +311,7 @@ public class RmxAudioPlayer implements PlaybackStatusListener<AudioTrack>,
 
     // the position and duration vals are in milliseconds.
     if (currentItem != null) {
+        isStream = currentItem.getIsStream();
         trackId = currentItem.getTrackId();
         bufferPercentFloat = currentItem.getBufferPercentFloat(); // progress.
         bufferPercent = currentItem.getBufferPercent(); // progress.
@@ -319,6 +321,7 @@ public class RmxAudioPlayer implements PlaybackStatusListener<AudioTrack>,
     JSONObject trackStatus = new JSONObject();
     try {
         trackStatus.put("trackId", trackId);
+        trackStatus.put("isStream", isStream);
         trackStatus.put("currentIndex", playlistManager.getCurrentPosition());
         trackStatus.put("status", status);
         trackStatus.put("currentPosition", position / 1000.0);

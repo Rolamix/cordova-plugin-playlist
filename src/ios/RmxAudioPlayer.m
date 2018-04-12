@@ -895,6 +895,7 @@ static char kPlayerItemTimeRangesContext;
 
     NSDictionary *info = @{
         @"trackId": currentItem.trackId,
+        @"isStream": currentItem.isStream,
         @"currentIndex": self.currentIndex,
         @"status": status,
         @"currentPosition": @(position),
