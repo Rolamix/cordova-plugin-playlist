@@ -125,7 +125,7 @@
 
 -(BOOL)isAtEnd
 {
-    if ([self currentIndex] >= [_itemsForPlayer count] - 1 && [self currentItem] == nil) {
+    if ([self currentIndex] >= [_itemsForPlayer count] - 1 || [self currentItem] == nil) {
         return YES;
     }
     return NO;

@@ -392,6 +392,13 @@ static char kPlayerItemTimeRangesContext;
     _wasPlayingInterrupted = NO;
     [self initializeMPCommandCenter];
     // [[self avQueuePlayer] play];
+
+    AudioTrack* currentTrack = (AudioTrack*)[self avQueuePlayer].currentItem;
+    if (currentTrack != nil && currentTrack.isStream) {
+        [[self avQueuePlayer] seekToTime:kCMTimePositiveInfinity toleranceBefore:kCMTimeZero toleranceAfter:kCMTimeZero];
+        [currentTrack seekToTime:kCMTimePositiveInfinity toleranceBefore:kCMTimeZero toleranceAfter:kCMTimeZero completionHandler:nil];
+    }
+
     [self avQueuePlayer].rate = self.rate;
     [self avQueuePlayer].volume = self.volume;
 
@@ -406,6 +413,17 @@ static char kPlayerItemTimeRangesContext;
     _wasPlayingInterrupted = NO;
     [self initializeMPCommandCenter];
     [[self avQueuePlayer] pause];
+
+    // When the track is a stream, we do not want it to hold the buffer at the current location;
+    // it does in fact continue buffering afterwards but the buffer on iOS is rather small, so you'll end up
+    // reaching a point where you jump forward in time however long you were paused.
+    // The correct behavior for streams is to pick up at the current LIVE point in the stream, which we accomplish
+    // by seeking to the "end" of the stream.
+    AudioTrack* currentTrack = (AudioTrack*)[self avQueuePlayer].currentItem;
+    if (currentTrack != nil && currentTrack.isStream) {
+        [[self avQueuePlayer] seekToTime:kCMTimePositiveInfinity toleranceBefore:kCMTimeZero toleranceAfter:kCMTimeZero];
+        [currentTrack seekToTime:kCMTimePositiveInfinity toleranceBefore:kCMTimeZero toleranceAfter:kCMTimeZero completionHandler:nil];
+    }
 
     if (isCommand) {
         NSString * action = @"music-controls-pause";
@@ -427,7 +445,7 @@ static char kPlayerItemTimeRangesContext;
         AudioTrack* playerItem = (AudioTrack*)[self avQueuePlayer].currentItem;
         NSDictionary* param = @{
           @"currentIndex": @([self avQueuePlayer].currentIndex),
-          @"currentItem": playerItem
+          @"currentItem": [playerItem toDict]
         };
         [self onStatus:RMX_STATUS_SKIP_BACK trackId:playerItem.trackId param:param];
     }
@@ -447,7 +465,7 @@ static char kPlayerItemTimeRangesContext;
         AudioTrack* playerItem = (AudioTrack *)[self avQueuePlayer].currentItem;
         NSDictionary* param = @{
           @"currentIndex": @([self avQueuePlayer].currentIndex),
-          @"currentItem": playerItem
+          @"currentItem": [playerItem toDict]
         };
         [self onStatus:RMX_STATUS_SKIP_FORWARD trackId:playerItem.trackId param:param];
     }
@@ -631,7 +649,8 @@ static char kPlayerItemTimeRangesContext;
                 _wasPlayingInterrupted = YES;
             }
 
-            [[self avQueuePlayer] pause];
+            // [[self avQueuePlayer] pause];
+            [self pauseCommand:NO];
             break;
         }
         case AVAudioSessionInterruptionTypeEnded: {
@@ -738,7 +757,7 @@ static char kPlayerItemTimeRangesContext;
     }
 
     for (NSString* val in _updatedNowPlayingInfo.allKeys) {
-        NSLog(@"%@ ]] %@", val, _updatedNowPlayingInfo[val]);
+        NSLog(@"%@ ==> %@", val, _updatedNowPlayingInfo[val]);
     }
 
     float currentTime = CMTimeGetSeconds(currentItem.currentTime);
@@ -755,6 +774,10 @@ static char kPlayerItemTimeRangesContext;
     _updatedNowPlayingInfo[MPNowPlayingInfoPropertyPlaybackRate] = [NSNumber numberWithFloat:1.0];
 
     nowPlayingInfoCenter.nowPlayingInfo = _updatedNowPlayingInfo;
+
+    MPRemoteCommandCenter *commandCenter = [MPRemoteCommandCenter sharedCommandCenter];
+    [commandCenter.nextTrackCommand setEnabled:!self.isAtEnd];
+    [commandCenter.previousTrackCommand setEnabled:!self.isAtBeginning];
 }
 
 - (void) handlePlayerCurrentItemChanged:(AudioTrack*)playerItem
@@ -764,22 +787,25 @@ static char kPlayerItemTimeRangesContext;
     NSLog(@"New item ID: %@", playerItem.trackId);
     NSLog(@"Queue is at end: %@", self.isAtEnd ? @"YES" : @"NO");
 
-    // When an item starts, immediately scrub it back to the beginning
-    [playerItem seekToTime:kCMTimeZero toleranceBefore:kCMTimeZero toleranceAfter:kCMTimeZero completionHandler:nil];
-    // Update the command center
-    [self updateNowPlayingTrackInfo:playerItem updateTrackData:YES];
+    if (playerItem != nil) {
+        // When an item starts, immediately scrub it back to the beginning
+        [playerItem seekToTime:kCMTimeZero toleranceBefore:kCMTimeZero toleranceAfter:kCMTimeZero completionHandler:nil];
+        // Update the command center
+        [self updateNowPlayingTrackInfo:playerItem updateTrackData:YES];
+    }
 
     NSDictionary* info = @{
-      @"currentItem": [playerItem toDict],
-      @"currentIndex": @([self avQueuePlayer].currentIndex),
-      @"isAtEnd": @(self.isAtEnd),
-      @"isAtBeginning": @(self.isAtBeginning),
-      @"hasNext": @(!self.isAtEnd),
-      @"hasPrevious": @(!self.isAtBeginning)
+       @"currentItem": playerItem != nil ? [playerItem toDict] : @{},
+       @"currentIndex": @([self avQueuePlayer].currentIndex),
+       @"isAtEnd": @(self.isAtEnd),
+       @"isAtBeginning": @(self.isAtBeginning),
+       @"hasNext": @(!self.isAtEnd),
+       @"hasPrevious": @(!self.isAtBeginning)
     };
-    [self onStatus:RMXSTATUS_TRACK_CHANGED trackId:playerItem.trackId param:info];
+    NSString* trackId = playerItem != nil ? playerItem.trackId : @"NONE";
+    [self onStatus:RMXSTATUS_TRACK_CHANGED trackId:trackId param:info];
 
-    if ([[self avQueuePlayer] isAtEnd]) {
+    if ([[self avQueuePlayer] isAtEnd] && [self avQueuePlayer].currentItem == nil) {
         [[self avQueuePlayer] seekToTime:kCMTimeZero toleranceBefore:kCMTimeZero toleranceAfter:kCMTimeZero];
 
         [self onStatus:RMXSTATUS_PLAYLIST_COMPLETED trackId:@"INVALID" param:nil];
@@ -900,7 +926,8 @@ static char kPlayerItemTimeRangesContext;
 
     NSDictionary* bufferInfo = [self getTrackBufferInfo:currentItem];
     float position = [self getTrackCurrentTime:currentItem];
-    float playbackPercent = (position / [bufferInfo[@"duration"] floatValue]) * 100.0;
+    float duration = [bufferInfo[@"duration"] floatValue];
+    float playbackPercent = duration > 0 ? (position / duration) * 100.0 : 0.0f;
 
     NSString* status = @"";
     if (currentItem.status == AVPlayerItemStatusReadyToPlay) {
@@ -929,11 +956,11 @@ static char kPlayerItemTimeRangesContext;
         @"currentIndex": @([self avQueuePlayer].currentIndex),
         @"status": status,
         @"currentPosition": @(position),
-        @"duration": bufferInfo[@"duration"],
+        @"duration": @(duration),
         @"playbackPercent": @(playbackPercent),
-        @"bufferPercent": bufferInfo[@"bufferPercent"],
-        @"bufferStart": bufferInfo[@"start"],
-        @"bufferEnd": bufferInfo[@"end"]
+        @"bufferPercent": @([bufferInfo[@"bufferPercent"] floatValue]),
+        @"bufferStart": @([bufferInfo[@"start"] floatValue]),
+        @"bufferEnd": @([bufferInfo[@"end"] floatValue])
     };
     return info;
 }
