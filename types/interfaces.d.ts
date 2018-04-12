@@ -37,12 +37,12 @@ export interface AudioTrackRemoval {
 export interface OnStatusCallbackData {
     trackId: string;
     type: RmxAudioStatusMessage;
-    value: any;
+    value: any | OnStatusErrorCallbackData;
 }
 export interface OnStatusErrorCallbackData {
     code: RmxAudioErrorType;
     message: string;
 }
-export declare type OnStatusCallback = (info: OnStatusCallbackData | OnStatusErrorCallbackData) => void;
+export declare type OnStatusCallback = (info: OnStatusCallbackData) => void;
 export declare type SuccessCallback = (args?: any) => void;
 export declare type ErrorCallback = (error: any) => void;
