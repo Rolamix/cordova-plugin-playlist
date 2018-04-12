@@ -18,7 +18,7 @@
 #import "Constants.h"
 #import "AudioTrack.h"
 
-@interface RmxAudioPlayer : CDVPlugin { }
+@interface RmxAudioPlayer : CDVPlugin
 
 // structural methods
 - (void) pluginInitialize;

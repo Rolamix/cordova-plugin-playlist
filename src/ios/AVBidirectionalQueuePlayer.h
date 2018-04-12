@@ -24,7 +24,6 @@
 
 @interface AVBidirectionalQueuePlayer : AVQueuePlayer
 
-@property (nonatomic, weak) id <AVBidirectionalQueuePlayerDelegate> delegate;
 @property (nonatomic, strong) NSMutableArray *itemsForPlayer;
 @property () NSUInteger currentIndex;
 

@@ -27,10 +27,15 @@
     NSURL* assetUrlObj = [self getUrlForAsset:assetUrl];
     AudioTrack* track = [AudioTrack playerItemWithURL:assetUrlObj];
 
-    track.isStream = [isStreamStr isEqualToString:@"true"] ? YES : NO;;
+    BOOL isStream = NO;
+    if (isStreamStr != nil && [isStreamStr boolValue]) {
+        isStream = YES;
+    }
+
+    track.isStream = isStream;
     track.trackId = trackId;
-    track.assetUrl = assetUrl;
-    track.albumArt = trackInfo[@"albumArt"];
+    track.assetUrl = assetUrlObj;
+    track.albumArt = [self getUrlForAsset:trackInfo[@"albumArt"]];
     track.artist = trackInfo[@"artist"];
     track.album = trackInfo[@"album"];
     track.title = trackInfo[@"title"];
@@ -46,10 +51,10 @@
 
 -(NSDictionary*)toDict {
   NSDictionary* info = @{
-    @"isStream": self.isStream,
+    @"isStream": @(self.isStream),
     @"trackId": self.trackId,
-    @"assetUrl": self.assetUrl,
-    @"albumArt": self.albumArt,
+    @"assetUrl": [self.assetUrl absoluteString],
+    @"albumArt": [self.albumArt absoluteString],
     @"artist": self.artist,
     @"album": self.album,
     @"title": self.title

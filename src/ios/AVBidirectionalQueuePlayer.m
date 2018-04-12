@@ -139,7 +139,7 @@
 -(NSUInteger)currentIndex
 {
     // This method simply returns the now playing index
-    return (int)[_itemsForPlayer indexOfObject:self.currentItem];
+    return [_itemsForPlayer indexOfObject:self.currentItem];
 }
 
 -(void)setCurrentIndex:(NSUInteger)currentIndex {
