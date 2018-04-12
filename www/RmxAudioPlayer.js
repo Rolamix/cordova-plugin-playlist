@@ -53,7 +53,8 @@ function () {
       enumerable: true,
       writable: true,
       value: {
-        verbose: false
+        verbose: false,
+        resetStreamOnPause: true
       }
     });
     Object.defineProperty(this, "init", {

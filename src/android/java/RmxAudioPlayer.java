@@ -43,6 +43,7 @@ public class RmxAudioPlayer implements PlaybackStatusListener<AudioTrack>,
 
   private int lastBufferPercent = 0;
   private boolean trackLoaded = false;
+  private boolean resetStreamOnPause = true;
 
   public RmxAudioPlayer(@NonNull OnStatusReportListener statusListener, @NonNull CordovaInterface cordova) {
     // AudioPlayerPlugin and RmxAudioPlayer are separate classes in order to increase
@@ -53,6 +54,7 @@ public class RmxAudioPlayer implements PlaybackStatusListener<AudioTrack>,
     // at all if this one gets garbage collected).
     this.cordova = cordova;
     this.statusListener = statusListener;
+
     getPlaylistManager();
     playlistManager.setId(PLAYLIST_ID);
     playlistManager.setPlaybackStatusListener(this);
@@ -64,6 +66,15 @@ public class RmxAudioPlayer implements PlaybackStatusListener<AudioTrack>,
     Context app = cordova.getActivity().getApplicationContext();
     playlistManager = ((MainApplication)app).getPlaylistManager();
     return playlistManager;
+  }
+
+  public boolean getResetStreamOnPause() {
+    return resetStreamOnPause;
+  }
+
+  public void setResetStreamOnPause(boolean val) {
+    resetStreamOnPause = val;
+    getPlaylistManager().setResetStreamOnPause(getResetStreamOnPause());
   }
 
   public float getVolume() {

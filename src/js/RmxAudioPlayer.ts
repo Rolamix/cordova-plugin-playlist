@@ -34,7 +34,7 @@ const log = console;
  */
 export class RmxAudioPlayer {
   handlers: AudioPlayerEventHandlers = {};
-  options: AudioPlayerOptions = { verbose: false };
+  options: AudioPlayerOptions = { verbose: false, resetStreamOnPause: true };
 
   constructor() {
     this.handlers = {};

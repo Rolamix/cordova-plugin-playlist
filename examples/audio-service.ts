@@ -8,7 +8,7 @@
  * constructor(
  *   private cdvAudioPlayer: CordovaAudioPlayerService,
  *  ) {
- *   this.cdvAudioPlayer.init({ verbose: true })
+ *   this.cdvAudioPlayer.init({ verbose: true, resetStreamOnPause: true })
  *     .then(() => {
  *       this.cdvAudioPlayer.setPlaylistItems([
  *         { trackId: '12345', assetUrl: testUrls[0], albumArt: testImgs[0], artist: 'Awesome', album: 'Test Files', title: 'Test 1' },

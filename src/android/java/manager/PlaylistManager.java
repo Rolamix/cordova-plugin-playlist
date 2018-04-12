@@ -36,6 +36,9 @@ public class PlaylistManager extends ListPlaylistManager<AudioTrack> implements 
     private boolean previousInvoked = false;
     private boolean nextInvoked = false;
 
+    // Really need a way to propagate the settings through the app
+    private boolean resetStreamOnPause = true;
+
     private WeakReference<MediaControlsListener> mediaControlsListener = new WeakReference<>(null);
     private WeakReference<OnErrorListener> errorListener = new WeakReference<>(null);
     private WeakReference<MediaPlayerApi<AudioTrack>> currentMediaPlayer = new WeakReference<>(null);
@@ -63,6 +66,14 @@ public class PlaylistManager extends ListPlaylistManager<AudioTrack> implements 
 
     public void setMediaControlsListener(MediaControlsListener listener) {
       mediaControlsListener = new WeakReference<>(listener);
+    }
+
+    public boolean getResetStreamOnPause() {
+      return resetStreamOnPause;
+    }
+
+    public void setResetStreamOnPause(boolean val) {
+      resetStreamOnPause = val;
     }
 
     @Override

@@ -81,9 +81,11 @@ public class AudioPlaylistHandler<I extends PlaylistItem, M extends BasePlaylist
             // "start at the current location in the stream when you play again"
             // Without this, the stream buffer grows out of control, and worse, playback
             // continues where you paused. Accidentally pause for 12 hours? Yeah, you just
-            // blew out the memory on your device (or forced the player into an undefined state)
-            if (track instanceof AudioTrack && ((AudioTrack) track).getIsStream()) {
-                performSeek(0, false);
+            // blew out the memory on your device (or forced the player to skip)
+            if (getPlaylistManager().getResetStreamOnPause()) {
+              if (track instanceof AudioTrack && ((AudioTrack) track).getIsStream()) {
+                  performSeek(0, false);
+              }
             }
         } else {
             play();

@@ -12,6 +12,7 @@ static char kPlayerItemTimeRangesContext;
   id _playbackTimeObserver;
   BOOL _wasPlayingInterrupted;
   BOOL _commandCenterRegistered;
+  BOOL _resetStreamOnPause;
   NSMutableDictionary* _updatedNowPlayingInfo;
   float _rate;
   float _volume;
@@ -38,6 +39,7 @@ static char kPlayerItemTimeRangesContext;
     _wasPlayingInterrupted = NO;
     _commandCenterRegistered = NO;
     _updatedNowPlayingInfo = nil;
+    _resetStreamOnPause = YES;
     self.rate = 1.0f;
     self.volume = 0.5f;
     self.loop = false;
@@ -64,6 +66,10 @@ static char kPlayerItemTimeRangesContext;
  */
 - (void) initialize:(CDVInvokedUrlCommand*) command {
   NSDictionary* options = [command.arguments objectAtIndex:0];
+  if (options == nil) {
+    options = @{};
+  }
+  _resetStreamOnPause = [options[@"resetStreamOnPause"] boolValue];
   // We don't do anything with these yet.
   CDVPluginResult* result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary:options];
   [self.commandDelegate sendPluginResult:result callbackId:command.callbackId];
@@ -393,10 +399,12 @@ static char kPlayerItemTimeRangesContext;
     [self initializeMPCommandCenter];
     // [[self avQueuePlayer] play];
 
-    AudioTrack* currentTrack = (AudioTrack*)[self avQueuePlayer].currentItem;
-    if (currentTrack != nil && currentTrack.isStream) {
-        [[self avQueuePlayer] seekToTime:kCMTimePositiveInfinity toleranceBefore:kCMTimeZero toleranceAfter:kCMTimeZero];
-        [currentTrack seekToTime:kCMTimePositiveInfinity toleranceBefore:kCMTimeZero toleranceAfter:kCMTimeZero completionHandler:nil];
+    if (_resetStreamOnPause) {
+      AudioTrack* currentTrack = (AudioTrack*)[self avQueuePlayer].currentItem;
+      if (currentTrack != nil && currentTrack.isStream) {
+          [[self avQueuePlayer] seekToTime:kCMTimePositiveInfinity toleranceBefore:kCMTimeZero toleranceAfter:kCMTimeZero];
+          [currentTrack seekToTime:kCMTimePositiveInfinity toleranceBefore:kCMTimeZero toleranceAfter:kCMTimeZero completionHandler:nil];
+      }
     }
 
     [self avQueuePlayer].rate = self.rate;
@@ -419,10 +427,12 @@ static char kPlayerItemTimeRangesContext;
     // reaching a point where you jump forward in time however long you were paused.
     // The correct behavior for streams is to pick up at the current LIVE point in the stream, which we accomplish
     // by seeking to the "end" of the stream.
-    AudioTrack* currentTrack = (AudioTrack*)[self avQueuePlayer].currentItem;
-    if (currentTrack != nil && currentTrack.isStream) {
-        [[self avQueuePlayer] seekToTime:kCMTimePositiveInfinity toleranceBefore:kCMTimeZero toleranceAfter:kCMTimeZero];
-        [currentTrack seekToTime:kCMTimePositiveInfinity toleranceBefore:kCMTimeZero toleranceAfter:kCMTimeZero completionHandler:nil];
+    if (_resetStreamOnPause) {
+      AudioTrack* currentTrack = (AudioTrack*)[self avQueuePlayer].currentItem;
+      if (currentTrack != nil && currentTrack.isStream) {
+          [[self avQueuePlayer] seekToTime:kCMTimePositiveInfinity toleranceBefore:kCMTimeZero toleranceAfter:kCMTimeZero];
+          [currentTrack seekToTime:kCMTimePositiveInfinity toleranceBefore:kCMTimeZero toleranceAfter:kCMTimeZero completionHandler:nil];
+      }
     }
 
     if (isCommand) {
