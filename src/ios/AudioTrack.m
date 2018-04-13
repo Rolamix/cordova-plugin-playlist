@@ -40,6 +40,10 @@
     track.album = trackInfo[@"album"];
     track.title = trackInfo[@"title"];
 
+    if (isStream && [track respondsToSelector:@selector(setCanUseNetworkResourcesForLiveStreamingWhilePaused:)]) {
+        track.canUseNetworkResourcesForLiveStreamingWhilePaused = YES;
+    }
+
     return track;
 }
 
