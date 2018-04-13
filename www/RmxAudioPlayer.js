@@ -37,6 +37,38 @@ var log = console;
 var RmxAudioPlayer =
 /*#__PURE__*/
 function () {
+  _createClass(RmxAudioPlayer, [{
+    key: "currentState",
+    get: function get() {
+      return this._currentState;
+    }
+  }, {
+    key: "isInitialized",
+    get: function get() {
+      return this._currentState !== 'unknown';
+    }
+  }, {
+    key: "isPlaying",
+    get: function get() {
+      return this._currentState === 'playing';
+    }
+  }, {
+    key: "isPaused",
+    get: function get() {
+      return this._currentState === 'paused' || this._currentState === 'stopped';
+    }
+  }, {
+    key: "isLoading",
+    get: function get() {
+      return this._currentState === 'loading';
+    }
+  }, {
+    key: "hasError",
+    get: function get() {
+      return this._hasError;
+    }
+  }]);
+
   function RmxAudioPlayer() {
     var _this = this;
 
@@ -56,6 +88,18 @@ function () {
         verbose: false,
         resetStreamOnPause: true
       }
+    });
+    Object.defineProperty(this, "_currentState", {
+      configurable: true,
+      enumerable: true,
+      writable: true,
+      value: 'unknown'
+    });
+    Object.defineProperty(this, "_hasError", {
+      configurable: true,
+      enumerable: true,
+      writable: true,
+      value: false
     });
     Object.defineProperty(this, "init", {
       configurable: true,
@@ -272,6 +316,18 @@ function () {
 
       if (this.options.verbose) {
         log.log(`RmxAudioPlayer.onStatus: ${_Constants.RmxAudioStatusMessageDescriptions[type]}(${type}) [${trackId}]: `, value);
+      }
+
+      if (status.value && status.value.status) {
+        this._currentState = status.value.status;
+      }
+
+      if (status.type === _Constants.RmxAudioStatusMessage.RMXSTATUS_ERROR) {
+        this._hasError = true;
+      }
+
+      if (status.type === _Constants.RmxAudioStatusMessage.RMXSTATUS_TRACK_CHANGED) {
+        this._hasError = false;
       }
 
       this.emit('status', status);

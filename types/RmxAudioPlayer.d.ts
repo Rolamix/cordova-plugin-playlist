@@ -9,6 +9,14 @@ import { AudioPlayerEventHandler, AudioPlayerEventHandlers, AudioPlayerOptions, 
 export declare class RmxAudioPlayer {
     handlers: AudioPlayerEventHandlers;
     options: AudioPlayerOptions;
+    private _currentState;
+    private _hasError;
+    readonly currentState: string;
+    readonly isInitialized: boolean;
+    readonly isPlaying: boolean;
+    readonly isPaused: boolean;
+    readonly isLoading: boolean;
+    readonly hasError: boolean;
     constructor();
     /**
      * Player interface

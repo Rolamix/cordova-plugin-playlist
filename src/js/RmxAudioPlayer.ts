@@ -35,6 +35,33 @@ const log = console;
 export class RmxAudioPlayer {
   handlers: AudioPlayerEventHandlers = {};
   options: AudioPlayerOptions = { verbose: false, resetStreamOnPause: true };
+  private _currentState: string = 'unknown';
+  private _hasError: boolean = false;
+
+  get currentState() {
+    return this._currentState;
+  }
+
+  get isInitialized() {
+    return this._currentState !== 'unknown';
+  }
+
+  get isPlaying() {
+    return this._currentState === 'playing';
+  }
+
+  get isPaused() {
+    return this._currentState === 'paused' || this._currentState === 'stopped';
+  }
+
+  get isLoading() {
+    return this._currentState === 'loading';
+  }
+
+  get hasError() {
+    return this._hasError;
+  }
+
 
   constructor() {
     this.handlers = {};
@@ -162,6 +189,15 @@ export class RmxAudioPlayer {
     const status = { type, trackId, value };
     if (this.options.verbose) {
       log.log(`RmxAudioPlayer.onStatus: ${RmxAudioStatusMessageDescriptions[type]}(${type}) [${trackId}]: `, value);
+    }
+    if (status.value && status.value.status) {
+      this._currentState = status.value.status;
+    }
+    if (status.type === RmxAudioStatusMessage.RMXSTATUS_ERROR) {
+      this._hasError = true;
+    }
+    if (status.type === RmxAudioStatusMessage.RMXSTATUS_TRACK_CHANGED) {
+      this._hasError = false;
     }
     this.emit('status', status);
   }
