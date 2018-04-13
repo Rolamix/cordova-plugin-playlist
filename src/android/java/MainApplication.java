@@ -45,8 +45,9 @@ public class MainApplication extends Application {
                 OkHttpClient httpClient = new OkHttpClient().newBuilder().followRedirects(true).followSslRedirects(true).build();
                 DataSource.Factory upstreamFactory = new OkHttpDataSourceFactory(httpClient, userAgent, listener);
 
-                // Adds a cache around the upstreamFactory
-                Cache cache = new SimpleCache(getCacheDir(), new LeastRecentlyUsedCacheEvictor(50 * 1024 * 1024));
+                // Adds a cache around the upstreamFactory.
+                // This sets a cache of 100MB, we might make this configurable.
+                Cache cache = new SimpleCache(getCacheDir(), new LeastRecentlyUsedCacheEvictor(100 * 1024 * 1024));
                 return new CacheDataSourceFactory(cache, upstreamFactory, CacheDataSource.FLAG_IGNORE_CACHE_ON_ERROR);
             }
         });
