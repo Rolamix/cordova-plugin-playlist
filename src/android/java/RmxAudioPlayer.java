@@ -300,7 +300,7 @@ public class RmxAudioPlayer implements PlaybackStatusListener<AudioTrack>,
       case ERROR: { status = "error"; break; }
       case RETRIEVING:
       case PREPARING: { status = "loading"; break; }
-      case SEEKING: { status = "seeking"; break; }
+      case SEEKING: // { status = "seeking"; break; } // seeking === playing
       case PLAYING: { status = "playing"; break; }
       case PAUSED: { status = "paused"; break; }
       default:
