@@ -23,7 +23,7 @@ export declare class RmxAudioPlayer {
     /**
      * Player interface
      */
-    init: (successCallback: SuccessCallback, errorCallback: ErrorCallback, options: AudioPlayerOptions) => void;
+    setOptions: (successCallback: SuccessCallback, errorCallback: ErrorCallback, options: AudioPlayerOptions) => void;
     /**
      * Playlist item management
      */

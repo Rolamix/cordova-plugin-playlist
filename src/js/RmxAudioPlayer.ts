@@ -76,9 +76,9 @@ export class RmxAudioPlayer {
    * Player interface
    */
 
-  init = (successCallback: SuccessCallback, errorCallback: ErrorCallback, options: AudioPlayerOptions) => {
+  setOptions = (successCallback: SuccessCallback, errorCallback: ErrorCallback, options: AudioPlayerOptions) => {
     this.options = {...this.options, ...options};
-    exec(successCallback, errorCallback, 'RmxAudioPlayer', 'initialize', [options]);
+    exec(successCallback, errorCallback, 'RmxAudioPlayer', 'setOptions', [options]);
   }
 
   /**

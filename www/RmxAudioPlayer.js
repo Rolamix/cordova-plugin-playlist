@@ -112,13 +112,13 @@ function () {
       writable: true,
       value: false
     });
-    Object.defineProperty(this, "init", {
+    Object.defineProperty(this, "setOptions", {
       configurable: true,
       enumerable: true,
       writable: true,
       value: function value(successCallback, errorCallback, options) {
         _this.options = _objectSpread({}, _this.options, options);
-        exec(successCallback, errorCallback, 'RmxAudioPlayer', 'initialize', [options]);
+        exec(successCallback, errorCallback, 'RmxAudioPlayer', 'setOptions', [options]);
       }
     });
     Object.defineProperty(this, "setPlaylistItems", {

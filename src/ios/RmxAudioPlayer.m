@@ -64,7 +64,7 @@ static char kPlayerItemTimeRangesContext;
  *
  *
  */
-- (void) initialize:(CDVInvokedUrlCommand*) command {
+- (void) setOptions:(CDVInvokedUrlCommand*) command {
   NSDictionary* options = [command.arguments objectAtIndex:0];
   if (options == nil) {
     options = @{};

@@ -47,7 +47,7 @@ public class AudioPlayerPlugin extends CordovaPlugin implements RmxConstants, On
       onStatus(RmxAudioStatusMessage.RMXSTATUS_REGISTER, "INIT", null);
       return true;
     }
-    if (INITIALIZE.equals(action)) {
+    if (SET_OPTIONS.equals(action)) {
       JSONObject options = args.optJSONObject(0);
       if (options == null) {
         options = new JSONObject();

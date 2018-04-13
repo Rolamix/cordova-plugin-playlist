@@ -7,7 +7,7 @@ public interface RmxConstants {
   String CDVFILE_PREFIX           = "cdvfile://";
 
   // Playlist item management
-  String INITIALIZE             = "initialize";
+  String SET_OPTIONS            = "setOptions";
   String STORE_CHANNEL          = "storeMessageChannel";
   String SET_PLAYLIST_ITEMS     = "setPlaylistItems";
   String ADD_PLAYLIST_ITEM      = "addItem";
