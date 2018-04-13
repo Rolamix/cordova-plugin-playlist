@@ -63,6 +63,11 @@ function () {
       return this._currentState === 'loading';
     }
   }, {
+    key: "hasLoaded",
+    get: function get() {
+      return this._hasLoaded;
+    }
+  }, {
     key: "hasError",
     get: function get() {
       return this._hasError;
@@ -96,6 +101,12 @@ function () {
       value: 'unknown'
     });
     Object.defineProperty(this, "_hasError", {
+      configurable: true,
+      enumerable: true,
+      writable: true,
+      value: false
+    });
+    Object.defineProperty(this, "_hasLoaded", {
       configurable: true,
       enumerable: true,
       writable: true,
@@ -328,6 +339,11 @@ function () {
 
       if (status.type === _Constants.RmxAudioStatusMessage.RMXSTATUS_TRACK_CHANGED) {
         this._hasError = false;
+        this._hasLoaded = false;
+      }
+
+      if (status.type === _Constants.RmxAudioStatusMessage.RMXSTATUS_CANPLAY) {
+        this._hasLoaded = true;
       }
 
       this.emit('status', status);

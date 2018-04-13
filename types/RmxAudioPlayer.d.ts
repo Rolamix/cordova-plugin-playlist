@@ -11,11 +11,13 @@ export declare class RmxAudioPlayer {
     options: AudioPlayerOptions;
     private _currentState;
     private _hasError;
+    private _hasLoaded;
     readonly currentState: string;
     readonly isInitialized: boolean;
     readonly isPlaying: boolean;
     readonly isPaused: boolean;
     readonly isLoading: boolean;
+    readonly hasLoaded: boolean;
     readonly hasError: boolean;
     constructor();
     /**
