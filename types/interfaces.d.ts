@@ -41,7 +41,19 @@ export interface AudioTrackRemoval {
 export interface OnStatusCallbackData {
     trackId: string;
     type: RmxAudioStatusMessage;
-    value: any | OnStatusErrorCallbackData;
+    value: OnStatusCallbackUpdateData | OnStatusErrorCallbackData;
+}
+export interface OnStatusCallbackUpdateData {
+    trackId: string;
+    isStream: boolean;
+    currentIndex: number;
+    status: string;
+    currentPosition: number;
+    duration: number;
+    playbackPercent: number;
+    bufferPercent: number;
+    bufferStart: number;
+    bufferEnd: number;
 }
 export interface OnStatusErrorCallbackData {
     code: RmxAudioErrorType;
