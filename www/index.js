@@ -8,18 +8,39 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.default = void 0;
 
 var _Constants = require("./Constants");
 
+Object.keys(_Constants).forEach(function (key) {
+  if (key === "default" || key === "__esModule") return;
+  Object.defineProperty(exports, key, {
+    enumerable: true,
+    get: function get() {
+      return _Constants[key];
+    }
+  });
+});
+
+var _interfaces = require("./interfaces");
+
+Object.keys(_interfaces).forEach(function (key) {
+  if (key === "default" || key === "__esModule") return;
+  Object.defineProperty(exports, key, {
+    enumerable: true,
+    get: function get() {
+      return _interfaces[key];
+    }
+  });
+});
+
 var _RmxAudioPlayer = require("./RmxAudioPlayer");
 
-var _default = {
-  RmxAudioErrorType: _Constants.RmxAudioErrorType,
-  RmxAudioErrorTypeDescriptions: _Constants.RmxAudioErrorTypeDescriptions,
-  RmxAudioStatusMessage: _Constants.RmxAudioStatusMessage,
-  RmxAudioStatusMessageDescriptions: _Constants.RmxAudioStatusMessageDescriptions,
-  AudioPlayer: _RmxAudioPlayer.AudioPlayer,
-  RmxAudioPlayer: _RmxAudioPlayer.RmxAudioPlayer
-};
-exports.default = _default;
+Object.keys(_RmxAudioPlayer).forEach(function (key) {
+  if (key === "default" || key === "__esModule") return;
+  Object.defineProperty(exports, key, {
+    enumerable: true,
+    get: function get() {
+      return _RmxAudioPlayer[key];
+    }
+  });
+});
