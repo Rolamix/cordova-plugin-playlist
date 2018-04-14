@@ -15,6 +15,7 @@ import {
   OnStatusCallback,
   SuccessCallback,
   ErrorCallback,
+  PlaylistItemOptions,
 } from './interfaces';
 
 /*!
@@ -85,8 +86,8 @@ export class RmxAudioPlayer {
    * Playlist item management
    */
 
-  setPlaylistItems = (successCallback: SuccessCallback, errorCallback: ErrorCallback, items: AudioTrack[]) => {
-    exec(successCallback, errorCallback, 'RmxAudioPlayer', 'setPlaylistItems', [items]);
+  setPlaylistItems = (successCallback: SuccessCallback, errorCallback: ErrorCallback, items: AudioTrack[], options?: PlaylistItemOptions) => {
+    exec(successCallback, errorCallback, 'RmxAudioPlayer', 'setPlaylistItems', [items, options || {}]);
   }
 
   addItem = (successCallback: SuccessCallback, errorCallback: ErrorCallback, trackItem: AudioTrack) => {

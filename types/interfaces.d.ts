@@ -21,6 +21,10 @@ export interface AudioPlayerOptions {
      */
     resetStreamOnPause?: boolean;
 }
+export interface PlaylistItemOptions {
+    retainPosition?: boolean;
+    playFromPosition?: number;
+}
 export interface AudioTrack {
     isStream?: boolean;
     trackId: string;

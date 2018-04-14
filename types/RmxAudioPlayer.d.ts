@@ -1,5 +1,5 @@
 import { RmxAudioStatusMessage } from './Constants';
-import { AudioPlayerEventHandler, AudioPlayerEventHandlers, AudioPlayerOptions, AudioTrack, AudioTrackRemoval, OnStatusCallback, SuccessCallback, ErrorCallback } from './interfaces';
+import { AudioPlayerEventHandler, AudioPlayerEventHandlers, AudioPlayerOptions, AudioTrack, AudioTrackRemoval, OnStatusCallback, SuccessCallback, ErrorCallback, PlaylistItemOptions } from './interfaces';
 /**
  * AudioPlayer class implementation. A singleton of this class is exported for use by Cordova,
  * but nothing stops you from creating another instance. Keep in mind that the native players
@@ -27,7 +27,7 @@ export declare class RmxAudioPlayer {
     /**
      * Playlist item management
      */
-    setPlaylistItems: (successCallback: SuccessCallback, errorCallback: ErrorCallback, items: AudioTrack[]) => void;
+    setPlaylistItems: (successCallback: SuccessCallback, errorCallback: ErrorCallback, items: AudioTrack[], options?: PlaylistItemOptions | undefined) => void;
     addItem: (successCallback: SuccessCallback, errorCallback: ErrorCallback, trackItem: AudioTrack) => void;
     addAllItems: (successCallback: SuccessCallback, errorCallback: ErrorCallback, items: AudioTrack[]) => void;
     removeItem: (successCallback: SuccessCallback, errorCallback: ErrorCallback, removeItem: AudioTrackRemoval) => void;

@@ -77,8 +77,19 @@ static char kPlayerItemTimeRangesContext;
 
 - (void) setPlaylistItems:(CDVInvokedUrlCommand *) command {
   NSMutableArray* items = [command.arguments objectAtIndex:0];
+  NSDictionary* options = [command.arguments objectAtIndex:1];
 
-  [self insertOrReplaceTracks:items replace:YES];
+  BOOL retainPosition = [options[@"retainPosition"] boolValue];
+  float playFromPosition = [options[@"playFromPosition"] floatValue];
+  float seekToPosition = 0.0f;
+  if (retainPosition) {
+    seekToPosition = [self getTrackCurrentTime:nil];
+    if (playFromPosition > 0.0f) {
+      seekToPosition = playFromPosition;
+    }
+  }
+
+  [self insertOrReplaceTracks:items replace:YES startPosition:seekToPosition];
 
   CDVPluginResult* result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
   [self.commandDelegate sendPluginResult:result callbackId:command.callbackId];
@@ -101,7 +112,7 @@ static char kPlayerItemTimeRangesContext;
 - (void) addAllItems:(CDVInvokedUrlCommand *) command {
   NSMutableArray* items = [command.arguments objectAtIndex:0];
 
-  [self insertOrReplaceTracks:items replace:NO];
+  [self insertOrReplaceTracks:items replace:NO startPosition:-1];
 
   CDVPluginResult* result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
   [self.commandDelegate sendPluginResult:result callbackId:command.callbackId];
@@ -331,7 +342,7 @@ static char kPlayerItemTimeRangesContext;
 /* ****** */
 /* Utilities for the above functions */
 
-- (void) insertOrReplaceTracks:(NSArray*)items replace:(BOOL)replace {
+- (void) insertOrReplaceTracks:(NSArray*)items replace:(BOOL)replace startPosition:(float)startPosition {
   if (items == nil || items.count == 0) {
     return;
   }
@@ -345,7 +356,7 @@ static char kPlayerItemTimeRangesContext;
   }
 
   if (replace) {
-    [self setTracks:newList];
+    [self setTracks:newList startPosition:startPosition];
   } else {
     [self addTracks:newList];
   }
@@ -530,7 +541,7 @@ static char kPlayerItemTimeRangesContext;
   [[self avQueuePlayer] insertAllItems:tracks];
 }
 
-- (void) setTracks:(NSMutableArray<AudioTrack*>*)tracks
+- (void) setTracks:(NSMutableArray<AudioTrack*>*)tracks startPosition:(float)startPosition
 {
   for (AudioTrack* playerItem in tracks) {
     [self addTrackObservers:playerItem];
@@ -541,6 +552,9 @@ static char kPlayerItemTimeRangesContext;
   }
 
   [[self avQueuePlayer] setItemsForPlayer:tracks];
+  if (startPosition > 0) {
+    [self seekTo:startPosition isCommand:NO];
+  }
 }
 
 - (void) removeAllTracks:(BOOL)isCommand
@@ -980,6 +994,10 @@ static char kPlayerItemTimeRangesContext;
     AudioTrack* currentItem = playerItem;
     if (currentItem == nil) {
       currentItem = (AudioTrack*)[self avQueuePlayer].currentItem;
+    }
+
+    if (currentItem == nil) {
+      return 0.0f;
     }
 
     if (!CMTIME_IS_INDEFINITE(currentItem.currentTime)) {

@@ -68,8 +68,11 @@ public class AudioPlayerPlugin extends CordovaPlugin implements RmxConstants, On
     // Playlist management
     if (SET_PLAYLIST_ITEMS.equals(action)) {
       JSONArray items = args.optJSONArray(0);
+      JSONObject optionsArgs = args.optJSONObject(1);
+      PlaylistItemOptions options = new PlaylistItemOptions(optionsArgs);
+
       ArrayList<AudioTrack> trackItems = getTrackItems(items);
-      audioPlayerImpl.getPlaylistManager().setAllItems(trackItems);
+      audioPlayerImpl.getPlaylistManager().setAllItems(trackItems, options);
 
       for (AudioTrack playerItem : trackItems) {
         if (playerItem.getTrackId() != null) {

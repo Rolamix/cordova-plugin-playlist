@@ -125,8 +125,8 @@ function () {
       configurable: true,
       enumerable: true,
       writable: true,
-      value: function value(successCallback, errorCallback, items) {
-        exec(successCallback, errorCallback, 'RmxAudioPlayer', 'setPlaylistItems', [items]);
+      value: function value(successCallback, errorCallback, items, options) {
+        exec(successCallback, errorCallback, 'RmxAudioPlayer', 'setPlaylistItems', [items, options || {}]);
       }
     });
     Object.defineProperty(this, "addItem", {

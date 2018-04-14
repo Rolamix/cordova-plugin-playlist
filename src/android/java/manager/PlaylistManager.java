@@ -175,15 +175,29 @@ public class PlaylistManager extends ListPlaylistManager<AudioTrack> implements 
      * List management
      */
 
-    public void setAllItems(List<AudioTrack> items) {
+    public void setAllItems(List<AudioTrack> items, PlaylistItemOptions options) {
       clearItems();
       addAllItems(items);
       setCurrentPosition(0);
+
+      // If the options said to start from a specific position, do so.
+      long seekStart = 0;
+      if (options.getRetainPosition()) {
+        if (options.getPlayFromPosition() > 0) {
+          seekStart = options.getPlayFromPosition();
+        } else {
+          MediaProgress progress = getCurrentProgress();
+          if (progress != null) {
+            seekStart = progress.getPosition();
+          }
+        }
+      }
+
       // We assume that if the playlist is fully loaded in one go,
       // that the next thing to happen will be to play. So let's start
       // paused, which will allow the player to pre-buffer until the
       // user says Go.
-      beginPlayback(0, true);
+      beginPlayback(seekStart, true);
     }
 
     public void addItem(AudioTrack item) {
