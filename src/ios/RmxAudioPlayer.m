@@ -79,9 +79,13 @@ static char kPlayerItemTimeRangesContext;
   NSMutableArray* items = [command.arguments objectAtIndex:0];
   NSDictionary* options = [command.arguments objectAtIndex:1];
 
-  BOOL retainPosition = [options[@"retainPosition"] boolValue];
-  float playFromPosition = [options[@"playFromPosition"] floatValue];
+  if (options == nil) {
+    options = @{};
+  }
+
   float seekToPosition = 0.0f;
+  BOOL retainPosition = options[@"retainPosition"] != nil ? [options[@"retainPosition"] boolValue] : NO;
+  float playFromPosition = options[@"retainPosition"] != nil ? [options[@"playFromPosition"] floatValue] : 0.0f;
   if (retainPosition) {
     seekToPosition = [self getTrackCurrentTime:nil];
     if (playFromPosition > 0.0f) {
