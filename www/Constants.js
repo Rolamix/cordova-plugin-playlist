@@ -10,6 +10,9 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.RmxAudioStatusMessageDescriptions = exports.RmxAudioStatusMessage = exports.RmxAudioErrorTypeDescriptions = exports.RmxAudioErrorType = void 0;
 
+/**
+ * Enum describing the possible errors that may come from the plugins
+ */
 var RmxAudioErrorType;
 exports.RmxAudioErrorType = RmxAudioErrorType;
 
@@ -22,7 +25,16 @@ exports.RmxAudioErrorType = RmxAudioErrorType;
 })(RmxAudioErrorType || (exports.RmxAudioErrorType = RmxAudioErrorType = {}));
 
 ;
+/**
+ * String descriptions corresponding to the RmxAudioErrorType values
+ */
+
 var RmxAudioErrorTypeDescriptions = ['No Active Sources', 'Aborted', 'Network', 'Failed to Decode', 'No Supported Sources'];
+/**
+ * Enumeration of all status messages raised by the plugin.
+ * NONE, REGISTER and INIT are structural and probably not useful to you.
+ */
+
 exports.RmxAudioErrorTypeDescriptions = RmxAudioErrorTypeDescriptions;
 var RmxAudioStatusMessage;
 exports.RmxAudioStatusMessage = RmxAudioStatusMessage;
@@ -55,6 +67,10 @@ exports.RmxAudioStatusMessage = RmxAudioStatusMessage;
 })(RmxAudioStatusMessage || (exports.RmxAudioStatusMessage = RmxAudioStatusMessage = {}));
 
 ;
+/**
+ * String descriptions corresponding to the RmxAudioStatusMessage values
+ */
+
 var RmxAudioStatusMessageDescriptions = {
   0: 'No Status',
   1: 'Plugin Registered',

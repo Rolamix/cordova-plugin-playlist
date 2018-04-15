@@ -20,6 +20,7 @@
     NSString* trackId = trackInfo[@"trackId"];
     NSString* assetUrl = trackInfo[@"assetUrl"];
     NSString* isStreamStr = trackInfo[@"isStream"];
+    NSString* albumArt = trackInfo[@"albumArt"];
 
     if (trackId == nil || [trackId isEqualToString:@""]) { return nil; }
     if (assetUrl == nil) { return nil; }
@@ -35,7 +36,7 @@
     track.isStream = isStream;
     track.trackId = trackId;
     track.assetUrl = assetUrlObj;
-    track.albumArt = [self getUrlForAsset:trackInfo[@"albumArt"]];
+    track.albumArt = albumArt != nil ? [self getUrlForAsset:albumArt] : nil;
     track.artist = trackInfo[@"artist"];
     track.album = trackInfo[@"album"];
     track.title = trackInfo[@"title"];
@@ -58,7 +59,7 @@
     @"isStream": @(self.isStream),
     @"trackId": self.trackId,
     @"assetUrl": [self.assetUrl absoluteString],
-    @"albumArt": [self.albumArt absoluteString],
+    @"albumArt": self.albumArt != nil ? [self.albumArt absoluteString] : @"",
     @"artist": self.artist,
     @"album": self.album,
     @"title": self.title

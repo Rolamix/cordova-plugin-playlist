@@ -10,6 +10,8 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.default = exports.AudioPlayer = exports.RmxAudioPlayer = void 0;
 
+require("core-js/modules/es6.regexp.replace");
+
 var _Constants = require("./Constants");
 
 function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; var ownKeys = Object.keys(source); if (typeof Object.getOwnPropertySymbols === 'function') { ownKeys = ownKeys.concat(Object.getOwnPropertySymbols(source).filter(function (sym) { return Object.getOwnPropertyDescriptor(source, sym).enumerable; })); } ownKeys.forEach(function (key) { _defineProperty(target, key, source[key]); }); } return target; }
@@ -39,34 +41,72 @@ var RmxAudioPlayer =
 function () {
   _createClass(RmxAudioPlayer, [{
     key: "currentState",
+
+    /**
+     * The current summarized state of the player, as a string. It is preferred that you use the 'isX' accessors,
+     * because they properly interpret the range of these values, but this field is exposed if you wish to observe
+     * or interrogate it.
+     */
     get: function get() {
       return this._currentState;
     }
+    /**
+     * True if the plugin has been initialized. You'll likely never see this state; it is handled internally.
+     */
+
   }, {
     key: "isInitialized",
     get: function get() {
       return this._currentState !== 'unknown';
     }
+    /**
+     * If the playlist is currently playling a track.
+     */
+
   }, {
     key: "isPlaying",
     get: function get() {
       return this._currentState === 'playing';
     }
+    /**
+     * True if the playlist is currently paused
+     */
+
   }, {
     key: "isPaused",
     get: function get() {
       return this._currentState === 'paused' || this._currentState === 'stopped';
     }
+    /**
+     * True if the plugin is currently loading its *current* track.
+     * On iOS, many tracks are loaded in parallel, so this only reports for the *current item*, e.g.
+     * the item that will begin playback if you press pause.
+     * If you need track-specific data, it is better to watch the onStatus stream and watch for RMXSTATUS_LOADING,
+     * which will be raised independently & simultaneously for every track in the playlist.
+     * On Android, tracks are only loaded as they begin playback, so this value and RMXSTATUS_LOADING should always
+     * apply to the same track.
+     */
+
   }, {
     key: "isLoading",
     get: function get() {
       return this._currentState === 'loading';
     }
+    /**
+     * True if the *currently playing track* has been loaded and can be played (this includes if it is *currently playing*).
+     */
+
   }, {
     key: "hasLoaded",
     get: function get() {
       return this._hasLoaded;
     }
+    /**
+     * True if the *current track* has reported an error. In almost all cases,
+     * the playlist will automatically skip forward to the next track, in which case you will also receive
+     * an RMXSTATUS_TRACK_CHANGED event.
+     */
+
   }, {
     key: "hasError",
     get: function get() {
@@ -126,7 +166,7 @@ function () {
       enumerable: true,
       writable: true,
       value: function value(successCallback, errorCallback, items, options) {
-        exec(successCallback, errorCallback, 'RmxAudioPlayer', 'setPlaylistItems', [items, options || {}]);
+        exec(successCallback, errorCallback, 'RmxAudioPlayer', 'setPlaylistItems', [_this.validateTracks(items), options || {}]);
       }
     });
     Object.defineProperty(this, "addItem", {
@@ -134,7 +174,13 @@ function () {
       enumerable: true,
       writable: true,
       value: function value(successCallback, errorCallback, trackItem) {
-        exec(successCallback, errorCallback, 'RmxAudioPlayer', 'addItem', [trackItem]);
+        var validTrackItem = _this.validateTrack(trackItem);
+
+        if (!validTrackItem) {
+          return errorCallback(new Error('Provided track is null or not an audio track'));
+        }
+
+        exec(successCallback, errorCallback, 'RmxAudioPlayer', 'addItem', [validTrackItem]);
       }
     });
     Object.defineProperty(this, "addAllItems", {
@@ -142,7 +188,7 @@ function () {
       enumerable: true,
       writable: true,
       value: function value(successCallback, errorCallback, items) {
-        exec(successCallback, errorCallback, 'RmxAudioPlayer', 'addAllItems', [items]);
+        exec(successCallback, errorCallback, 'RmxAudioPlayer', 'addAllItems', [_this.validateTracks(items)]);
       }
     });
     Object.defineProperty(this, "removeItem", {
@@ -150,6 +196,14 @@ function () {
       enumerable: true,
       writable: true,
       value: function value(successCallback, errorCallback, removeItem) {
+        if (!removeItem) {
+          return errorCallback(new Error('Track removal spec is empty'));
+        }
+
+        if (!removeItem.trackId && !removeItem.trackIndex) {
+          return errorCallback(new Error('Track removal spec is invalid'));
+        }
+
         exec(successCallback, errorCallback, 'RmxAudioPlayer', 'removeItem', [removeItem.trackIndex, removeItem.trackId]);
       }
     });
@@ -311,12 +365,22 @@ function () {
    * Player interface
    */
 
+  /**
+   * Sets the player options. This can be called at any time and is not required before playback can be initiated.
+   */
+
 
   _createClass(RmxAudioPlayer, [{
     key: "onStatus",
 
     /**
      * Status event handling
+     */
+
+    /**
+     * @internal
+     * Call this function to emit an onStatus event via the on('status') handler.
+     * Internal use only, to raise events received from the native interface.
      */
     value: function onStatus(trackId, type, value) {
       var status = {
@@ -348,6 +412,14 @@ function () {
 
       this.emit('status', status);
     }
+    /**
+     * Subscribe to events raised by the plugin, e.g. on('status', (data) => { ... }),
+     * For now, only 'status' is supported.
+     *
+     * @param eventName Name of event to subscribe to.
+     * @param callback The callback function to receive the event data
+     */
+
   }, {
     key: "on",
     value: function on(eventName, callback) {
@@ -357,6 +429,13 @@ function () {
 
       this.handlers[eventName].push(callback);
     }
+    /**
+     * Remove an event handler from the plugin
+     * @param eventName The name of the event whose subscription is to be removed
+     * @param handle The event handler to destroy. Ensure that this is the SAME INSTANCE as the handler
+     * that was passed in to create the subscription!
+     */
+
   }, {
     key: "off",
     value: function off(eventName, handle) {
@@ -368,6 +447,12 @@ function () {
         }
       }
     }
+    /**
+     * @internal
+     * Raises an event via the corresponding event handler. Internal use only.
+     * @param args Event args to pass through to the handler.
+     */
+
   }, {
     key: "emit",
     value: function emit() {
@@ -392,6 +477,63 @@ function () {
       }
 
       return true;
+    }
+    /**
+     * Validates the list of AudioTrack items to ensure they are valid.
+     * Used internally but you can call this if you need to :)
+     *
+     * @param items The AudioTrack items to validate
+     */
+
+  }, {
+    key: "validateTracks",
+    value: function validateTracks(items) {
+      if (!items || !Array.isArray(items)) {
+        return [];
+      }
+
+      return items.map(this.validateTrack).filter(function (x) {
+        return x;
+      }); // may produce an empty array!
+    }
+    /**
+     * Validate a single track and ensure it is valid for playback.
+     * Used internally but you can call this if you need to :)
+     *
+     * @param track The AudioTrack to validate
+     */
+
+  }, {
+    key: "validateTrack",
+    value: function validateTrack(track) {
+      if (!track) {
+        return null;
+      } // For now we will rely on TS to do the heavy lifting, but we can add a validation here
+      // that all the required fields are valid. For now we just take care of the unique ID.
+
+
+      track.trackId = track.trackId || this.generateUUID();
+      return track;
+    }
+    /**
+     * Generate a v4 UUID for use as a unique trackId. Used internally, but you can use this to generate track ID's if you want.
+     */
+
+  }, {
+    key: "generateUUID",
+    value: function generateUUID() {
+      // Doesn't need to be perfect or secure, just good enough to give each item an ID.
+      var d = new Date().getTime();
+
+      if (typeof performance !== 'undefined' && typeof performance.now === 'function') {
+        d += performance.now(); //use high-precision timer if available
+      }
+
+      return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+        var r = (d + Math.random() * 16) % 16 | 0;
+        d = Math.floor(d / 16);
+        return (c === 'x' ? r : r & 0x3 | 0x8).toString(16);
+      });
     }
   }]);
 
