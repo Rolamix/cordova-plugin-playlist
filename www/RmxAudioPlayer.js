@@ -385,11 +385,9 @@ function () {
         type,
         trackId,
         value
-      };
+      }; // if (this.options.verbose) {
 
-      if (this.options.verbose) {
-        log.log(`RmxAudioPlayer.onStatus: ${_Constants.RmxAudioStatusMessageDescriptions[type]}(${type}) [${trackId}]: `, value);
-      }
+      log.log(`RmxAudioPlayer.onStatus: ${_Constants.RmxAudioStatusMessageDescriptions[type]}(${type}) [${trackId}]: `, value); // }
 
       if (status.value && status.value.status) {
         this._currentState = status.value.status;
@@ -552,6 +550,8 @@ channel.createSticky('onRmxAudioPlayerReady');
 channel.waitForInitialization('onRmxAudioPlayerReady');
 
 function onNativeStatus(msg) {
+  console.log('onNativeStatus: ', msg);
+
   if (msg.action === 'status') {
     playerInstance.onStatus(msg.status.trackId, msg.status.msgType, msg.status.value);
   } else {
@@ -560,7 +560,12 @@ function onNativeStatus(msg) {
 }
 
 channel.onCordovaReady.subscribe(function () {
-  exec(onNativeStatus, undefined, 'RmxAudioPlayer', 'storeMessageChannel', []);
+  var error = function error(args) {
+    return console.warn('CORDOVA RMXAUDIOPLAYER: Error storing message channel:', args);
+  };
+
+  console.log('CORDOVA RMXAUDIOPLAYER: Subscribing to player plugin message channel');
+  exec(onNativeStatus, error, 'RmxAudioPlayer', 'storeMessageChannel', []);
   channel.initializationComplete('onRmxAudioPlayerReady');
 });
 /*!

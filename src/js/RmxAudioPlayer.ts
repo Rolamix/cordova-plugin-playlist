@@ -323,9 +323,9 @@ export class RmxAudioPlayer {
     */
   onStatus(trackId: string, type: RmxAudioStatusMessage, value: OnStatusCallbackUpdateData | OnStatusTrackChangedData | OnStatusErrorCallbackData) {
     const status = { type, trackId, value };
-    if (this.options.verbose) {
+    // if (this.options.verbose) {
       log.log(`RmxAudioPlayer.onStatus: ${RmxAudioStatusMessageDescriptions[type]}(${type}) [${trackId}]: `, value);
-    }
+    // }
 
     if (status.value && (<any>status.value).status) {
       this._currentState = (<any>status.value).status;
@@ -452,6 +452,7 @@ channel.createSticky('onRmxAudioPlayerReady');
 channel.waitForInitialization('onRmxAudioPlayerReady');
 
 function onNativeStatus(msg: any) {
+  console.log('onNativeStatus: ', msg);
   if (msg.action === 'status') {
     playerInstance.onStatus(msg.status.trackId, msg.status.msgType, msg.status.value);
   } else {
@@ -460,7 +461,9 @@ function onNativeStatus(msg: any) {
 }
 
 channel.onCordovaReady.subscribe(() => {
-  exec(onNativeStatus, undefined, 'RmxAudioPlayer', 'storeMessageChannel', []);
+  const error = (args: any) => console.warn('CORDOVA RMXAUDIOPLAYER: Error storing message channel:', args);
+  console.log('CORDOVA RMXAUDIOPLAYER: Subscribing to player plugin message channel');
+  exec(onNativeStatus, error, 'RmxAudioPlayer', 'storeMessageChannel', []);
   channel.initializationComplete('onRmxAudioPlayerReady');
 });
 

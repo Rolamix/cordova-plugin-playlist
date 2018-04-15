@@ -46,8 +46,10 @@ public class PluginCallback {
 
     public void send(PluginResult result, boolean keepCallback) {
         if (callbackContext == null) {
+          Log.e("PluginCallback", "send did not complete: callbackContext is null");
           return;
         }
+        Log.i("PluginCallback", "Sending status: " + result.getMessage());
         result.setKeepCallback(keepCallback);
         // callbackContext.success(dict);
         callbackContext.sendPluginResult(result);
