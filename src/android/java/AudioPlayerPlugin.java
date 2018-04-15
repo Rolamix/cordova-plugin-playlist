@@ -36,7 +36,7 @@ public class AudioPlayerPlugin extends CordovaPlugin implements RmxConstants, On
 
   @Override
   public void pluginInitialize() {
-    audioPlayerImpl = new RmxAudioPlayer(this, cordova, streamResetsOnPause);
+    audioPlayerImpl = new RmxAudioPlayer(this, cordova);
   }
 
   @Override
@@ -52,8 +52,7 @@ public class AudioPlayerPlugin extends CordovaPlugin implements RmxConstants, On
       if (options == null) {
         options = new JSONObject();
       }
-      boolean resetSetting = options.optBoolean("resetStreamOnPause", this.resetStreamOnPause);
-      this.resetStreamOnPause = resetSetting;
+      resetStreamOnPause = options.optBoolean("resetStreamOnPause", this.resetStreamOnPause);
       audioPlayerImpl.setResetStreamOnPause(resetStreamOnPause);
       // We don't do anything with these yet.
       new PluginCallback(callbackContext).send(PluginResult.Status.OK, options);

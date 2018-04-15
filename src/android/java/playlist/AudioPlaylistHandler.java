@@ -1,6 +1,7 @@
 package com.rolamix.plugins.audioplayer.playlist;
 
 import com.rolamix.plugins.audioplayer.data.AudioTrack;
+import com.rolamix.plugins.audioplayer.manager.PlaylistManager;
 
 import android.support.annotation.Nullable;
 import android.app.Service;
@@ -82,7 +83,7 @@ public class AudioPlaylistHandler<I extends PlaylistItem, M extends BasePlaylist
             // Without this, the stream buffer grows out of control, and worse, playback
             // continues where you paused. Accidentally pause for 12 hours? Yeah, you just
             // blew out the memory on your device (or forced the player to skip)
-            if (getPlaylistManager().getResetStreamOnPause()) {
+            if (((PlaylistManager)getPlaylistManager()).getResetStreamOnPause()) {
               if (track instanceof AudioTrack && ((AudioTrack) track).getIsStream()) {
                   performSeek(0, false);
               }

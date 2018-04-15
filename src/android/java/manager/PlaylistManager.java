@@ -9,6 +9,7 @@ import android.support.annotation.FloatRange;
 import android.support.annotation.IntRange;
 import android.support.annotation.Nullable;
 
+import com.devbrackets.android.playlistcore.data.MediaProgress;
 import com.devbrackets.android.playlistcore.manager.ListPlaylistManager;
 import com.devbrackets.android.playlistcore.manager.BasePlaylistManager;
 import com.devbrackets.android.playlistcore.api.MediaPlayerApi;

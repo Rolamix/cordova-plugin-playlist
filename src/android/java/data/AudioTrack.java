@@ -46,6 +46,7 @@ public class AudioTrack implements PlaylistItem {
         // is called, basically finding the index of that ID.
         // Alternatively, simply use PlaylistManager.setCurrentPosition which uses index directly.
         // Probably easier in almost all cases.
+        if (getTrackId() == null) { return 0; }
         return getTrackId().hashCode();
     }
 
