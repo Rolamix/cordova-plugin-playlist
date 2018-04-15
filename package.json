@@ -6,6 +6,7 @@
   "author": "Patrick <patrick@rolamix.com>",
   "license": "MIT",
   "types": "./www/index.d.ts",
+  "main": "./www/index.js",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/Rolamix/cordova-plugin-audio-player.git"
