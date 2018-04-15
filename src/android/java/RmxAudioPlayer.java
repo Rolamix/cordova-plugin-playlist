@@ -273,7 +273,13 @@ public class RmxAudioPlayer implements PlaybackStatusListener<AudioTrack>,
             if (progress.getBufferPercent() >= 100f) {
                 // Unlike iOS this will get raised continuously.
                 // Extracting the source event from playlistcore would be really hard.
+                // The gate above should do the trick.
                 onStatus(RmxAudioStatusMessage.RMXSTATUS_LOADED, currentItem.getTrackId(), trackStatus);
+            }
+
+            if (!trackLoaded) {
+              onStatus(RmxAudioStatusMessage.RMXSTATUS_CANPLAY, currentItem.getTrackId(), trackStatus);
+              trackLoaded = true;
             }
 
             if (!trackDuration) {

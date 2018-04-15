@@ -8,7 +8,7 @@
  * constructor(
  *   private cdvAudioPlayer: CordovaAudioPlayerService,
  *  ) {
- *   this.cdvAudioPlayer.init({ verbose: true, resetStreamOnPause: true })
+ *   this.cdvAudioPlayer.setOptions({ verbose: true, resetStreamOnPause: true })
  *     .then(() => {
  *       this.cdvAudioPlayer.setPlaylistItems([
  *         { trackId: '12345', assetUrl: testUrls[0], albumArt: testImgs[0], artist: 'Awesome', album: 'Test Files', title: 'Test 1' },
@@ -29,23 +29,55 @@
 
 import { Injectable, NgZone } from '@angular/core';
 import { Platform } from 'ionic-angular';
-import { RmxAudioPlayer } from 'cordova-plugin-audio-player/types/RmxAudioPlayer';
-import {
-  AudioTrack, AudioTrackRemoval, AudioPlayerOptions, OnStatusCallbackData, OnStatusErrorCallbackData,
-} from 'cordova-plugin-audio-player/types/interfaces';
 import { ReplaySubject } from 'rxjs/ReplaySubject';
-
-const production = false;
-const Log = console;
+import {
+  RmxAudioPlayer,
+  AudioTrack,
+  AudioTrackRemoval,
+  AudioPlayerOptions,
+  OnStatusCallbackData,
+  OnStatusErrorCallbackData,
+  PlaylistItemOptions,
+} from 'cordova-plugin-audio-player';
+export * from 'cordova-plugin-audio-player'; // 'cordova-plugin-audio-player/www/index.d'
 
 @Injectable()
 export class CordovaAudioPlayerService {
 
   private AudioPlayer: RmxAudioPlayer;
   private statusStream: ReplaySubject<OnStatusCallbackData | OnStatusErrorCallbackData> = new ReplaySubject(1);
+  private Log = console;
 
   get onStatus() {
     return this.statusStream;
+  }
+
+  get currentState() {
+    return this.AudioPlayer.currentState;
+  }
+
+  get isInitialized() {
+    return this.AudioPlayer.isInitialized;
+  }
+
+  get isLoading() {
+    return this.AudioPlayer.isLoading;
+  }
+
+  get isPaused() {
+    return this.AudioPlayer.isPaused;
+  }
+
+  get isPlaying() {
+    return this.AudioPlayer.isPlaying;
+  }
+
+  get hasLoaded() {
+    return this.AudioPlayer.hasLoaded;
+  }
+
+  get hasError() {
+    return this.AudioPlayer.hasError;
   }
 
   constructor(
@@ -57,7 +89,7 @@ export class CordovaAudioPlayerService {
         this.AudioPlayer = (<any>window).plugins.AudioPlayer.AudioPlayer;
 
         if (!this.AudioPlayer) {
-          console.log('CordovaAudioPlayerService: Could not read `AudioPlayer` from `window.plugins`: ', (<any>window).plugins);
+          this.Log.warn('CordovaAudioPlayerService: Could not read `AudioPlayer` from `window.plugins`: ', (<any>window).plugins);
           throw new Error('CordovaAudioPlayerService: Could not read `AudioPlayer` from `window.plugins`');
         }
 
@@ -72,15 +104,15 @@ export class CordovaAudioPlayerService {
    * Playlist item management
    */
 
-  init(options?: AudioPlayerOptions) {
+  setOptions(options?: AudioPlayerOptions) {
     return this.wrapPromise((resolve, reject) => {
-      this.AudioPlayer.init(this.getSuccessCb(resolve), this.getErrorCb(reject), options);
+      this.AudioPlayer.setOptions(this.getSuccessCb(resolve), this.getErrorCb(reject), options);
     });
   }
 
-  setPlaylistItems = (items: AudioTrack[]) => {
+  setPlaylistItems = (items: AudioTrack[], options?: PlaylistItemOptions) => {
     return this.wrapPromise((resolve, reject) => {
-      this.AudioPlayer.setPlaylistItems(this.getSuccessCb(resolve), this.getErrorCb(reject), items);
+      this.AudioPlayer.setPlaylistItems(this.getSuccessCb(resolve), this.getErrorCb(reject), items, options || {});
     });
   }
 
@@ -238,13 +270,13 @@ export class CordovaAudioPlayerService {
     if (!this.platform.is('cordova')) { return Promise.resolve(); }
     let executor = new Promise((resolve, reject) => execFn(resolve, reject));
 
-    if (!production) {
-      executor = executor.then((data) => {
-        Log.log('AudioPlayerSuccessCb: ', data);
+    if (this.AudioPlayer.options.verbose) {
+      return executor.then((data) => {
+        this.Log.log('AudioPlayerSuccessCb: ', data);
         return data;
       })
       .catch((err) => {
-        Log.warn('AudioPlayerErrorCb: ', err);
+        this.Log.warn('AudioPlayerErrorCb: ', err);
         throw err;
       });
     }
@@ -257,10 +289,11 @@ export class CordovaAudioPlayerService {
       .then(() => {
         if (!this.platform.is('cordova')) { return; }
         if (!this.AudioPlayer) {
-          console.log('CordovaAudioPlayerService: Could not read `AudioPlayer` from `window.plugins`: ', (<any>window).plugins);
+          this.Log.warn('CordovaAudioPlayerService: Could not read `AudioPlayer` from `window.plugins`: ', (<any>window).plugins);
           throw new Error('CordovaAudioPlayerService: Could not read `AudioPlayer` from `window.plugins`');
         }
       });
   }
 
 }
+

@@ -41,13 +41,12 @@ public class AudioPlayerPlugin extends CordovaPlugin implements RmxConstants, On
 
   @Override
   public boolean execute(String action, JSONArray args, CallbackContext callbackContext) throws JSONException {
-    Log.i(TAG, "execute=" + action + ": ===> " + args.toString());
+    Log.i(TAG, "execute: " + action + ": ===> " + args.toString());
 
     // capture callback
     if (STORE_CHANNEL.equals(action)) {
       if (statusCallback == null) {
         statusCallback = new OnStatusCallback(callbackContext);
-        Log.i(TAG, "storeChannel was called!");
         onStatus(RmxAudioStatusMessage.RMXSTATUS_REGISTER, "INIT", null);
       }
       return true;
@@ -57,7 +56,6 @@ public class AudioPlayerPlugin extends CordovaPlugin implements RmxConstants, On
       if (options == null) {
         options = new JSONObject();
       }
-      Log.i(TAG, "setOptions completing: " + options);
       resetStreamOnPause = options.optBoolean("resetStreamOnPause", this.resetStreamOnPause);
       audioPlayerImpl.setResetStreamOnPause(resetStreamOnPause);
       // We don't do anything with these yet.
