@@ -41,11 +41,15 @@ public class AudioPlayerPlugin extends CordovaPlugin implements RmxConstants, On
 
   @Override
   public boolean execute(String action, JSONArray args, CallbackContext callbackContext) throws JSONException {
+    Log.i(TAG, "execute=" + action + ": ===> " + args.toString());
+
     // capture callback
     if (STORE_CHANNEL.equals(action)) {
-      statusCallback = new OnStatusCallback(callbackContext);
-      Log.i(TAG, "storeChannel was called!");
-      onStatus(RmxAudioStatusMessage.RMXSTATUS_REGISTER, "INIT", null);
+      if (statusCallback == null) {
+        statusCallback = new OnStatusCallback(callbackContext);
+        Log.i(TAG, "storeChannel was called!");
+        onStatus(RmxAudioStatusMessage.RMXSTATUS_REGISTER, "INIT", null);
+      }
       return true;
     }
     if (SET_OPTIONS.equals(action)) {
