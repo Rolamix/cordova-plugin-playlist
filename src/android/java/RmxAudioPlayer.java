@@ -42,6 +42,7 @@ public class RmxAudioPlayer implements PlaybackStatusListener<AudioTrack>,
   private OnStatusReportListener statusListener;
 
   private int lastBufferPercent = 0;
+  private boolean trackDuration = false;
   private boolean trackLoaded = false;
   private boolean resetStreamOnPause = true;
 
@@ -142,10 +143,8 @@ public class RmxAudioPlayer implements PlaybackStatusListener<AudioTrack>,
       Log.i(TAG, "onMediaPlaybackStarted: ==> " + item.getTitle() + ": " + currentPosition + "," + duration);
       // this is the first place that valid duration is seen. Immediately before, we get the PLAYING status change,
       // and before that, it announces PREPARING twice and all values are 0.
-
-//      JSONObject trackStatus = getPlayerStatus(item);
-//      onStatus(RmxAudioStatusMessage.RMXSTATUS_CANPLAY, item.getTrackId(), trackStatus);
-//      onStatus(RmxAudioStatusMessage.RMXSTATUS_DURATION, item.getTrackId(), trackStatus);
+      // Problem is, this method is only called if playback is already in progress when the track changes,
+      // which is useless in most cases. So, these values are actually handled in onProgressUpdated.
   }
 
   @Override
@@ -189,6 +188,7 @@ public class RmxAudioPlayer implements PlaybackStatusListener<AudioTrack>,
       }
 
       lastBufferPercent = 0;
+      trackDuration = false;
       trackLoaded = false;
 
       onStatus(RmxAudioStatusMessage.RMXSTATUS_TRACK_CHANGED, trackId, info);
@@ -233,6 +233,10 @@ public class RmxAudioPlayer implements PlaybackStatusListener<AudioTrack>,
           }
           case PLAYING:
               if (currentItem != null && currentItem.getTrackId() != null) {
+                  if (!trackLoaded) {
+                    onStatus(RmxAudioStatusMessage.RMXSTATUS_CANPLAY, currentItem.getTrackId(), trackStatus);
+                    trackLoaded = true;
+                  }
                   onStatus(RmxAudioStatusMessage.RMXSTATUS_PLAYING, currentItem.getTrackId(), trackStatus);
               }
               break;
@@ -270,10 +274,9 @@ public class RmxAudioPlayer implements PlaybackStatusListener<AudioTrack>,
                 onStatus(RmxAudioStatusMessage.RMXSTATUS_LOADED, currentItem.getTrackId(), trackStatus);
             }
 
-            if (!trackLoaded) {
-                onStatus(RmxAudioStatusMessage.RMXSTATUS_CANPLAY, currentItem.getTrackId(), trackStatus);
+            if (!trackDuration) {
                 onStatus(RmxAudioStatusMessage.RMXSTATUS_DURATION, currentItem.getTrackId(), trackStatus);
-                trackLoaded = true;
+                trackDuration = true;
             }
 
             onStatus(RmxAudioStatusMessage.RMXSTATUS_BUFFERING, currentItem.getTrackId(), trackStatus);
