@@ -432,11 +432,15 @@ export class RmxAudioPlayer {
     if (typeof performance !== 'undefined' && typeof performance.now === 'function') {
       d += performance.now(); //use high-precision timer if available
     }
-    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+    // There are better ways to do this in ES6, we are intentionally avoiding the import
+    // of an ES6 polyfill here.
+    const template = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx';
+    return (<string[]>[].slice.call(template)).map(function (c) {
+      if (c === '-' || c === '4') { return c; }
       var r = (d + Math.random() * 16) % 16 | 0;
       d = Math.floor(d / 16);
       return (c === 'x' ? r : (r & 0x3 | 0x8)).toString(16);
-    });
+    }).join('');
   }
 }
 
