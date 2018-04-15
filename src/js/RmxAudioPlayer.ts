@@ -323,9 +323,9 @@ export class RmxAudioPlayer {
     */
   onStatus(trackId: string, type: RmxAudioStatusMessage, value: OnStatusCallbackUpdateData | OnStatusTrackChangedData | OnStatusErrorCallbackData) {
     const status = { type, trackId, value };
-    // if (this.options.verbose) {
+    if (this.options.verbose) {
       log.log(`RmxAudioPlayer.onStatus: ${RmxAudioStatusMessageDescriptions[type]}(${type}) [${trackId}]: `, value);
-    // }
+    }
 
     if (status.value && (<any>status.value).status) {
       this._currentState = (<any>status.value).status;

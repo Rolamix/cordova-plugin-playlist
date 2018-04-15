@@ -385,9 +385,11 @@ function () {
         type,
         trackId,
         value
-      }; // if (this.options.verbose) {
+      };
 
-      log.log(`RmxAudioPlayer.onStatus: ${_Constants.RmxAudioStatusMessageDescriptions[type]}(${type}) [${trackId}]: `, value); // }
+      if (this.options.verbose) {
+        log.log(`RmxAudioPlayer.onStatus: ${_Constants.RmxAudioStatusMessageDescriptions[type]}(${type}) [${trackId}]: `, value);
+      }
 
       if (status.value && status.value.status) {
         this._currentState = status.value.status;

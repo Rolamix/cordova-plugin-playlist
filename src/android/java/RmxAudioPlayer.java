@@ -233,6 +233,8 @@ public class RmxAudioPlayer implements PlaybackStatusListener<AudioTrack>,
           }
           case PLAYING:
               if (currentItem != null && currentItem.getTrackId() != null) {
+                  // Can also check here that duration == 0, because that is what happens on the first PLAYING invokation.
+                  // We'll leave this for now.
                   if (!trackLoaded) {
                     onStatus(RmxAudioStatusMessage.RMXSTATUS_CANPLAY, currentItem.getTrackId(), trackStatus);
                     trackLoaded = true;
