@@ -40,9 +40,6 @@ jspm_packages/
 # Typescript v1 declaration files
 typings/
 
-# This file will never contain anything; the types are exported separately.
-www/interfaces.js
-
 # Optional npm cache directory
 .npm
 
