@@ -332,8 +332,8 @@ public class RmxAudioPlayer implements PlaybackStatusListener<AudioTrack>,
       case STOPPED: { status = "stopped"; break; }
       case ERROR: { status = "error"; break; }
       case RETRIEVING:
+      case SEEKING: // { status = "seeking"; break; } // seeking === loading
       case PREPARING: { status = "loading"; break; }
-      case SEEKING: // { status = "seeking"; break; } // seeking === playing
       case PLAYING: { status = "playing"; break; }
       case PAUSED: { status = "paused"; break; }
       default:
@@ -349,8 +349,8 @@ public class RmxAudioPlayer implements PlaybackStatusListener<AudioTrack>,
 
     // The media players hold onto their current playback position between songs,
     // despite my efforts to reset it. So we will just filter out this state.
-    if (progress != null && !status.equals("loading")) {
-        position = progress.getPosition();
+    if (progress != null) { // && !status.equals("loading")) {
+      position = progress.getPosition();
     }
 
     // the position and duration vals are in milliseconds.

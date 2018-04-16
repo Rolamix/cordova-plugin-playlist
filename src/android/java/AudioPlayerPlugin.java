@@ -74,16 +74,21 @@ public class AudioPlayerPlugin extends CordovaPlugin implements RmxConstants, On
       JSONObject optionsArgs = args.optJSONObject(1);
       PlaylistItemOptions options = new PlaylistItemOptions(optionsArgs);
 
-      ArrayList<AudioTrack> trackItems = getTrackItems(items);
-      audioPlayerImpl.getPlaylistManager().setAllItems(trackItems, options);
+      cordova.getThreadPool().execute(new Runnable() {
+          @Override
+          public void run() {
+              ArrayList<AudioTrack> trackItems = getTrackItems(items);
+              audioPlayerImpl.getPlaylistManager().setAllItems(trackItems, options);
 
-      for (AudioTrack playerItem : trackItems) {
-        if (playerItem.getTrackId() != null) {
-          onStatus(RmxAudioStatusMessage.RMXSTATUS_ITEM_ADDED, playerItem.getTrackId(), playerItem.toDict());
-        }
-      }
+              for (AudioTrack playerItem : trackItems) {
+                  if (playerItem.getTrackId() != null) {
+                      onStatus(RmxAudioStatusMessage.RMXSTATUS_ITEM_ADDED, playerItem.getTrackId(), playerItem.toDict());
+                  }
+              }
 
-      new PluginCallback(callbackContext).send(PluginResult.Status.OK);
+              new PluginCallback(callbackContext).send(PluginResult.Status.OK);
+          }
+      });
       return true;
     }
 
@@ -166,16 +171,17 @@ public class AudioPlayerPlugin extends CordovaPlugin implements RmxConstants, On
 
     // Playback
     if (PLAY.equals(action)) {
-      // Hmmm.
-      // audioPlayerImpl.getPlaylistManager().getPlaylistHandler().play();
-      // audioPlayerImpl.getPlaylistManager().invokePausePlay();
-      long position = 0;
-      MediaProgress progress = audioPlayerImpl.getPlaylistManager().getCurrentProgress();
-      if (progress != null) {
-        position = progress.getPosition();
-      }
+      //long position = 0;
+      //MediaProgress progress = audioPlayerImpl.getPlaylistManager().getCurrentProgress();
+      //if (progress != null) {
+        //position = progress.getPosition();
+      //}
       // This may not do the right thing, we may need to use 0, not getPosition
-      audioPlayerImpl.getPlaylistManager().beginPlayback(position, false);
+      // audioPlayerImpl.getPlaylistManager().beginPlayback(position, false);
+      if (audioPlayerImpl.getPlaylistManager().getPlaylistHandler() != null) {
+          audioPlayerImpl.getPlaylistManager().getPlaylistHandler().play();
+          //audioPlayerImpl.getPlaylistManager().getPlaylistHandler().seek(position);
+      }
       new PluginCallback(callbackContext).send(PluginResult.Status.OK);
       return true;
     }
@@ -202,8 +208,10 @@ public class AudioPlayerPlugin extends CordovaPlugin implements RmxConstants, On
 
     if (PAUSE.equals(action)) {
       // Hmmm.
-      // audioPlayerImpl.getPlaylistManager().getPlaylistHandler().pause();
-      audioPlayerImpl.getPlaylistManager().invokePausePlay();
+      // audioPlayerImpl.getPlaylistManager().invokePausePlay();
+      if (audioPlayerImpl.getPlaylistManager().getPlaylistHandler() != null) {
+          audioPlayerImpl.getPlaylistManager().getPlaylistHandler().pause(true);
+      }
       new PluginCallback(callbackContext).send(PluginResult.Status.OK);
       return true;
     }
@@ -229,12 +237,15 @@ public class AudioPlayerPlugin extends CordovaPlugin implements RmxConstants, On
       if (progress != null) {
         position = progress.getPosition();
       }
-      float currPos = position / 1000f;
-      Double positionD = args.optDouble(0, currPos) * 1000.0;
-      int positionVal = positionD.intValue();
+      long positionVal = (long)(args.optDouble(0, position / 1000.0f) * 1000.0);
 
-      audioPlayerImpl.getPlaylistManager().invokeSeekStarted();
-      audioPlayerImpl.getPlaylistManager().invokeSeekEnded(positionVal);
+      if (audioPlayerImpl.getPlaylistManager().getPlaylistHandler() != null) { // isPlaying &&
+          boolean isPlaying = audioPlayerImpl.getPlaylistManager().getPlaylistHandler().getCurrentMediaPlayer().isPlaying();
+          audioPlayerImpl.getPlaylistManager().getPlaylistHandler().seek(positionVal);
+          if (!isPlaying) {
+              audioPlayerImpl.getPlaylistManager().getPlaylistHandler().pause(false);
+          }
+      }
       new PluginCallback(callbackContext).send(PluginResult.Status.OK);
       return true;
     }
