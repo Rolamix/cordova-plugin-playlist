@@ -304,7 +304,7 @@ public class RmxAudioPlayer implements PlaybackStatusListener<AudioTrack>,
               trackLoaded = true;
             }
 
-            if (!trackDuration) {
+            if (!trackDuration && progress.getDuration() > 0) {
                 onStatus(RmxAudioStatusMessage.RMXSTATUS_DURATION, currentItem.getTrackId(), trackStatus);
                 trackDuration = true;
             }
