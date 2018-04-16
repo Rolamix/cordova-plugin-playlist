@@ -12,6 +12,7 @@ export declare class RmxAudioPlayer {
     private _currentState;
     private _hasError;
     private _hasLoaded;
+    private _currentItem;
     /**
      * The current summarized state of the player, as a string. It is preferred that you use the 'isX' accessors,
      * because they properly interpret the range of these values, but this field is exposed if you wish to observe
@@ -22,6 +23,7 @@ export declare class RmxAudioPlayer {
      * True if the plugin has been initialized. You'll likely never see this state; it is handled internally.
      */
     readonly isInitialized: boolean;
+    readonly currentTrack: AudioTrack | null;
     /**
      * If the playlist is currently playling a track.
      */

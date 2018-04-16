@@ -21,6 +21,7 @@ import com.devbrackets.android.playlistcore.listener.PlaylistListener;
 import com.devbrackets.android.playlistcore.listener.ProgressListener;
 import com.devbrackets.android.playlistcore.listener.PlaybackStatusListener;
 import com.devbrackets.android.exomedia.listener.OnErrorListener;
+import com.google.android.exoplayer2.ExoPlaybackException;
 
 /**
 *
@@ -130,11 +131,31 @@ public class RmxAudioPlayer implements PlaybackStatusListener<AudioTrack>,
 
   @Override
   public boolean onError(Exception e) {
-      Log.i(TAG, "Error playing audio track: " + e.toString());
       String errorMsg = e.toString();
-      AudioTrack currentItem = playlistManager.getCurrentItem();
-      String trackId = currentItem != null ? currentItem.getTrackId() : "INVALID";
-      onError(RmxAudioErrorType.RMXERR_DECODE, trackId, errorMsg);
+      RmxAudioErrorType errorType = RmxAudioErrorType.RMXERR_NONE_SUPPORTED;
+
+      if (e instanceof  ExoPlaybackException) {
+          switch (((ExoPlaybackException) e).type) {
+              case ExoPlaybackException.TYPE_SOURCE:
+                  errorMsg = "ExoPlaybackException.TYPE_SOURCE: " + ((ExoPlaybackException) e).getSourceException().getMessage();
+                  break;
+              case ExoPlaybackException.TYPE_RENDERER:
+                  errorType = RmxAudioErrorType.RMXERR_DECODE;
+                  errorMsg = "ExoPlaybackException.TYPE_RENDERER: " + ((ExoPlaybackException) e).getRendererException().getMessage();
+                  break;
+              case ExoPlaybackException.TYPE_UNEXPECTED:
+                  errorType = RmxAudioErrorType.RMXERR_DECODE;
+                  errorMsg = "ExoPlaybackException.TYPE_UNEXPECTED: " + ((ExoPlaybackException) e).getUnexpectedException().getMessage();
+                  break;
+          }
+      }
+
+      AudioTrack errorItem = playlistManager.getCurrentErrorTrack();
+      String trackId = errorItem != null ? errorItem.getTrackId() : "INVALID";
+
+      Log.i(TAG, "Error playing audio track: [" + trackId + "]: " + errorMsg);
+      onError(errorType, trackId, errorMsg);
+      playlistManager.setCurrentErrorTrack(null);
       return true;
   }
 
@@ -247,7 +268,8 @@ public class RmxAudioPlayer implements PlaybackStatusListener<AudioTrack>,
                   onStatus(RmxAudioStatusMessage.RMXSTATUS_PAUSE, currentItem.getTrackId(), trackStatus);
               }
               break;
-          case ERROR: // we'll handle error in the listener.
+          // we'll handle error in the listener. ExoMedia only raises this in the case of catastrophic player failure.
+          case ERROR:
           default:
               break;
       }

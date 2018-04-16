@@ -65,6 +65,12 @@ public class AudioPlaylistHandler<I extends PlaylistItem, M extends BasePlaylist
     }
 
     @Override
+    public boolean onError(MediaPlayerApi<I> mediaPlayer) {
+        ((PlaylistManager)getPlaylistManager()).setCurrentErrorTrack(getCurrentPlaylistItem());
+        return super.onError(mediaPlayer);
+    }
+
+    @Override
     public void onCompletion(MediaPlayerApi<I> mediaPlayer) {
         Log.i("AudioPlaylistHandler", "onCompletion");
         // This is called when a single item completes playback.

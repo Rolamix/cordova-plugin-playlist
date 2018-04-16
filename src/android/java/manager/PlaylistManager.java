@@ -9,6 +9,7 @@ import android.support.annotation.FloatRange;
 import android.support.annotation.IntRange;
 import android.support.annotation.Nullable;
 
+import com.devbrackets.android.playlistcore.api.PlaylistItem;
 import com.devbrackets.android.playlistcore.data.MediaProgress;
 import com.devbrackets.android.playlistcore.manager.ListPlaylistManager;
 import com.devbrackets.android.playlistcore.manager.BasePlaylistManager;
@@ -37,6 +38,7 @@ public class PlaylistManager extends ListPlaylistManager<AudioTrack> implements 
     private boolean shouldStopPlaylist = false;
     private boolean previousInvoked = false;
     private boolean nextInvoked = false;
+    private AudioTrack currentErrorTrack;
 
     // Really need a way to propagate the settings through the app
     private boolean resetStreamOnPause = true;
@@ -76,6 +78,14 @@ public class PlaylistManager extends ListPlaylistManager<AudioTrack> implements 
 
     public void setResetStreamOnPause(boolean val) {
       resetStreamOnPause = val;
+    }
+
+    public AudioTrack getCurrentErrorTrack() {
+      return currentErrorTrack;
+    }
+
+    public void setCurrentErrorTrack(@Nullable PlaylistItem errorItem) {
+        currentErrorTrack = (AudioTrack)errorItem;
     }
 
     @Override

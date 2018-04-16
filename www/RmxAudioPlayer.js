@@ -57,6 +57,11 @@ function () {
     get: function get() {
       return this._currentState !== 'unknown';
     }
+  }, {
+    key: "currentTrack",
+    get: function get() {
+      return this._currentItem;
+    }
     /**
      * If the playlist is currently playling a track.
      */
@@ -149,6 +154,12 @@ function () {
       enumerable: true,
       writable: true,
       value: false
+    });
+    Object.defineProperty(this, "_currentItem", {
+      configurable: true,
+      enumerable: true,
+      writable: true,
+      value: null
     });
     Object.defineProperty(this, "setOptions", {
       configurable: true,
@@ -396,12 +407,15 @@ function () {
       }
 
       if (status.type === _Constants.RmxAudioStatusMessage.RMXSTATUS_ERROR) {
-        this._hasError = true;
+        if (this._currentItem && this._currentItem.trackId === trackId) {
+          this._hasError = true;
+        }
       }
 
       if (status.type === _Constants.RmxAudioStatusMessage.RMXSTATUS_TRACK_CHANGED) {
         this._hasError = false;
         this._hasLoaded = false;
+        this._currentItem = status.value.currentItem;
       }
 
       if (status.type === _Constants.RmxAudioStatusMessage.RMXSTATUS_CANPLAY) {

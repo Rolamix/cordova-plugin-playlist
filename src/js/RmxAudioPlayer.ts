@@ -42,6 +42,7 @@ export class RmxAudioPlayer {
   private _currentState: 'unknown' | 'ready' | 'error' | 'playing' | 'loading' | 'paused' | 'stopped' = 'unknown';
   private _hasError: boolean = false;
   private _hasLoaded: boolean = false;
+  private _currentItem: AudioTrack | null = null;
 
   /**
    * The current summarized state of the player, as a string. It is preferred that you use the 'isX' accessors,
@@ -57,6 +58,10 @@ export class RmxAudioPlayer {
    */
   get isInitialized() {
     return this._currentState !== 'unknown';
+  }
+
+  get currentTrack(): AudioTrack | null {
+    return this._currentItem;
   }
 
   /**
@@ -332,12 +337,15 @@ export class RmxAudioPlayer {
     }
 
     if (status.type === RmxAudioStatusMessage.RMXSTATUS_ERROR) {
-      this._hasError = true;
+      if (this._currentItem && this._currentItem.trackId === trackId) {
+        this._hasError = true;
+      }
     }
 
     if (status.type === RmxAudioStatusMessage.RMXSTATUS_TRACK_CHANGED) {
       this._hasError = false;
       this._hasLoaded = false;
+      this._currentItem = (status.value as OnStatusTrackChangedData).currentItem;
     }
 
     if (status.type === RmxAudioStatusMessage.RMXSTATUS_CANPLAY) {
