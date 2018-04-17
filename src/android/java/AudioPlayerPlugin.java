@@ -175,16 +175,16 @@ public class AudioPlayerPlugin extends CordovaPlugin implements RmxConstants, On
 
     // Playback
     if (PLAY.equals(action)) {
-      //long position = 0;
-      //MediaProgress progress = audioPlayerImpl.getPlaylistManager().getCurrentProgress();
-      //if (progress != null) {
-        //position = progress.getPosition();
-      //}
-      // This may not do the right thing, we may need to use 0, not getPosition
-      // audioPlayerImpl.getPlaylistManager().beginPlayback(position, false);
       if (audioPlayerImpl.getPlaylistManager().getPlaylistHandler() != null) {
-          audioPlayerImpl.getPlaylistManager().getPlaylistHandler().play();
-          //audioPlayerImpl.getPlaylistManager().getPlaylistHandler().seek(position);
+          boolean isPlaying = audioPlayerImpl.getPlaylistManager().getPlaylistHandler().getCurrentMediaPlayer() != null
+                  && audioPlayerImpl.getPlaylistManager().getPlaylistHandler().getCurrentMediaPlayer().isPlaying();
+          // There's a bug in the threaded repeater that it stacks up the repeat calls instead of ignoring
+          // additional ones or starting a new one. E.g. every time this is called, you'd get a new repeat cycle,
+          // meaning you get N updates per second. Ew.
+          if (!isPlaying) {
+            audioPlayerImpl.getPlaylistManager().getPlaylistHandler().play();
+            //audioPlayerImpl.getPlaylistManager().getPlaylistHandler().seek(position);
+          }
       }
       new PluginCallback(callbackContext).send(PluginResult.Status.OK);
       return true;
