@@ -58,6 +58,10 @@ public class PlaylistManager extends ListPlaylistManager<AudioTrack> implements 
     }
 
     public void onMediaPlayerChanged(MediaPlayerApi<AudioTrack> currentMediaPlayer) {
+        if (this.currentMediaPlayer.get() != null) {
+            this.currentMediaPlayer.clear();
+            this.currentMediaPlayer = null;
+        }
         this.currentMediaPlayer = new WeakReference<>(currentMediaPlayer);
         if (mediaServiceStarted) {
             setVolume(volumeLeft, volumeRight);
@@ -332,7 +336,7 @@ public class PlaylistManager extends ListPlaylistManager<AudioTrack> implements 
         volumeLeft = left;
         volumeRight = right;
 
-        if (currentMediaPlayer.get() != null) {
+        if (currentMediaPlayer != null && currentMediaPlayer.get() != null) {
             Log.i("PlaylistManager", "setVolume completing with volume = " + left);
             currentMediaPlayer.get().setVolume(volumeLeft, volumeRight);
         }
@@ -344,7 +348,7 @@ public class PlaylistManager extends ListPlaylistManager<AudioTrack> implements 
 
     public void setPlaybackSpeed(@FloatRange(from = 0.0, to = 1.0) float speed) {
         playbackSpeed = speed;
-        if (currentMediaPlayer.get() != null && currentMediaPlayer.get() instanceof AudioApi) {
+        if (currentMediaPlayer != null && currentMediaPlayer.get() != null && currentMediaPlayer.get() instanceof AudioApi) {
             Log.i("PlaylistManager", "setPlaybackSpeed completing with speed = " + speed);
             ((AudioApi)currentMediaPlayer.get()).setPlaybackSpeed(playbackSpeed);
         }
@@ -352,8 +356,12 @@ public class PlaylistManager extends ListPlaylistManager<AudioTrack> implements 
 
     public void beginPlayback(@IntRange(from = 0) long seekPosition, boolean startPaused) {
       super.play(seekPosition, startPaused);
-      setVolume(volumeLeft, volumeRight);
-      setPlaybackSpeed(playbackSpeed);
+      try {
+          setVolume(volumeLeft, volumeRight);
+          setPlaybackSpeed(playbackSpeed);
+      } catch (Exception e) {
+          Log.w(TAG, "beginPlayback: Error setting volume or playback speed: " + e.getMessage());
+      }
     }
 
     // If we wanted to implement a *native* player (like cordova-plugin-exoplayer),
