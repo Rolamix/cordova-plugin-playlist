@@ -1,17 +1,17 @@
 {
-  "extends": "airbnb",
+  "extends": "airbnb-base",
   "parser": "babel-eslint",
-  "ecmaFeatures": {
-    "experimentalObjectRestSpread": true
+  "env": {
+    "node": true,
+    "mocha": true,
+    "browser": true
   },
   "rules": {
     "spaced-comment": 0,
     "no-console": 0,
-    "no-unused-expressions": [2, { "allowShortCircuit": true }]
-  },
-  "env": {
-      "node": true,
-      "mocha": true,
-      "browser": true
+    "no-unused-expressions": [2, { "allowShortCircuit": true }],
+    "arrow-parens": "off",
+    "max-len": [1, 120],
+    "no-plusplus": 0
   }
 }

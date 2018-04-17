@@ -27,8 +27,8 @@ Both Android and iOS have special support for playlist-based playback, and the n
 
 ## 2. Notes
 
-### On *Android*, utilizes a wrapper over ExoPlayer called ExoMedia. ExoPlayer is a powerful, high-quality player for Android provided by Google
-### On iOS, utilizes a customized AVQueuePlayer in order to provide feedback about track changes, buffering, etc.
+### On *Android*, utilizes a wrapper over ExoPlayer called [ExoMedia](https://github.com/brianwernick/ExoMedia). ExoPlayer is a powerful, high-quality player for Android provided by Google
+### On iOS, utilizes a customized AVQueuePlayer in order to provide feedback about track changes, buffering, etc.; given that AVQueuePlayer can keep the audio session running between songs.
 
 * This plugin intentionally does not display track cover art on the lock screen controls on iOS. Usage of the media image object on iOS is known to cause memory leaks. See the [Todo](#4-todo) section. The Swift version of that object does not (seem to) contain this memory leak, and rewriting this plugin to use Swift 4 is on the [Todo](#4-todo) list. This is fully supported on Android, however.
 
@@ -67,12 +67,13 @@ Android normally will give you ~2-3 minutes of background playback before killin
 iOS will immediately stop playback when the app goes into the background if you do not include the `audio` `UIBackgroundMode`. iOS has an additional requirement that audio playback must never stop; when it does, the audio session will be terminated and playback cannot continue without user interaction.
 
 ## 3. Usage
-Coming...
+
+Be sure to check out the examples folder, where you can find an Angular5/Ionic implementation of the Cordova plugin.
+Just drop into your project and go.
 
 ## 4. Todo
 
 There's so much more to do on this plugin. Some items I would like to see added if anyone wants to help:
-* [JS] Add typescript to the src JS files so that the types don't have to be manually updated.
 * [iOS, Android] Add support for recording, similar to what is provided by `cordova-plugin-media`
 * [iOS] Safely implement cover art for cover images displayed on the command/lock screen controls
 * [iOS] Write this plugin in Swift instead of Objective-C. I didn't have time to learn Swift when I needed this.

@@ -1,11 +1,12 @@
 {
   "name": "cordova-plugin-audio-player",
   "description": "A Cordova plugin for Android and iOS with native support for audio playlists, background support, and lock screen controls",
-  "version": "0.5.0",
+  "version": "0.5.2",
   "homepage": "https://github.com/Rolamix/cordova-plugin-audio-player#readme",
   "author": "Patrick <patrick@rolamix.com>",
   "license": "MIT",
-  "types": "./types/index.d.ts",
+  "types": "./www/index.d.ts",
+  "main": "./www/index.js",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/Rolamix/cordova-plugin-audio-player.git"
@@ -21,7 +22,7 @@
     ]
   },
   "scripts": {
-    "build": "npx browserslist && babel src/js --out-dir www",
+    "build": "npm run lint && npx browserslist && tsc --emitDeclarationOnly && babel src/js --out-dir www --extensions \".ts,.tsx\"",
     "build:watch": "nodemon -w ./src/js -e js -x npm run build",
     "precommit-msg": "echo 'Pre-commit checks... make sure you built!!' && exit 0",
     "lint": "eslint src/js",
@@ -48,23 +49,35 @@
   ],
   "engines": {
     "cordovaDependencies": {
-      "0.5.0": { "cordova": ">=7.1.0", "cordova-android": ">=6.4.0", "cordova-ios": ">=4.3.0" }
+      "0.5.0": {
+        "cordova": ">=7.1.0",
+        "cordova-android": ">=6.4.0",
+        "cordova-ios": ">=4.3.0"
+      }
     }
   },
   "browserslist": "ios_saf >= 9.3, chrome >= 49",
+  "dependencies": {
+    "fs-extra": "^5.0.0",
+    "semver": "^5.5.0",
+    "xml2js": "^0.4.19"
+  },
   "devDependencies": {
     "@babel/cli": "^7.0.0-beta.42",
     "@babel/core": "^7.0.0-beta.42",
+    "@babel/plugin-proposal-class-properties": "^7.0.0-beta.44",
+    "@babel/plugin-proposal-object-rest-spread": "^7.0.0-beta.44",
     "@babel/preset-env": "^7.0.0-beta.42",
+    "@babel/preset-typescript": "^7.0.0-beta.44",
+    "@types/semver": "^5.5.0",
     "babel-eslint": "^8.2.2",
+    "babel-plugin-add-header-comment": "^1.0.3",
     "eslint": "^4.19.1",
-    "eslint-config-airbnb": "^16.1.0",
+    "eslint-config-airbnb-base": "^12.1.0",
     "eslint-plugin-import": "^2.9.0",
     "jasmine-node": "^1.14.5",
     "nodemon": "^1.17.2",
-    "pluginpub": "^0.0.9"
-  },
-  "dependencies": {
-    "babel-plugin-add-header-comment": "^1.0.3"
+    "pluginpub": "^0.0.9",
+    "typescript": "^2.8.1"
   }
 }

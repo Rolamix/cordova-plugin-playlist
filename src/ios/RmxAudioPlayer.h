@@ -18,11 +18,12 @@
 #import "Constants.h"
 #import "AudioTrack.h"
 
-@interface RmxAudioPlayer : CDVPlugin { }
+@interface RmxAudioPlayer : CDVPlugin
 
 // structural methods
 - (void) pluginInitialize;
-- (void) storeMessageChannel:(CDVInvokedUrlCommand*) command
+- (void) setOptions:(CDVInvokedUrlCommand*) command;
+- (void) storeMessageChannel:(CDVInvokedUrlCommand*) command;
 
 // public API
 
@@ -45,6 +46,7 @@
 - (void) seekToQueuePosition:(CDVInvokedUrlCommand *) command;
 - (void) setPlaybackRate:(CDVInvokedUrlCommand *) command;
 - (void) setPlaybackVolume:(CDVInvokedUrlCommand *) command;
+- (void) setLoopAll:(CDVInvokedUrlCommand *) command;
 
 // Get accessors to manually update values. Note:
 // these values are reported anyway via the onStatus event

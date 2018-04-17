@@ -1,16 +1,4 @@
-package com.rolamix.plugins;
-
-public enum RmxAudioErrorType {
-  RMXERR_NONE_ACTIVE(0),
-  RMXERR_ABORTED(1),
-  RMXERR_NETWORK(2),
-  RMXERR_DECODE(3),
-  RMXERR_NONE_SUPPORTED(4);
-
-  private final int id;
-  RmxAudioErrorType(int id) { this.id = id; }
-  public int getValue() { return id; }
-};
+package com.rolamix.plugins.audioplayer;
 
 public enum RmxAudioStatusMessage {
   RMXSTATUS_NONE(0),
@@ -29,6 +17,7 @@ public enum RmxAudioStatusMessage {
   RMXSTATUS_SEEK(45),
   RMXSTATUS_COMPLETED(50),
   RMXSTATUS_DURATION(55),
+  RMXSTATUS_STOPPED(60),
 
   RMX_STATUS_SKIP_FORWARD(90),
   RMX_STATUS_SKIP_BACK(95),
@@ -44,10 +33,3 @@ public enum RmxAudioStatusMessage {
   RmxAudioStatusMessage(int id) { this.id = id; }
   public int getValue() { return id; }
 };
-
-public final static class Constants {
-  public static final String DOCUMENTS_SCHEME_PREFIX = "documents://";
-  public static final String HTTP_SCHEME_PREFIX = "http://";
-  public static final String HTTPS_SCHEME_PREFIX = "https://";
-  public static final String CDVFILE_PREFIX = "cdvfile://";
-}
