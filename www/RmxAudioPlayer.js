@@ -22,8 +22,8 @@ function _defineProperties(target, props) { for (var i = 0; i < props.length; i+
 
 function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
 
-var exec = cordova ? cordova.require('cordova/exec') : null;
-var channel = cordova ? cordova.require('cordova/channel') : null;
+var exec = typeof cordova !== 'undefined' ? cordova.require('cordova/exec') : null;
+var channel = typeof cordova !== 'undefined' ? cordova.require('cordova/channel') : null;
 var log = console;
 /**
  * AudioPlayer class implementation. A singleton of this class is exported for use by Cordova,

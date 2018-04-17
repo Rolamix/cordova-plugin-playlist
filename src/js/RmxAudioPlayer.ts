@@ -26,8 +26,8 @@ import {
  */
 
 declare var cordova: any;
-const exec = cordova ? cordova.require('cordova/exec') : null;
-const channel = cordova ? cordova.require('cordova/channel') : null;
+const exec = typeof cordova !== 'undefined' ? cordova.require('cordova/exec') : null;
+const channel = typeof cordova !== 'undefined' ? cordova.require('cordova/channel') : null;
 const log = console;
 
 /**
