@@ -3,7 +3,7 @@
 	id="cordova-plugin-playlist"
 	version="2.1.4">
 	<name>AudioPlayer</name>
-	<keywords>cordova,music,controller,controls,media,plugin,notification,lockscreen,now,playing</keywords>
+	<keywords>cordova,music,controller,controls,media,plugin,notification,lockscreen,now,playing,playlist</keywords>
 	<repo>https://github.com/Rolamix/cordova-plugin-playlist</repo>
 	<description>Native support for audio playlists, background support, and lock screen controls</description>
 	<license>MIT</license>
