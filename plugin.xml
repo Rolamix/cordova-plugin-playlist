@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <plugin xmlns="http://apache.org/cordova/ns/plugins/1.0" xmlns:android="http://schemas.android.com/apk/res/android"
-	id="cordova-plugin-audio-player"
+	id="cordova-plugin-playlist"
 	version="2.1.4">
 	<name>AudioPlayer</name>
 	<keywords>cordova,music,controller,controls,media,plugin,notification,lockscreen,now,playing</keywords>
-	<repo>https://github.com/Rolamix/cordova-plugin-audio-player</repo>
+	<repo>https://github.com/Rolamix/cordova-plugin-playlist</repo>
 	<description>Native support for audio playlists, background support, and lock screen controls</description>
 	<license>MIT</license>
 	<author>Rolamix</author>
@@ -30,7 +30,7 @@
     <hook type="before_plugin_uninstall" src="scripts/android_before_plugin_uninstall.js" />
 
     <info>
-        cordova-plugin-audio-player adds a MainApplication.java file to your Android project and an Application to your app.
+        cordova-plugin-playlist adds a MainApplication.java file to your Android project and an Application to your app.
         If your app cannot use this, do not install this plugin.
     </info>
 

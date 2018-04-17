@@ -38,8 +38,8 @@ import {
   OnStatusCallbackData,
   OnStatusErrorCallbackData,
   PlaylistItemOptions,
-} from 'cordova-plugin-audio-player';
-export * from 'cordova-plugin-audio-player'; // 'cordova-plugin-audio-player/www/index.d'
+} from 'cordova-plugin-playlist';
+export * from 'cordova-plugin-playlist'; // 'cordova-plugin-playlist/www/index.d'
 
 @Injectable()
 export class CordovaAudioPlayerService {

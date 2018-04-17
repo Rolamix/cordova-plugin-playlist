@@ -1,21 +1,21 @@
 {
-  "name": "cordova-plugin-audio-player",
+  "name": "cordova-plugin-playlist",
   "description": "A Cordova plugin for Android and iOS with native support for audio playlists, background support, and lock screen controls",
   "version": "0.5.2",
-  "homepage": "https://github.com/Rolamix/cordova-plugin-audio-player#readme",
+  "homepage": "https://github.com/Rolamix/cordova-plugin-playlist#readme",
   "author": "Patrick <patrick@rolamix.com>",
   "license": "MIT",
   "types": "./www/index.d.ts",
   "main": "./www/index.js",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Rolamix/cordova-plugin-audio-player.git"
+    "url": "git+https://github.com/Rolamix/cordova-plugin-playlist.git"
   },
   "bugs": {
-    "url": "https://github.com/Rolamix/cordova-plugin-audio-player/issues"
+    "url": "https://github.com/Rolamix/cordova-plugin-playlist/issues"
   },
   "cordova": {
-    "id": "cordova-plugin-audio-player",
+    "id": "cordova-plugin-playlist",
     "platforms": [
       "android",
       "ios"

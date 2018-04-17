@@ -7,7 +7,7 @@ We love pull requests from everyone.
 [Fork](https://help.github.com/articles/fork-a-repo/), then [clone](https://help.github.com/articles/cloning-a-repository/) the repo:
 
 ```
-git clone git@github.com:your-username/cordova-plugin-audio-player.git
+git clone git@github.com:your-username/cordova-plugin-playlist.git
 ```
 
 Set up a branch for your feature or bugfix with a link to the original repo:
@@ -15,7 +15,7 @@ Set up a branch for your feature or bugfix with a link to the original repo:
 ```
 git checkout -b my-awesome-new-feature
 git push --set-upstream origin my-awesome-new-feature
-git remote add upstream https://github.com/Rolamix/cordova-plugin-audio-player.git
+git remote add upstream https://github.com/Rolamix/cordova-plugin-playlist.git
 ```
 
 Set up the project:

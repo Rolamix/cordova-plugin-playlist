@@ -1,4 +1,4 @@
-# cordova-plugin-audio-player
+# cordova-plugin-playlist
 A Cordova plugin for Android and iOS with native support for audio playlists, background support, and lock screen controls
 
 ## 0. Index
@@ -41,7 +41,7 @@ Both Android and iOS have special support for playlist-based playback, and the n
 As with most cordova plugins...
 
 ```
-cordova plugin add cordova-plugin-audio-player
+cordova plugin add cordova-plugin-playlist
 ```
 
 Rather than oblige all developers to include background permissions, add the following to your `config.xml` if you wish to support continuing to play audio in the background:
