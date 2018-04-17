@@ -8,6 +8,7 @@ public class PlaylistItemOptions {
 
   private boolean retainPosition = false;
   private long playFromPosition = -1L;
+  private boolean startPaused = true;
 
   PlaylistItemOptions(JSONObject optionsObj) {
     this.options = optionsObj;
@@ -16,6 +17,8 @@ public class PlaylistItemOptions {
     }
 
     this.retainPosition = this.options.optBoolean("retainPosition", false);
+    this.startPaused = this.options.optBoolean("startPaused", true);
+
     try {
       playFromPosition = (long)this.options.getDouble("playFromPosition") * 1000L;
     } catch (JSONException ex) {
@@ -23,9 +26,14 @@ public class PlaylistItemOptions {
     }
   }
 
-  PlaylistItemOptions(boolean retainPosition, long playFromPosition) {
+  PlaylistItemOptions(boolean retainPosition, long playFromPosition, boolean startPaused) {
+    this.startPaused = startPaused;
     this.retainPosition = retainPosition;
     this.playFromPosition = playFromPosition;
+  }
+
+  public boolean getStartPaused() {
+    return startPaused;
   }
 
   public boolean getRetainPosition() {

@@ -214,7 +214,7 @@ public class PlaylistManager extends ListPlaylistManager<AudioTrack> implements 
       // that the next thing to happen will be to play. So let's start
       // paused, which will allow the player to pre-buffer until the
       // user says Go.
-      beginPlayback(seekStart, true);
+      beginPlayback(seekStart, options.getStartPaused());
     }
 
     public void addItem(AudioTrack item) {

@@ -50,6 +50,11 @@ export interface PlaylistItemOptions {
    * rather than letting the plugin decide based on current playback.
    */
   playFromPosition?: number;
+  /**
+   * If playback should immediately begin when calling setPlaylistItems on the plugin.
+   * Default is false;
+   */
+  startPaused?: boolean;
 }
 
 /**

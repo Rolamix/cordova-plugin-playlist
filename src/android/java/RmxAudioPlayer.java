@@ -218,7 +218,6 @@ public class RmxAudioPlayer implements PlaybackStatusListener<AudioTrack>,
 
   @Override
   public boolean onPlaybackStateChanged(@NonNull PlaybackState playbackState) {
-      Log.i("AudioPlayerActiv/opsc", playbackState.toString());
       // in testing, I saw PREPARING, then PLAYING, and buffering happened
       // during PLAYING. Tapping play/pause toggles PLAYING and PAUSED
       // sending a seek command produces SEEKING here
@@ -226,6 +225,7 @@ public class RmxAudioPlayer implements PlaybackStatusListener<AudioTrack>,
 
       AudioTrack currentItem = playlistManager.getCurrentItem();
       JSONObject trackStatus = getPlayerStatus(currentItem);
+      Log.i("AudioPlayerActiv/opsc", playbackState.toString() + ", " + trackStatus.toString() + ", " + currentItem);
 
       switch (playbackState) {
           case STOPPED:
