@@ -17,6 +17,7 @@ import com.devbrackets.android.playlistcore.api.MediaPlayerApi;
 import com.devbrackets.android.exomedia.listener.OnErrorListener;
 
 import com.rolamix.plugins.audioplayer.PlaylistItemOptions;
+import com.rolamix.plugins.audioplayer.TrackRemovalItem;
 import com.rolamix.plugins.audioplayer.data.AudioTrack;
 import com.rolamix.plugins.audioplayer.playlist.AudioApi;
 import com.rolamix.plugins.audioplayer.service.MediaService;
