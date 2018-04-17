@@ -139,6 +139,7 @@ public class AudioPlayerPlugin extends CordovaPlugin implements RmxConstants, On
       int removed = 0;
 
       if (items != null) {
+        ArrayList<TrackRemovalItem> removals = new ArrayList<>();
         for (int index = 0; index < items.length(); index++) {
           JSONObject entry = items.optJSONObject(index);
           if (entry == null) {
@@ -146,12 +147,15 @@ public class AudioPlayerPlugin extends CordovaPlugin implements RmxConstants, On
           }
           int trackIndex = entry.optInt("trackIndex", -1);
           String trackId = entry.optString("trackId", "");
-          AudioTrack removedItem = audioPlayerImpl.getPlaylistManager().removeItem(trackIndex, trackId);
-          if (removedItem != null) {
-            if (removedItem.getTrackId() != null) {
+          removals.add(new TrackRemovalItem(trackIndex, trackId));
+
+          ArrayList<AudioTrack> removedTracks = audioPlayerImpl.getPlaylistManager().removeAllItems(removals);
+
+          if (removedTracks.size() > 0) {
+            for (AudioTrack removedItem : removedTracks) {
               onStatus(RmxAudioStatusMessage.RMXSTATUS_ITEM_REMOVED, removedItem.getTrackId(), removedItem.toDict());
             }
-            removed++;
+            removed = removedTracks.size();
           }
         }
       }

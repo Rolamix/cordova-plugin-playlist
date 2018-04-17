@@ -52,6 +52,9 @@ export declare class RmxAudioPlayer {
      * an RMXSTATUS_TRACK_CHANGED event.
      */
     readonly hasError: boolean;
+    /**
+     * Creates a new RmxAudioPlayer instance.
+     */
     constructor();
     /**
      * Player interface

@@ -88,6 +88,7 @@
 		<source-file src="src/android/java/RmxConstants.java" target-dir="src/com/rolamix/plugins/audioplayer/" />
     <source-file src="src/android/java/RmxAudioErrorType.java" target-dir="src/com/rolamix/plugins/audioplayer/" />
     <source-file src="src/android/java/RmxAudioStatusMessage.java" target-dir="src/com/rolamix/plugins/audioplayer/" />
+    <source-file src="src/android/java/TrackRemovalItem.java" target-dir="src/com/rolamix/plugins/audioplayer/" />
 	</platform>
 
 	<!-- ios -->

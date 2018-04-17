@@ -69,9 +69,20 @@ public class AudioPlaylistHandler<I extends PlaylistItem, M extends BasePlaylist
     @Override
     public boolean onError(MediaPlayerApi<I> mediaPlayer) {
         ((PlaylistManager)getPlaylistManager()).setCurrentErrorTrack(getCurrentPlaylistItem());
-        super.onError(mediaPlayer);
+        int currentIndex = getPlaylistManager().getCurrentPosition();
+        int currentErrorCount = getSequentialErrors();
 
-        if (getSequentialErrors() <= 3) {
+        super.onError(mediaPlayer);
+        // Do not set startPaused to false if we are at the first item.
+        // For all other items, the user MUST have triggered playback;
+        // for item 0, they will never have done so at this point (since the tracks
+        // are auto-buffered when a list is loaded).
+        // This is a bit of a guess. What happens of tracks 2,3,4 are also broken?
+        // User has no network? The only way to be *certain* is to capture all user interaction
+        // input points and create a global flag "somewhere" that says the user has tried to play.
+        // Maintaining that would be a nightmare.
+        if (currentIndex > 0 && currentErrorCount <= 3) {
+            Log.e(TAG, "ListHandler error: setting startPaused to false");
             setStartPaused(false);
         }
 

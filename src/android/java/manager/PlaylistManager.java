@@ -88,6 +88,10 @@ public class PlaylistManager extends ListPlaylistManager<AudioTrack> implements 
         currentErrorTrack = (AudioTrack)errorItem;
     }
 
+    public boolean isPlaying() {
+      return getPlaylistHandler() != null && getPlaylistHandler().getCurrentMediaPlayer() != null && getPlaylistHandler().getCurrentMediaPlayer().isPlaying();
+    }
+
     @Override
     public boolean onError(Exception e) {
         Log.i(TAG, "onError: " + e.toString());
@@ -226,23 +230,63 @@ public class PlaylistManager extends ListPlaylistManager<AudioTrack> implements 
     }
 
     public AudioTrack removeItem(int index, @Nullable String itemId) {
-        AudioTrack currentItem = getCurrentItem(); // may be null
-        AudioTrack foundItem = null;
+      boolean wasPlaying = this.isPlaying();
+      if (this.getPlaylistHandler() != null) {
+          this.getPlaylistHandler().pause(true);
+      }
+      int currentPosition = getCurrentPosition();
+      AudioTrack currentItem = getCurrentItem(); // may be null
+      AudioTrack foundItem = null;
+      boolean removingCurrent = false;
 
-        if (index >= 0 && index < AudioTracks.size()) {
-            foundItem = AudioTracks.get(index);
-            AudioTracks.remove(index);
-        } else if (itemId != null && !"".equals(itemId)) {
-            int itemPos = getPositionForItem(itemId.hashCode());
-            if (itemPos != BasePlaylistManager.INVALID_POSITION) {
-                foundItem = AudioTracks.get(itemPos);
-                AudioTracks.remove(itemPos);
-            }
-        }
+      // If isPlaying is true, and currentItem is not null,
+      // that implies that currentItem is the currently playing item.
+      // If removingCurrent gets set to true, we are removing the currently playing item,
+      // and we need to restart playback once we do.
 
-        setItems(AudioTracks);
-        setCurrentPosition(AudioTracks.indexOf(currentItem));
-        return foundItem;
+      int resolvedIndex = resolveItemPosition(index, itemId);
+      if (resolvedIndex >= 0) {
+          foundItem = AudioTracks.get(resolvedIndex);
+          if (foundItem == currentItem) {
+              removingCurrent = true;
+          }
+          AudioTracks.remove(resolvedIndex);
+      }
+
+      setItems(AudioTracks);
+      setCurrentPosition(removingCurrent ? currentPosition : AudioTracks.indexOf(currentItem));
+      this.beginPlayback(0, !wasPlaying);
+
+      return foundItem;
+    }
+
+    public ArrayList<AudioTrack> removeAllItems(ArrayList<TrackRemovalItem> items) {
+      ArrayList<AudioTrack> removedTracks = new ArrayList<>();
+      boolean wasPlaying = this.isPlaying();
+      if (this.getPlaylistHandler() != null) {
+          this.getPlaylistHandler().pause(true);
+      }
+      int currentPosition = getCurrentPosition();
+      AudioTrack currentItem = getCurrentItem(); // may be null
+      boolean removingCurrent = false;
+
+      for (TrackRemovalItem item : items) {
+          int resolvedIndex = resolveItemPosition(item.trackIndex, item.trackId);
+          if (resolvedIndex >= 0) {
+              AudioTrack foundItem = AudioTracks.get(resolvedIndex);
+              if (foundItem == currentItem) {
+                  removingCurrent = true;
+              }
+              removedTracks.add(foundItem);
+              AudioTracks.remove(resolvedIndex);
+          }
+      }
+
+      setItems(AudioTracks);
+      setCurrentPosition(removingCurrent ? currentPosition : AudioTracks.indexOf(currentItem));
+      this.beginPlayback(0, !wasPlaying);
+
+      return removedTracks;
     }
 
     public void clearItems() {
@@ -252,6 +296,19 @@ public class PlaylistManager extends ListPlaylistManager<AudioTrack> implements 
         AudioTracks.clear();
         setItems(AudioTracks);
         setCurrentPosition(BasePlaylistManager.INVALID_POSITION);
+    }
+
+    private int resolveItemPosition(int trackIndex, String trackId) {
+        int resolvedPosition = -1;
+        if (trackIndex >= 0 && trackIndex < AudioTracks.size()) {
+            resolvedPosition = trackIndex;
+        } else if (trackId != null && !"".equals(trackId)) {
+            int itemPos = getPositionForItem(trackId.hashCode());
+            if (itemPos != BasePlaylistManager.INVALID_POSITION) {
+                resolvedPosition = itemPos;
+            }
+        }
+        return resolvedPosition;
     }
 
     public boolean getLoop() {
