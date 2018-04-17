@@ -564,7 +564,7 @@ function () {
 exports.RmxAudioPlayer = RmxAudioPlayer;
 var playerInstance = new RmxAudioPlayer(); // Initialize the plugin to send and receive messages
 
-if (cordova) {
+if (typeof cordova != 'undefined') {
   var onNativeStatus = function onNativeStatus(msg) {
     if (msg.action === 'status') {
       playerInstance.onStatus(msg.status.trackId, msg.status.msgType, msg.status.value);

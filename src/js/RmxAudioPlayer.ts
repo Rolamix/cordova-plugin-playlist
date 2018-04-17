@@ -459,7 +459,7 @@ const playerInstance = new RmxAudioPlayer();
 
 // Initialize the plugin to send and receive messages
 
-if (cordova) {
+if (typeof cordova != 'undefined') {
   channel.createSticky('onRmxAudioPlayerReady');
   channel.waitForInitialization('onRmxAudioPlayerReady');
 
