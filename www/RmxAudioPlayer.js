@@ -22,8 +22,8 @@ function _defineProperties(target, props) { for (var i = 0; i < props.length; i+
 
 function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
 
-var exec = typeof cordova !== 'undefined' ? cordova.require('cordova/exec') : null;
-var channel = typeof cordova !== 'undefined' ? cordova.require('cordova/channel') : null;
+var exec = typeof cordova !== 'undefined' ? cordova.require('cordova/exec') : null; // const channel = typeof cordova !== 'undefined' ? cordova.require('cordova/channel') : null;
+
 var log = console;
 /**
  * AudioPlayer class implementation. A singleton of this class is exported for use by Cordova,
@@ -53,7 +53,7 @@ function () {
   }, {
     key: "isInitialized",
     get: function get() {
-      return this._currentState !== 'unknown';
+      return this._inititialized;
     }
   }, {
     key: "currentTrack",
@@ -139,6 +139,18 @@ function () {
         resetStreamOnPause: true
       }
     });
+    Object.defineProperty(this, "_inititialized", {
+      configurable: true,
+      enumerable: true,
+      writable: true,
+      value: false
+    });
+    Object.defineProperty(this, "_initPromise", {
+      configurable: true,
+      enumerable: true,
+      writable: true,
+      value: null
+    });
     Object.defineProperty(this, "_currentState", {
       configurable: true,
       enumerable: true,
@@ -162,6 +174,54 @@ function () {
       enumerable: true,
       writable: true,
       value: null
+    });
+    Object.defineProperty(this, "ready", {
+      configurable: true,
+      enumerable: true,
+      writable: true,
+      value: function value() {
+        return _this._initPromise;
+      }
+    });
+    Object.defineProperty(this, "initialize", {
+      configurable: true,
+      enumerable: true,
+      writable: true,
+      value: function value() {
+        if (!_this._initPromise) {
+          _this._initPromise = new Promise(function (resolve, reject) {
+            // Initialize the plugin to send and receive messages
+            // channel.createSticky('onRmxAudioPlayerReady');
+            // channel.waitForInitialization('onRmxAudioPlayerReady');
+            var onNativeStatus = function onNativeStatus(msg) {
+              // better or worse, we got an answer back from native, so we resolve.
+              resolve();
+              _this._inititialized = true;
+
+              if (msg.action === 'status') {
+                _this.onStatus(msg.status.trackId, msg.status.msgType, msg.status.value);
+              } else {
+                console.warn('Unknown audio player onStatus message:', msg.action);
+              }
+            }; // channel.onCordovaReady.subscribe(() => {
+
+
+            var error = function error(args) {
+              var message = 'CORDOVA RMXAUDIOPLAYER: Error storing message channel:';
+              console.warn(message, args);
+              reject({
+                message,
+                args
+              });
+            };
+
+            exec(onNativeStatus, error, 'RmxAudioPlayer', 'initialize', []); // channel.initializationComplete('onRmxAudioPlayerReady');
+            // });
+          });
+        }
+
+        return _this._initPromise;
+      }
     });
     Object.defineProperty(this, "setOptions", {
       configurable: true,
@@ -376,10 +436,6 @@ function () {
    * Player interface
    */
 
-  /**
-   * Sets the player options. This can be called at any time and is not required before playback can be initiated.
-   */
-
 
   _createClass(RmxAudioPlayer, [{
     key: "onStatus",
@@ -562,32 +618,10 @@ function () {
 }();
 
 exports.RmxAudioPlayer = RmxAudioPlayer;
-var playerInstance = new RmxAudioPlayer(); // Initialize the plugin to send and receive messages
-
-if (typeof cordova != 'undefined') {
-  var onNativeStatus = function onNativeStatus(msg) {
-    if (msg.action === 'status') {
-      playerInstance.onStatus(msg.status.trackId, msg.status.msgType, msg.status.value);
-    } else {
-      throw new Error(`Unknown audio player action ${msg.action}`);
-    }
-  };
-
-  channel.createSticky('onRmxAudioPlayerReady');
-  channel.waitForInitialization('onRmxAudioPlayerReady');
-  channel.onCordovaReady.subscribe(function () {
-    var error = function error(args) {
-      return console.warn('CORDOVA RMXAUDIOPLAYER: Error storing message channel:', args);
-    };
-
-    exec(onNativeStatus, error, 'RmxAudioPlayer', 'storeMessageChannel', []);
-    channel.initializationComplete('onRmxAudioPlayerReady');
-  });
-}
+var playerInstance = new RmxAudioPlayer();
 /*!
  * AudioPlayer Plugin instance.
  */
-
 
 var AudioPlayer = playerInstance;
 exports.AudioPlayer = AudioPlayer;

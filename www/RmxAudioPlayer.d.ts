@@ -9,6 +9,8 @@ import { AudioPlayerEventHandler, AudioPlayerEventHandlers, AudioPlayerOptions, 
 export declare class RmxAudioPlayer {
     handlers: AudioPlayerEventHandlers;
     options: AudioPlayerOptions;
+    private _inititialized;
+    private _initPromise;
     private _currentState;
     private _hasError;
     private _hasLoaded;
@@ -59,6 +61,8 @@ export declare class RmxAudioPlayer {
     /**
      * Player interface
      */
+    ready: () => Promise<boolean> | null;
+    initialize: () => Promise<boolean>;
     /**
      * Sets the player options. This can be called at any time and is not required before playback can be initiated.
      */
@@ -187,7 +191,7 @@ export declare class RmxAudioPlayer {
      * Call this function to emit an onStatus event via the on('status') handler.
      * Internal use only, to raise events received from the native interface.
      */
-    onStatus(trackId: string, type: RmxAudioStatusMessage, value: OnStatusCallbackUpdateData | OnStatusTrackChangedData | OnStatusErrorCallbackData): void;
+    protected onStatus(trackId: string, type: RmxAudioStatusMessage, value: OnStatusCallbackUpdateData | OnStatusTrackChangedData | OnStatusErrorCallbackData): void;
     /**
      * Subscribe to events raised by the plugin, e.g. on('status', (data) => { ... }),
      * For now, only 'status' is supported.

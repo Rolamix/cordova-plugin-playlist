@@ -93,6 +93,9 @@ export class CordovaAudioPlayerService {
           throw new Error('CordovaAudioPlayerService: Could not read `AudioPlayer` from `window.plugins`');
         }
 
+        // This returns a promsie that you can wait for if you want.
+        this.AudioPlayer.initialize();
+
         this.AudioPlayer.on('status', (data: OnStatusCallbackData | OnStatusErrorCallbackData) => {
           this.statusStream.next(data);
         });
@@ -292,6 +295,7 @@ export class CordovaAudioPlayerService {
           this.Log.warn('CordovaAudioPlayerService: Could not read `AudioPlayer` from `window.plugins`: ', (<any>window).plugins);
           throw new Error('CordovaAudioPlayerService: Could not read `AudioPlayer` from `window.plugins`');
         }
+        return this.AudioPlayer.ready();
       });
   }
 

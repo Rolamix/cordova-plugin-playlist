@@ -8,7 +8,7 @@ public interface RmxConstants {
 
   // Playlist item management
   String SET_OPTIONS            = "setOptions";
-  String STORE_CHANNEL          = "storeMessageChannel";
+  String INITIALIZE             = "initialize";
   String SET_PLAYLIST_ITEMS     = "setPlaylistItems";
   String ADD_PLAYLIST_ITEM      = "addItem";
   String ADD_PLAYLIST_ITEMS     = "addAllItems";
