@@ -205,9 +205,9 @@ function () {
         // channel.waitForInitialization('onRmxAudioPlayerReady');
         var onNativeStatus = function onNativeStatus(msg) {
           // better or worse, we got an answer back from native, so we resolve.
-          _this._readyResolve(true);
-
           _this._inititialized = true;
+
+          _this._readyResolve(true);
 
           if (msg.action === 'status') {
             _this.onStatus(msg.status.trackId, msg.status.msgType, msg.status.value);
