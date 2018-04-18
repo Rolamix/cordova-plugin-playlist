@@ -1,7 +1,7 @@
 {
   "name": "cordova-plugin-playlist",
   "description": "A Cordova plugin for Android and iOS with native support for audio playlists, background support, and lock screen controls",
-  "version": "0.5.2",
+  "version": "0.5.3-dev",
   "homepage": "https://github.com/Rolamix/cordova-plugin-playlist#readme",
   "author": "Patrick <patrick@rolamix.com>",
   "license": "MIT",
@@ -52,7 +52,7 @@
     "cordovaDependencies": {
       "0.5.0": {
         "cordova": ">=7.1.0",
-        "cordova-android": ">=6.4.0",
+        "cordova-android": ">=7.1.0",
         "cordova-ios": ">=4.3.0"
       }
     }
