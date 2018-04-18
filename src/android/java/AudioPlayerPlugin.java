@@ -387,7 +387,7 @@ public class AudioPlayerPlugin extends CordovaPlugin implements RmxConstants, On
   }
 
   private void destroyResources() {
-    // audioPlayerImpl.pause();
+    statusCallback = null;
     audioPlayerImpl.getPlaylistManager().clearItems();
   }
 
