@@ -41,7 +41,10 @@ export class RmxAudioPlayer {
   options: AudioPlayerOptions = { verbose: false, resetStreamOnPause: true };
 
   private _inititialized: boolean = false;
-  private _initPromise: Promise<boolean> | null = null;
+  private _initPromise: Promise<boolean>;
+  private _readyResolve: any;;
+  private _readyReject: any;
+
   private _currentState: 'unknown' | 'ready' | 'error' | 'playing' | 'loading' | 'paused' | 'stopped' = 'unknown';
   private _hasError: boolean = false;
   private _hasLoaded: boolean = false;
@@ -116,45 +119,48 @@ export class RmxAudioPlayer {
    */
   constructor() {
     this.handlers = {};
+    this._initPromise = new Promise((resolve, reject) => {
+      this._readyResolve = resolve;
+      this._readyReject = reject;
+    })
   }
 
   /**
    * Player interface
    */
 
+   /**
+    * Returns a promise that resolves when the plugin is ready.
+    */
   ready = () => {
     return this._initPromise;
   }
 
   initialize = () => {
-    if (!this._initPromise) {
-      this._initPromise = new Promise((resolve, reject) => {
-        // Initialize the plugin to send and receive messages
-        // channel.createSticky('onRmxAudioPlayerReady');
-        // channel.waitForInitialization('onRmxAudioPlayerReady');
+    // Initialize the plugin to send and receive messages
+    // channel.createSticky('onRmxAudioPlayerReady');
+    // channel.waitForInitialization('onRmxAudioPlayerReady');
 
-        const onNativeStatus = (msg: any) => {
-          // better or worse, we got an answer back from native, so we resolve.
-          resolve();
-          this._inititialized = true;
-          if (msg.action === 'status') {
-            this.onStatus(msg.status.trackId, msg.status.msgType, msg.status.value);
-          } else {
-            console.warn('Unknown audio player onStatus message:', msg.action);
-          }
-        }
-
-        // channel.onCordovaReady.subscribe(() => {
-        const error = (args: any) => {
-          const message = 'CORDOVA RMXAUDIOPLAYER: Error storing message channel:';
-          console.warn(message, args);
-          reject({ message, args });
-        }
-        exec(onNativeStatus, error, 'RmxAudioPlayer', 'initialize', []);
-          // channel.initializationComplete('onRmxAudioPlayerReady');
-        // });
-      });
+    const onNativeStatus = (msg: any) => {
+      // better or worse, we got an answer back from native, so we resolve.
+      this._readyResolve(true);
+      this._inititialized = true;
+      if (msg.action === 'status') {
+        this.onStatus(msg.status.trackId, msg.status.msgType, msg.status.value);
+      } else {
+        console.warn('Unknown audio player onStatus message:', msg.action);
+      }
     }
+
+    // channel.onCordovaReady.subscribe(() => {
+    const error = (args: any) => {
+      const message = 'CORDOVA RMXAUDIOPLAYER: Error storing message channel:';
+      console.warn(message, args);
+      this._readyReject({ message, args });
+    }
+    exec(onNativeStatus, error, 'RmxAudioPlayer', 'initialize', []);
+      // channel.initializationComplete('onRmxAudioPlayerReady');
+    // });
 
     return this._initPromise;
   }

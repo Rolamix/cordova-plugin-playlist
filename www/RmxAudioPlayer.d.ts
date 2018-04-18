@@ -11,6 +11,8 @@ export declare class RmxAudioPlayer {
     options: AudioPlayerOptions;
     private _inititialized;
     private _initPromise;
+    private _readyResolve;
+    private _readyReject;
     private _currentState;
     private _hasError;
     private _hasLoaded;
@@ -61,7 +63,10 @@ export declare class RmxAudioPlayer {
     /**
      * Player interface
      */
-    ready: () => Promise<boolean> | null;
+    /**
+     * Returns a promise that resolves when the plugin is ready.
+     */
+    ready: () => Promise<boolean>;
     initialize: () => Promise<boolean>;
     /**
      * Sets the player options. This can be called at any time and is not required before playback can be initiated.

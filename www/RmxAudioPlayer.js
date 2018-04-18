@@ -149,7 +149,19 @@ function () {
       configurable: true,
       enumerable: true,
       writable: true,
-      value: null
+      value: void 0
+    });
+    Object.defineProperty(this, "_readyResolve", {
+      configurable: true,
+      enumerable: true,
+      writable: true,
+      value: void 0
+    });
+    Object.defineProperty(this, "_readyReject", {
+      configurable: true,
+      enumerable: true,
+      writable: true,
+      value: void 0
     });
     Object.defineProperty(this, "_currentState", {
       configurable: true,
@@ -188,37 +200,35 @@ function () {
       enumerable: true,
       writable: true,
       value: function value() {
-        if (!_this._initPromise) {
-          _this._initPromise = new Promise(function (resolve, reject) {
-            // Initialize the plugin to send and receive messages
-            // channel.createSticky('onRmxAudioPlayerReady');
-            // channel.waitForInitialization('onRmxAudioPlayerReady');
-            var onNativeStatus = function onNativeStatus(msg) {
-              // better or worse, we got an answer back from native, so we resolve.
-              resolve();
-              _this._inititialized = true;
+        // Initialize the plugin to send and receive messages
+        // channel.createSticky('onRmxAudioPlayerReady');
+        // channel.waitForInitialization('onRmxAudioPlayerReady');
+        var onNativeStatus = function onNativeStatus(msg) {
+          // better or worse, we got an answer back from native, so we resolve.
+          _this._readyResolve(true);
 
-              if (msg.action === 'status') {
-                _this.onStatus(msg.status.trackId, msg.status.msgType, msg.status.value);
-              } else {
-                console.warn('Unknown audio player onStatus message:', msg.action);
-              }
-            }; // channel.onCordovaReady.subscribe(() => {
+          _this._inititialized = true;
+
+          if (msg.action === 'status') {
+            _this.onStatus(msg.status.trackId, msg.status.msgType, msg.status.value);
+          } else {
+            console.warn('Unknown audio player onStatus message:', msg.action);
+          }
+        }; // channel.onCordovaReady.subscribe(() => {
 
 
-            var error = function error(args) {
-              var message = 'CORDOVA RMXAUDIOPLAYER: Error storing message channel:';
-              console.warn(message, args);
-              reject({
-                message,
-                args
-              });
-            };
+        var error = function error(args) {
+          var message = 'CORDOVA RMXAUDIOPLAYER: Error storing message channel:';
+          console.warn(message, args);
 
-            exec(onNativeStatus, error, 'RmxAudioPlayer', 'initialize', []); // channel.initializationComplete('onRmxAudioPlayerReady');
-            // });
+          _this._readyReject({
+            message,
+            args
           });
-        }
+        };
+
+        exec(onNativeStatus, error, 'RmxAudioPlayer', 'initialize', []); // channel.initializationComplete('onRmxAudioPlayerReady');
+        // });
 
         return _this._initPromise;
       }
@@ -431,9 +441,17 @@ function () {
       }
     });
     this.handlers = {};
+    this._initPromise = new Promise(function (resolve, reject) {
+      _this._readyResolve = resolve;
+      _this._readyReject = reject;
+    });
   }
   /**
    * Player interface
+   */
+
+  /**
+   * Returns a promise that resolves when the plugin is ready.
    */
 
 
