@@ -23,7 +23,7 @@
 // structural methods
 - (void) pluginInitialize;
 - (void) setOptions:(CDVInvokedUrlCommand*) command;
-- (void) storeMessageChannel:(CDVInvokedUrlCommand*) command;
+- (void) initialize:(CDVInvokedUrlCommand*) command;
 
 // public API
 

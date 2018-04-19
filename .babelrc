@@ -1,6 +1,6 @@
 {
   "presets": [
-    ["@babel/env", { "modules": "commonjs", "useBuiltIns": "usage", "debug": true }],
+    ["@babel/env", { "modules": "commonjs", "useBuiltIns": false, "debug": true }],
     "@babel/typescript"
   ],
   "plugins": [

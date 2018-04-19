@@ -27,7 +27,7 @@ import {
 
 declare var cordova: any;
 const exec = typeof cordova !== 'undefined' ? cordova.require('cordova/exec') : null;
-const channel = typeof cordova !== 'undefined' ? cordova.require('cordova/channel') : null;
+// const channel = typeof cordova !== 'undefined' ? cordova.require('cordova/channel') : null;
 const log = console;
 
 /**
@@ -39,6 +39,12 @@ const log = console;
 export class RmxAudioPlayer {
   handlers: AudioPlayerEventHandlers = {};
   options: AudioPlayerOptions = { verbose: false, resetStreamOnPause: true };
+
+  private _inititialized: boolean = false;
+  private _initPromise: Promise<boolean>;
+  private _readyResolve: any;;
+  private _readyReject: any;
+
   private _currentState: 'unknown' | 'ready' | 'error' | 'playing' | 'loading' | 'paused' | 'stopped' = 'unknown';
   private _hasError: boolean = false;
   private _hasLoaded: boolean = false;
@@ -57,7 +63,7 @@ export class RmxAudioPlayer {
    * True if the plugin has been initialized. You'll likely never see this state; it is handled internally.
    */
   get isInitialized() {
-    return this._currentState !== 'unknown';
+    return this._inititialized;
   }
 
   get currentTrack(): AudioTrack | null {
@@ -113,11 +119,52 @@ export class RmxAudioPlayer {
    */
   constructor() {
     this.handlers = {};
+    this._initPromise = new Promise((resolve, reject) => {
+      this._readyResolve = resolve;
+      this._readyReject = reject;
+    });
   }
 
   /**
    * Player interface
    */
+
+   /**
+    * Returns a promise that resolves when the plugin is ready.
+    */
+  ready = () => {
+    return this._initPromise;
+  }
+
+  initialize = () => {
+    // Initialize the plugin to send and receive messages
+    // channel.createSticky('onRmxAudioPlayerReady');
+    // channel.waitForInitialization('onRmxAudioPlayerReady');
+
+    const onNativeStatus = (msg: any) => {
+      // better or worse, we got an answer back from native, so we resolve.
+      this._inititialized = true;
+      this._readyResolve(true);
+      if (msg.action === 'status') {
+        this.onStatus(msg.status.trackId, msg.status.msgType, msg.status.value);
+      } else {
+        console.warn('Unknown audio player onStatus message:', msg.action);
+      }
+    };
+
+    // channel.onCordovaReady.subscribe(() => {
+    const error = (args: any) => {
+      const message = 'CORDOVA RMXAUDIOPLAYER: Error storing message channel:';
+      console.warn(message, args);
+      this._readyReject({ message, args });
+    };
+
+    exec(onNativeStatus, error, 'RmxAudioPlayer', 'initialize', []);
+      // channel.initializationComplete('onRmxAudioPlayerReady');
+    // });
+
+    return this._initPromise;
+  }
 
    /**
     * Sets the player options. This can be called at any time and is not required before playback can be initiated.
@@ -329,7 +376,7 @@ export class RmxAudioPlayer {
     * Call this function to emit an onStatus event via the on('status') handler.
     * Internal use only, to raise events received from the native interface.
     */
-  onStatus(trackId: string, type: RmxAudioStatusMessage, value: OnStatusCallbackUpdateData | OnStatusTrackChangedData | OnStatusErrorCallbackData) {
+  protected onStatus(trackId: string, type: RmxAudioStatusMessage, value: OnStatusCallbackUpdateData | OnStatusTrackChangedData | OnStatusErrorCallbackData) {
     const status = { type, trackId, value };
     if (this.options.verbose) {
       log.log(`RmxAudioPlayer.onStatus: ${RmxAudioStatusMessageDescriptions[type]}(${type}) [${trackId}]: `, value);
@@ -456,27 +503,6 @@ export class RmxAudioPlayer {
 }
 
 const playerInstance = new RmxAudioPlayer();
-
-// Initialize the plugin to send and receive messages
-
-if (typeof cordova != 'undefined') {
-  channel.createSticky('onRmxAudioPlayerReady');
-  channel.waitForInitialization('onRmxAudioPlayerReady');
-
-  function onNativeStatus(msg: any) {
-    if (msg.action === 'status') {
-      playerInstance.onStatus(msg.status.trackId, msg.status.msgType, msg.status.value);
-    } else {
-      throw new Error(`Unknown audio player action ${msg.action}`);
-    }
-  }
-
-  channel.onCordovaReady.subscribe(() => {
-    const error = (args: any) => console.warn('CORDOVA RMXAUDIOPLAYER: Error storing message channel:', args);
-    exec(onNativeStatus, error, 'RmxAudioPlayer', 'storeMessageChannel', []);
-    channel.initializationComplete('onRmxAudioPlayerReady');
-  });
-}
 
 /*!
  * AudioPlayer Plugin instance.

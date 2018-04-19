@@ -40,7 +40,7 @@ public class OnStatusCallback extends PluginCallback {
         Log.e(TAG, "Exception while raising onStatus: ", e);
     }
 
-    Log.i(TAG, "statusChanged:" + dict.toString());
+    Log.v(TAG, "statusChanged:" + dict.toString());
     send(PluginResult.Status.OK, dict, true);
   }
 

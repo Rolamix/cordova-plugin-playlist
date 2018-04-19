@@ -64,6 +64,12 @@ static char kPlayerItemTimeRangesContext;
  *
  *
  */
+- (void) initialize:(CDVInvokedUrlCommand*) command
+{
+    self.statusCallbackId = command.callbackId;
+    [self onStatus:RMXSTATUS_REGISTER trackId:@"INIT" param:nil];
+}
+
 - (void) setOptions:(CDVInvokedUrlCommand*) command {
   NSDictionary* options = [command.arguments objectAtIndex:0];
   if (options == nil) {
@@ -1243,12 +1249,6 @@ static char kPlayerItemTimeRangesContext;
   // because that would seem to indicate the app closing in this case wouldn't it?
   NSLog(@"RmxAudioPlayer: viewWillDisappear");
   [self onStatus:RMXSTATUS_VIEWDISAPPEAR trackId:@"WINDOW" param:nil];
-}
-
-- (void) storeMessageChannel:(CDVInvokedUrlCommand*) command
-{
-    self.statusCallbackId = command.callbackId;
-    [self onStatus:RMXSTATUS_REGISTER trackId:@"INIT" param:nil];
 }
 
 - (NSDictionary*)createErrorWithCode:(RmxAudioErrorType)code message:(NSString*)message
