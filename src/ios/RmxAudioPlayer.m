@@ -17,6 +17,7 @@ static char kPlayerItemTimeRangesContext;
     float _rate;
     float _volume;
     BOOL _isReplacingItems;
+    BOOL _isWaitingToStartPlayback;
 }
 @property () NSString* statusCallbackId;
 @property (nonatomic, strong) AVBidirectionalQueuePlayer* avQueuePlayer;
@@ -42,6 +43,7 @@ static char kPlayerItemTimeRangesContext;
     _updatedNowPlayingInfo = nil;
     _resetStreamOnPause = YES;
     _isReplacingItems = NO;
+    _isWaitingToStartPlayback = NO;
     self.rate = 1.0f;
     self.volume = 0.5f;
     self.loop = false;
@@ -95,30 +97,34 @@ static char kPlayerItemTimeRangesContext;
 
     NSLog(@"RmxAudioPlayer.execute=setPlaylistItems, %@, %@", options, items);
 
-    [self.commandDelegate runInBackground:^{
-        float seekToPosition = 0.0f;
-        BOOL retainPosition = options[@"retainPosition"] != nil ? [options[@"retainPosition"] boolValue] : NO;
-        float playFromPosition = options[@"retainPosition"] != nil ? [options[@"playFromPosition"] floatValue] : 0.0f;
-        BOOL startPaused = options[@"startPaused"] != nil ? [options[@"startPaused"] boolValue] : YES;
+    float seekToPosition = 0.0f;
+    BOOL retainPosition = options[@"retainPosition"] != nil ? [options[@"retainPosition"] boolValue] : NO;
+    float playFromPosition = options[@"retainPosition"] != nil ? [options[@"playFromPosition"] floatValue] : 0.0f;
+    BOOL startPaused = options[@"startPaused"] != nil ? [options[@"startPaused"] boolValue] : YES;
 
-        if (retainPosition) {
-            seekToPosition = [self getTrackCurrentTime:nil];
-            if (playFromPosition > 0.0f) {
-                seekToPosition = playFromPosition;
-            }
+    if (retainPosition) {
+        seekToPosition = [self getTrackCurrentTime:nil];
+        if (playFromPosition > 0.0f) {
+            seekToPosition = playFromPosition;
+        }
+    }
+
+    [self.commandDelegate runInBackground:^{
+        // This will wait for the AVPlayerItemStatusReadyToPlay status change, and then trigger playback.
+        _isWaitingToStartPlayback = !startPaused;
+        if (_isWaitingToStartPlayback) {
+            NSLog(@"RmxAudioPlayer[setPlaylistItems] will wait for ready event to begin playback");
         }
 
         [self insertOrReplaceTracks:items replace:YES startPosition:seekToPosition];
-
-        if (!startPaused) {
-            [self playCommand:NO];
+        if (_isWaitingToStartPlayback) {
+            [self playCommand:NO]; // but we will try to preempt it to avoid the button blinking paused.
         }
 
         CDVPluginResult* result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
         [self.commandDelegate sendPluginResult:result callbackId:command.callbackId];
     }];
 }
-
 
 - (void) addItem:(CDVInvokedUrlCommand *) command {
     NSMutableDictionary* item = [command.arguments objectAtIndex:0];
@@ -244,6 +250,7 @@ static char kPlayerItemTimeRangesContext;
 
 - (void) pause:(CDVInvokedUrlCommand *) command {
     NSLog(@"RmxAudioPlayer.execute=pause");
+    _isWaitingToStartPlayback = NO;
     [self pauseCommand:NO];
 
     CDVPluginResult* result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
@@ -387,6 +394,7 @@ static char kPlayerItemTimeRangesContext;
 
 - (void) release:(CDVInvokedUrlCommand*)command {
     NSLog(@"RmxAudioPlayer.execute=release");
+    _isWaitingToStartPlayback = NO;
     [self releaseResources];
 
     CDVPluginResult* result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
@@ -918,10 +926,17 @@ static char kPlayerItemTimeRangesContext;
             NSLog(@"PlayerItem status changed to AVPlayerItemStatusReadyToPlay [%@]", name);
             NSDictionary* trackStatus = [self getPlayerStatusItem:playerItem];
             [self onStatus:RMXSTATUS_CANPLAY trackId:playerItem.trackId param:trackStatus];
+
+            if (_isWaitingToStartPlayback) {
+                _isWaitingToStartPlayback = NO;
+                NSLog(@"RmxAudioPlayer[setPlaylistItems] is beginning playback after waiting for ReadyToPlay event");
+                [self playCommand:NO];
+            }
             break;
         }
         case AVPlayerItemStatusFailed: {
             // Failed. Examine AVPlayerItem.error
+            _isWaitingToStartPlayback = NO;
             NSString* errorMsg = @"";
             if (playerItem.error) {
                 errorMsg = [NSString stringWithFormat:@"Error playing audio track: %@", [playerItem.error localizedFailureReason]];
@@ -932,6 +947,7 @@ static char kPlayerItemTimeRangesContext;
             break;
         }
         case AVPlayerItemStatusUnknown:
+            _isWaitingToStartPlayback = NO;
             NSLog(@"PlayerItem status changed to AVPlayerItemStatusUnknown [%@]", name);
             // Not ready
             break;
@@ -1037,9 +1053,13 @@ static char kPlayerItemTimeRangesContext;
         }
     }
 
+    if (isnan(position) || isinf(position)) {
+        position = 0.0f;
+    }
+
     NSDictionary *info = @{
                            @"trackId": currentItem.trackId,
-                           @"isStream": @(currentItem.isStream),
+                           @"isStream": currentItem.isStream ? @(1) : @(0),
                            @"currentIndex": @([self avQueuePlayer].currentIndex),
                            @"status": status,
                            @"currentPosition": @(position),
@@ -1063,7 +1083,7 @@ static char kPlayerItemTimeRangesContext;
         return 0.0f;
     }
 
-    if (!CMTIME_IS_INDEFINITE(currentItem.currentTime)) {
+    if (!CMTIME_IS_INDEFINITE(currentItem.currentTime) && CMTIME_IS_VALID(currentItem.currentTime)) {
         return CMTimeGetSeconds(currentItem.currentTime);
     } else {
         return 0.0f;

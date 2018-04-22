@@ -22,6 +22,7 @@ Both Android and iOS have special support for playlist-based playback, and the n
 * Background playback is optional - opt-in via runtime config and config.xml flags
 * Includes support for lock-screen controls
 * Works just as well for a single item as it does for a playlist
+* Fully supports streaming URLs, with control of seek-pause behavior (does play resume from where you paused, or does it resume from current live position?)
 * Compatible with [Cordova Plugman](https://github.com/apache/cordova-plugman).
 * For Android and iOS
 
