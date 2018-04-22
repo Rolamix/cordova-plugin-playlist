@@ -95,26 +95,28 @@ static char kPlayerItemTimeRangesContext;
 
     NSLog(@"RmxAudioPlayer.execute=setPlaylistItems, %@, %@", options, items);
 
-    float seekToPosition = 0.0f;
-    BOOL retainPosition = options[@"retainPosition"] != nil ? [options[@"retainPosition"] boolValue] : NO;
-    float playFromPosition = options[@"retainPosition"] != nil ? [options[@"playFromPosition"] floatValue] : 0.0f;
-    BOOL startPaused = options[@"startPaused"] != nil ? [options[@"startPaused"] boolValue] : YES;
+    [self.commandDelegate runInBackground:^{
+        float seekToPosition = 0.0f;
+        BOOL retainPosition = options[@"retainPosition"] != nil ? [options[@"retainPosition"] boolValue] : NO;
+        float playFromPosition = options[@"retainPosition"] != nil ? [options[@"playFromPosition"] floatValue] : 0.0f;
+        BOOL startPaused = options[@"startPaused"] != nil ? [options[@"startPaused"] boolValue] : YES;
 
-    if (retainPosition) {
-        seekToPosition = [self getTrackCurrentTime:nil];
-        if (playFromPosition > 0.0f) {
-            seekToPosition = playFromPosition;
+        if (retainPosition) {
+            seekToPosition = [self getTrackCurrentTime:nil];
+            if (playFromPosition > 0.0f) {
+                seekToPosition = playFromPosition;
+            }
         }
-    }
 
-    [self insertOrReplaceTracks:items replace:YES startPosition:seekToPosition];
+        [self insertOrReplaceTracks:items replace:YES startPosition:seekToPosition];
 
-    if (!startPaused) {
-        [self playCommand:NO];
-    }
+        if (!startPaused) {
+            [self playCommand:NO];
+        }
 
-    CDVPluginResult* result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
-    [self.commandDelegate sendPluginResult:result callbackId:command.callbackId];
+        CDVPluginResult* result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
+        [self.commandDelegate sendPluginResult:result callbackId:command.callbackId];
+    }];
 }
 
 

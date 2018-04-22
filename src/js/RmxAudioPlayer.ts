@@ -30,6 +30,14 @@ const exec = typeof cordova !== 'undefined' ? cordova.require('cordova/exec') : 
 // const channel = typeof cordova !== 'undefined' ? cordova.require('cordova/channel') : null;
 const log = console;
 
+const itemStatusChangeTypes = [
+  RmxAudioStatusMessage.RMXSTATUS_PLAYBACK_POSITION, RmxAudioStatusMessage.RMXSTATUS_DURATION,
+  RmxAudioStatusMessage.RMXSTATUS_BUFFERING, RmxAudioStatusMessage.RMXSTATUS_CANPLAY,
+  RmxAudioStatusMessage.RMXSTATUS_LOADING, RmxAudioStatusMessage.RMXSTATUS_LOADED,
+  RmxAudioStatusMessage.RMXSTATUS_COMPLETED,
+  RmxAudioStatusMessage.RMXSTATUS_ERROR,
+];
+
 /**
  * AudioPlayer class implementation. A singleton of this class is exported for use by Cordova,
  * but nothing stops you from creating another instance. Keep in mind that the native players
@@ -382,24 +390,30 @@ export class RmxAudioPlayer {
       log.log(`RmxAudioPlayer.onStatus: ${RmxAudioStatusMessageDescriptions[type]}(${type}) [${trackId}]: `, value);
     }
 
-    if (status.value && (<any>status.value).status) {
-      this._currentState = (<any>status.value).status;
-    }
-
-    if (status.type === RmxAudioStatusMessage.RMXSTATUS_ERROR) {
-      if (this._currentItem && this._currentItem.trackId === trackId) {
-        this._hasError = true;
-      }
-    }
-
     if (status.type === RmxAudioStatusMessage.RMXSTATUS_TRACK_CHANGED) {
       this._hasError = false;
       this._hasLoaded = false;
+      this._currentState = 'loading';
       this._currentItem = (status.value as OnStatusTrackChangedData).currentItem;
     }
 
-    if (status.type === RmxAudioStatusMessage.RMXSTATUS_CANPLAY) {
-      this._hasLoaded = true;
+    // The plugin's status changes only in response to specific events.
+    if (itemStatusChangeTypes.indexOf(status.type) >= 0) {
+      // Only change the plugin's *current status* if the event being raised is for the current active track.
+      if (this._currentItem && this._currentItem.trackId === trackId) {
+
+        if (status.value && (<any>status.value).status) {
+          this._currentState = (<any>status.value).status;
+        }
+
+        if (status.type === RmxAudioStatusMessage.RMXSTATUS_CANPLAY) {
+          this._hasLoaded = true;
+        }
+
+        if (status.type === RmxAudioStatusMessage.RMXSTATUS_ERROR) {
+          this._hasError = true;
+        }
+      }
     }
 
     this.emit('status', status);

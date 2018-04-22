@@ -25,6 +25,7 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
 var exec = typeof cordova !== 'undefined' ? cordova.require('cordova/exec') : null; // const channel = typeof cordova !== 'undefined' ? cordova.require('cordova/channel') : null;
 
 var log = console;
+var itemStatusChangeTypes = [_Constants.RmxAudioStatusMessage.RMXSTATUS_PLAYBACK_POSITION, _Constants.RmxAudioStatusMessage.RMXSTATUS_DURATION, _Constants.RmxAudioStatusMessage.RMXSTATUS_BUFFERING, _Constants.RmxAudioStatusMessage.RMXSTATUS_CANPLAY, _Constants.RmxAudioStatusMessage.RMXSTATUS_LOADING, _Constants.RmxAudioStatusMessage.RMXSTATUS_LOADED, _Constants.RmxAudioStatusMessage.RMXSTATUS_COMPLETED, _Constants.RmxAudioStatusMessage.RMXSTATUS_ERROR];
 /**
  * AudioPlayer class implementation. A singleton of this class is exported for use by Cordova,
  * but nothing stops you from creating another instance. Keep in mind that the native players
@@ -478,24 +479,29 @@ function () {
         log.log(`RmxAudioPlayer.onStatus: ${_Constants.RmxAudioStatusMessageDescriptions[type]}(${type}) [${trackId}]: `, value);
       }
 
-      if (status.value && status.value.status) {
-        this._currentState = status.value.status;
-      }
-
-      if (status.type === _Constants.RmxAudioStatusMessage.RMXSTATUS_ERROR) {
-        if (this._currentItem && this._currentItem.trackId === trackId) {
-          this._hasError = true;
-        }
-      }
-
       if (status.type === _Constants.RmxAudioStatusMessage.RMXSTATUS_TRACK_CHANGED) {
         this._hasError = false;
         this._hasLoaded = false;
+        this._currentState = 'loading';
         this._currentItem = status.value.currentItem;
-      }
+      } // The plugin's status changes only in response to specific events.
 
-      if (status.type === _Constants.RmxAudioStatusMessage.RMXSTATUS_CANPLAY) {
-        this._hasLoaded = true;
+
+      if (itemStatusChangeTypes.indexOf(status.type) >= 0) {
+        // Only change the plugin's *current status* if the event being raised is for the current active track.
+        if (this._currentItem && this._currentItem.trackId === trackId) {
+          if (status.value && status.value.status) {
+            this._currentState = status.value.status;
+          }
+
+          if (status.type === _Constants.RmxAudioStatusMessage.RMXSTATUS_CANPLAY) {
+            this._hasLoaded = true;
+          }
+
+          if (status.type === _Constants.RmxAudioStatusMessage.RMXSTATUS_ERROR) {
+            this._hasError = true;
+          }
+        }
       }
 
       this.emit('status', status);
