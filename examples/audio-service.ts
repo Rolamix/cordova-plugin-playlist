@@ -1,3 +1,34 @@
+/**	
+* This is an example Angular + Ionic 3 service to wrap the Cordova audio player plugin.	
+* Simply drop this into your app, make sure you have the plugin installed,	
+* add the service to your app.module.ts and import it wherever you need.	
+*	
+* An example of such usage might be:	
+*	
+* constructor(	
+*   private cdvAudioPlayer: CordovaAudioPlayerService,	
+*  ) {	
+*   this.cdvAudioPlayer.setOptions({ verbose: true, resetStreamOnPause: true })	
+*     .then(() => {	
+*       this.cdvAudioPlayer.setPlaylistItems([	
+*         { trackId: '12345', assetUrl: testUrls[0], albumArt: testImgs[0], artist: 'Awesome', album: 'Test Files', title: 'Test 1' },	
+*         { trackId: '678900', assetUrl: testUrls[1], albumArt: testImgs[1], artist: 'Awesome', album: 'Test Files', title: 'Test 2' },	
+*         { trackId: 'a1b2c3d4', assetUrl: testUrls[2], albumArt: testImgs[2], artist: 'Awesome', album: 'Test Files', title: 'Test 3' },	
+*         { trackId: 'a1bSTREAM', assetUrl: testUrls[3], albumArt: testImgs[3], artist: 'Awesome', album: 'Streams', title: 'The Stream', isStream: true },	
+*       ])	
+*       .then(() => {	
+*         this.cdvAudioPlayer.play();	
+*       }).catch((err) => console.log('YourService, cdvAudioPlayer setPlaylistItems error: ', err));	
+*     }).catch((err) => console.log('YourService, cdvAudioPlayer init error: ', err));	
+*	
+*   this.cdvAudioPlayer.setOptions({ verbose: true, resetStreamOnPause: true });
+*   this.cdvAudioPlayer.setVolume(0.5);
+*
+*   this.cdvAudioPlayer.onStatus.subscribe((status) => {	
+*     console.log('YourService: Got RmxAudioPlayer onStatus: ', status);	
+*   });	
+* }	
+*/
 import { Injectable, NgZone } from '@angular/core';
 import { Platform } from 'ionic-angular';
 import { ReplaySubject } from 'rxjs/ReplaySubject';
