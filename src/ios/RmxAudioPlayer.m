@@ -45,7 +45,7 @@ static char kPlayerItemTimeRangesContext;
     _isReplacingItems = NO;
     _isWaitingToStartPlayback = NO;
     self.rate = 1.0f;
-    self.volume = 0.5f;
+    self.volume = 1f;
     self.loop = false;
 
     [self activateAudioSession];
