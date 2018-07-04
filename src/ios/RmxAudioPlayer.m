@@ -1038,6 +1038,12 @@ static char kPlayerItemTimeRangesContext;
     NSDictionary* bufferInfo = [self getTrackBufferInfo:currentItem];
     float position = [self getTrackCurrentTime:currentItem];
     float duration = [bufferInfo[@"duration"] floatValue];
+
+    // Correct this value here, so that playbackPercent is not set to INFINITY
+    if (isnan(position) || isinf(position)) {
+        position = 0.0f;
+    }
+
     float playbackPercent = duration > 0 ? (position / duration) * 100.0 : 0.0f;
 
     NSString* status = @"";
@@ -1059,10 +1065,6 @@ static char kPlayerItemTimeRangesContext;
         } else {
             status = @"paused";
         }
-    }
-
-    if (isnan(position) || isinf(position)) {
-        position = 0.0f;
     }
 
     NSDictionary *info = @{
