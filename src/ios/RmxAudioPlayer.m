@@ -1294,6 +1294,9 @@ static char kPlayerItemTimeRangesContext;
         options |= AVAudioSessionCategoryOptionAllowBluetoothA2DP;
     }
 
+    // If no devices are connected, play audio through the default speaker (rather than the earpiece)
+    options |= AVAudioSessionCategoryOptionDefaultToSpeaker;
+
     [avSession setCategory:AVAudioSessionCategoryPlayAndRecord withOptions:options error:&categoryError];
     if (categoryError) {
         NSLog(@"Error setting category! %@", [categoryError description]);
