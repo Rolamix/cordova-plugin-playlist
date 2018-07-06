@@ -45,7 +45,7 @@ static char kPlayerItemTimeRangesContext;
     _isReplacingItems = NO;
     _isWaitingToStartPlayback = NO;
     self.rate = 1.0f;
-    self.volume = 1f;
+    self.volume = 1.0f;
     self.loop = false;
 
     [self activateAudioSession];
@@ -1283,6 +1283,9 @@ static char kPlayerItemTimeRangesContext;
     if (@available(iOS 10.0, *)) {
         options |= AVAudioSessionCategoryOptionAllowBluetoothA2DP;
     }
+
+    // If no devices are connected, play audio through the default speaker (rather than the earpiece)
+    options |= AVAudioSessionCategoryOptionDefaultToSpeaker;
 
     [avSession setCategory:AVAudioSessionCategoryPlayAndRecord withOptions:options error:&categoryError];
     if (categoryError) {
