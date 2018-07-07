@@ -39,7 +39,7 @@ public class AudioApi extends BaseMediaApi {
         // the following lines have no effect.
         int wakeMode = PowerManager.PARTIAL_WAKE_LOCK; // | PowerManager.PROXIMITY_SCREEN_OFF_WAKE_LOCK;
         audioPlayer.setWakeMode(context, wakeMode);
-        audioPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
+        audioPlayer.setAudioStreamType(AudioManager.STREAM_VOICE_CALL);
     }
 
     public void addErrorListener(OnErrorListener listener) {
