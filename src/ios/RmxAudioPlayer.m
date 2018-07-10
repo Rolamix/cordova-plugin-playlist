@@ -890,7 +890,7 @@ static char kPlayerItemTimeRangesContext;
 
     if (playerItem != nil) {
         // When an item starts, immediately scrub it back to the beginning
-        [playerItem seekToTime:kCMTimeZero toleranceBefore:kCMTimeZero toleranceAfter:kCMTimeZero completionHandler:nil];
+        //[playerItem seekToTime:kCMTimeZero toleranceBefore:kCMTimeZero toleranceAfter:kCMTimeZero completionHandler:nil];
         // Update the command center
         [self updateNowPlayingTrackInfo:playerItem updateTrackData:YES];
     }
