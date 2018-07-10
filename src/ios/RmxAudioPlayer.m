@@ -1,5 +1,6 @@
 
 #import "RmxAudioPlayer.h"
+#import "Proximity.h"
 #import "AVBidirectionalQueuePlayer.h"
 
 static char kAvQueuePlayerContext;
@@ -18,6 +19,7 @@ static char kPlayerItemTimeRangesContext;
     float _volume;
     BOOL _isReplacingItems;
     BOOL _isWaitingToStartPlayback;
+    Proximity* _prox;
 }
 @property () NSString* statusCallbackId;
 @property (nonatomic, strong) AVBidirectionalQueuePlayer* avQueuePlayer;
@@ -44,6 +46,7 @@ static char kPlayerItemTimeRangesContext;
     _resetStreamOnPause = YES;
     _isReplacingItems = NO;
     _isWaitingToStartPlayback = NO;
+    _prox = [[Proximity alloc] init];
     self.rate = 1.0f;
     self.volume = 1.0f;
     self.loop = false;
@@ -73,6 +76,7 @@ static char kPlayerItemTimeRangesContext;
     NSLog(@"RmxAudioPlayer.execute=initialize");
     self.statusCallbackId = command.callbackId;
     [self onStatus:RMXSTATUS_REGISTER trackId:@"INIT" param:nil];
+    [_prox addAudioRouteObserver];
 }
 
 - (void) setOptions:(CDVInvokedUrlCommand*) command {
@@ -488,6 +492,8 @@ static char kPlayerItemTimeRangesContext;
         NSString * action = @"music-controls-play";
         NSLog(@"%@", action);
     }
+    
+    [_prox setPlaying:[self avQueuePlayer].isPlaying];
 }
 
 - (void) pauseCommand:(BOOL)isCommand
@@ -513,6 +519,8 @@ static char kPlayerItemTimeRangesContext;
         NSString * action = @"music-controls-pause";
         NSLog(@"%@", action);
     }
+    
+    [_prox setPlaying:[self avQueuePlayer].isPlaying];
 }
 
 - (void) playPrevious:(BOOL)isCommand
@@ -1429,6 +1437,8 @@ static char kPlayerItemTimeRangesContext;
     _avQueuePlayer = nil;
 
     _playbackTimeObserver = nil;
+    
+    [_prox removeAudioRouteObserver];
 }
 
 @end
