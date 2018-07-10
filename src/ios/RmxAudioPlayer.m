@@ -1286,7 +1286,7 @@ static char kPlayerItemTimeRangesContext;
 {
     NSError *categoryError = nil;
     AVAudioSession* avSession = [AVAudioSession sharedInstance];
-    AVAudioSessionCategoryOptions options = AVAudioSessionCategoryOptionAllowBluetooth;
+    AVAudioSessionCategoryOptions options = nil;
 
     if (@available(iOS 10.0, *)) {
         options |= AVAudioSessionCategoryOptionAllowBluetoothA2DP;
