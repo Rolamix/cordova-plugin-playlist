@@ -1280,14 +1280,16 @@ static char kPlayerItemTimeRangesContext;
 {
     NSError *categoryError = nil;
     AVAudioSession* avSession = [AVAudioSession sharedInstance];
-    AVAudioSessionCategoryOptions options = AVAudioSessionCategoryOptionAllowBluetooth;
 
+    // If no devices are connected, play audio through the default speaker (rather than the earpiece).
+    AVAudioSessionCategoryOptions options = AVAudioSessionCategoryOptionDefaultToSpeaker;
+
+    // If both Bluetooth streaming options are enabled, the low quality stream is preferred; enable A2DP only.
     if (@available(iOS 10.0, *)) {
         options |= AVAudioSessionCategoryOptionAllowBluetoothA2DP;
+    } else {
+        options |= AVAudioSessionCategoryOptionAllowBluetooth;
     }
-
-    // If no devices are connected, play audio through the default speaker (rather than the earpiece)
-    options |= AVAudioSessionCategoryOptionDefaultToSpeaker;
 
     [avSession setCategory:AVAudioSessionCategoryPlayAndRecord withOptions:options error:&categoryError];
     if (categoryError) {
