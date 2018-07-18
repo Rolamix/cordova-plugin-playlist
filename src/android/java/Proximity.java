@@ -103,7 +103,7 @@ public class Proximity implements SensorEventListener {
     if (distance < proximitySensor.getMaximumRange()) {
       //near
       wakeLock.acquire();
-    } else {
+    } else if (wakeLock.isHeld()) {
       //far
       wakeLock.release();
     }
