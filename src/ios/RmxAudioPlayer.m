@@ -1289,8 +1289,7 @@ static char kPlayerItemTimeRangesContext;
     NSError *categoryError = nil;
     AVAudioSession* avSession = [AVAudioSession sharedInstance];
 
-    // If no devices are connected, play audio through the default speaker (rather than the earpiece).
-    AVAudioSessionCategoryOptions options = AVAudioSessionCategoryOptionDefaultToSpeaker;
+    AVAudioSessionCategoryOptions options = nil;
 
     // If both Bluetooth streaming options are enabled, the low quality stream is preferred; enable A2DP only.
     if (@available(iOS 10.0, *)) {
