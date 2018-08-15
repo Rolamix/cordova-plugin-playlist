@@ -1234,8 +1234,9 @@ static char kPlayerItemTimeRangesContext;
         }
     }
 
+    // nil values are not permitted in NSDictionary; use NSNull instead
     return @{
-             @"track": track,
+             @"track": track ? track : [NSNull null],
              @"index": @(idx),
              };
 }
