@@ -1205,7 +1205,7 @@ static char kPlayerItemTimeRangesContext;
         NSArray* queue = @[];
 
         _avQueuePlayer = [[AVBidirectionalQueuePlayer alloc] initWithItems:queue];
-        _avQueuePlayer.actionAtItemEnd = AVPlayerActionAtItemEndAdvance;
+        _avQueuePlayer.actionAtItemEnd = AVPlayerActionAtItemEndPause;
         [_avQueuePlayer addObserver:self forKeyPath:@"currentItem" options:NSKeyValueObservingOptionNew context:&kAvQueuePlayerContext];
         [_avQueuePlayer addObserver:self forKeyPath:@"rate" options:NSKeyValueObservingOptionNew context:&kAvQueuePlayerRateContext];
 
