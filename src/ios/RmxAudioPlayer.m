@@ -1243,7 +1243,7 @@ static char kPlayerItemTimeRangesContext;
     }
 
     return @{
-             @"track": track,
+             @"track": track == nil ? [NSNull null] : track,
              @"index": @(idx),
              };
 }
