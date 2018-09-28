@@ -290,6 +290,8 @@ public class RmxAudioPlayer implements PlaybackStatusListener<AudioTrack>,
       AudioTrack currentItem = playlistManager.getCurrentItem();
       PlaybackState playbackState = playlistManager.getCurrentPlaybackState();
 
+      boolean previousTrackCompleted = false;
+
       if (currentItem != null) { // I mean, this call makes no sense otherwise..
         currentItem.setDuration(progress.getDuration());
         currentItem.setBufferPercent(progress.getBufferPercent());
@@ -313,18 +315,23 @@ public class RmxAudioPlayer implements PlaybackStatusListener<AudioTrack>,
             if (!trackDuration && progress.getDuration() > 0) {
                 onStatus(RmxAudioStatusMessage.RMXSTATUS_DURATION, currentItem.getTrackId(), trackStatus);
                 trackDuration = true;
-
-                if(((PlaylistManager)getPlaylistManager()).getPreviousTrackCompleted()) {
-                    getPlaylistManager().getPlaylistHandler().pause(true);
-                }
             }
 
             onStatus(RmxAudioStatusMessage.RMXSTATUS_BUFFERING, currentItem.getTrackId(), trackStatus);
             lastBufferPercent = progress.getBufferPercent();
+
+            previousTrackCompleted = ((PlaylistManager)getPlaylistManager()).getPreviousTrackCompleted();
+            if(previousTrackCompleted) {
+                getPlaylistManager().getPlaylistHandler().pause(true);
+                getPlaylistManager().getPlaylistHandler().startSeek();
+                getPlaylistManager().getPlaylistHandler().seek(0);
+            }
         }
 
-        if (playbackState == PlaybackState.PLAYING || playbackState == PlaybackState.SEEKING || playbackState == PlaybackState.PREPARING) {
-            onStatus(RmxAudioStatusMessage.RMXSTATUS_PLAYBACK_POSITION, currentItem.getTrackId(), trackStatus);
+        if(!previousTrackCompleted) {
+            if (playbackState == PlaybackState.PLAYING || playbackState == PlaybackState.SEEKING || playbackState == PlaybackState.PREPARING) {
+                onStatus(RmxAudioStatusMessage.RMXSTATUS_PLAYBACK_POSITION, currentItem.getTrackId(), trackStatus);
+            }
         }
       }
 
