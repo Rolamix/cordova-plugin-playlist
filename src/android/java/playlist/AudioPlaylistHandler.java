@@ -103,7 +103,6 @@ public class AudioPlaylistHandler<I extends PlaylistItem, M extends BasePlaylist
         Log.i("AudioPlaylistHandler", "onCompletion");
         // This is called when a single item completes playback.
         // For now, the superclass does the right thing, but we may need to override.
-        ((PlaylistManager)getPlaylistManager()).onCompletion();
         super.onCompletion(mediaPlayer);
     }
 

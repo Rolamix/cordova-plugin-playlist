@@ -41,8 +41,6 @@ public class PlaylistManager extends ListPlaylistManager<AudioTrack> implements 
     private boolean nextInvoked = false;
     private AudioTrack currentErrorTrack;
 
-    private boolean previsousTrackCompleted = false;
-
     // Really need a way to propagate the settings through the app
     private boolean resetStreamOnPause = true;
 
@@ -69,16 +67,6 @@ public class PlaylistManager extends ListPlaylistManager<AudioTrack> implements 
             setVolume(volumeLeft, volumeRight);
             setPlaybackSpeed(playbackSpeed); // dunno bout this one. probably should be independent.
         }
-    }
-
-    public void onCompletion() {
-        previsousTrackCompleted = true;
-    }
-
-    public boolean getPreviousTrackCompleted() {
-        boolean ret = previsousTrackCompleted;
-        previsousTrackCompleted = false;
-        return ret;
     }
 
     public void setOnErrorListener(OnErrorListener listener) {
@@ -179,8 +167,6 @@ public class PlaylistManager extends ListPlaylistManager<AudioTrack> implements 
         if (isNextAvailable()) {
             setCurrentPosition(Math.min(getCurrentPosition() + 1, getItemCount()));
         } else {
-            previsousTrackCompleted = false;
-
             if (loop) {
               setCurrentPosition(BasePlaylistManager.INVALID_POSITION);
             } else {
