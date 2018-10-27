@@ -400,6 +400,10 @@ public class RmxAudioPlayer implements PlaybackStatusListener<AudioTrack>,
     updateCurrentPlaybackInformation();
   }
 
+  public boolean isRoutedToEarphone() {
+    return proximity.isHeadsetPluggedIn();
+  }
+
   private void updateCurrentPlaybackInformation() {
     PlaylistItemChange<AudioTrack> itemChange = playlistManager.getCurrentItemChange();
     if (itemChange != null) {
