@@ -37,5 +37,7 @@ public interface RmxConstants {
   String GET_TOTAL_DURATION     = "getTotalDuration";
   String GET_QUEUE_POSITION     = "getQueuePosition";
 
+  String IS_ROUTED_TO_EARPHONE  = "isRoutedToEarphone";
+
   String RELEASE = "release";
 }

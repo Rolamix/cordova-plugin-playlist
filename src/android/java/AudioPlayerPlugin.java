@@ -330,6 +330,13 @@ public class AudioPlayerPlugin extends CordovaPlugin implements RmxConstants, On
       return true;
     }
 
+    if (IS_ROUTED_TO_EARPHONE.equals(action)) {
+      boolean ret =  audioPlayerImpl.isRoutedToEarphone();
+      PluginResult result = new PluginResult(PluginResult.Status.OK, ret);
+      new PluginCallback(callbackContext).send(result);
+      return true;
+    }
+
     return false;
   }
 
