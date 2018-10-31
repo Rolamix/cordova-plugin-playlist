@@ -426,7 +426,7 @@ static char kPlayerItemTimeRangesContext;
 }
 
 - (BOOL) removeItemWithValues:(NSString*)trackIndex trackId:(NSString*)trackId {
-    if (trackIndex != nil
+    if ((id)trackIndex != [NSNull null]
         && [trackIndex integerValue] > 0
         && [trackIndex integerValue] < [self avQueuePlayer].itemsForPlayer.count
         ) {
@@ -434,7 +434,7 @@ static char kPlayerItemTimeRangesContext;
         [self removeTrackObservers:item];
         [[self avQueuePlayer] removeItem:item];
         return YES;
-    } else if (trackId != nil && ![trackId isEqualToString:@""]) {
+    } else if ((id)trackId != [NSNull null] && ![trackId isEqualToString:@""]) {
         NSDictionary* result = [self findTrackById:trackId];
         NSInteger idx = [(NSNumber*)result[@"index"] integerValue];
         AudioTrack* track = result[@"track"];
