@@ -431,6 +431,7 @@ static char kPlayerItemTimeRangesContext;
         && [trackIndex integerValue] < [self avQueuePlayer].itemsForPlayer.count
         ) {
         AudioTrack* item = [self avQueuePlayer].itemsForPlayer[[trackIndex integerValue]];
+        [self removeTrackObservers:item];
         [[self avQueuePlayer] removeItem:item];
         return YES;
     } else if (trackId != nil && ![trackId isEqualToString:@""]) {
@@ -440,6 +441,7 @@ static char kPlayerItemTimeRangesContext;
 
         if (idx >= 0) {
             // AudioTrack* item = [self avQueuePlayer].itemsForPlayer[idx];
+            [self removeTrackObservers:track];
             [[self avQueuePlayer] removeItem:track];
             return YES;
         } else {
