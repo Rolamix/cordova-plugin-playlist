@@ -430,20 +430,22 @@ static char kPlayerItemTimeRangesContext;
 }
 
 - (BOOL) removeItemWithValues:(NSString*)trackIndex trackId:(NSString*)trackId {
-    if (trackIndex != nil
+    if ((id)trackIndex != [NSNull null]
         && [trackIndex integerValue] > 0
         && [trackIndex integerValue] < [self avQueuePlayer].itemsForPlayer.count
         ) {
         AudioTrack* item = [self avQueuePlayer].itemsForPlayer[[trackIndex integerValue]];
+        [self removeTrackObservers:item];
         [[self avQueuePlayer] removeItem:item];
         return YES;
-    } else if (trackId != nil && ![trackId isEqualToString:@""]) {
+    } else if ((id)trackId != [NSNull null] && ![trackId isEqualToString:@""]) {
         NSDictionary* result = [self findTrackById:trackId];
         NSInteger idx = [(NSNumber*)result[@"index"] integerValue];
         AudioTrack* track = result[@"track"];
 
         if (idx >= 0) {
             // AudioTrack* item = [self avQueuePlayer].itemsForPlayer[idx];
+            [self removeTrackObservers:track];
             [[self avQueuePlayer] removeItem:track];
             return YES;
         } else {
@@ -1245,8 +1247,9 @@ static char kPlayerItemTimeRangesContext;
         }
     }
 
+    // nil values are not permitted in NSDictionary; use NSNull instead
     return @{
-             @"track": track == nil ? [NSNull null] : track,
+             @"track": track ? track : [NSNull null],
              @"index": @(idx),
              };
 }
