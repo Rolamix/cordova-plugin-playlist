@@ -8,6 +8,7 @@ public class PlaylistItemOptions {
 
   private boolean retainPosition = false;
   private long playFromPosition = -1L;
+  private String playFromId = null;
   private boolean startPaused = true;
 
   PlaylistItemOptions(JSONObject optionsObj) {
@@ -18,6 +19,7 @@ public class PlaylistItemOptions {
 
     this.retainPosition = this.options.optBoolean("retainPosition", false);
     this.startPaused = this.options.optBoolean("startPaused", true);
+    this.playFromId = this.options.optString("playFromId", null);
 
     try {
       playFromPosition = (long)this.options.getDouble("playFromPosition") * 1000L;
@@ -42,5 +44,9 @@ public class PlaylistItemOptions {
 
   public long getPlayFromPosition() {
     return playFromPosition;
+  }
+
+  public String getPlayFromId() {
+    return playFromId;
   }
 }
