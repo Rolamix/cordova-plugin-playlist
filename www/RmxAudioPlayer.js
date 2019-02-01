@@ -14,13 +14,13 @@ var _Constants = require("./Constants");
 
 function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; var ownKeys = Object.keys(source); if (typeof Object.getOwnPropertySymbols === 'function') { ownKeys = ownKeys.concat(Object.getOwnPropertySymbols(source).filter(function (sym) { return Object.getOwnPropertyDescriptor(source, sym).enumerable; })); } ownKeys.forEach(function (key) { _defineProperty(target, key, source[key]); }); } return target; }
 
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
 
 function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
 var exec = typeof cordova !== 'undefined' ? cordova.require('cordova/exec') : null; // const channel = typeof cordova !== 'undefined' ? cordova.require('cordova/channel') : null;
 
@@ -125,322 +125,174 @@ function () {
 
     _classCallCheck(this, RmxAudioPlayer);
 
-    Object.defineProperty(this, "handlers", {
-      configurable: true,
-      enumerable: true,
-      writable: true,
-      value: {}
-    });
-    Object.defineProperty(this, "options", {
-      configurable: true,
-      enumerable: true,
-      writable: true,
-      value: {
-        verbose: false,
-        resetStreamOnPause: true
-      }
-    });
-    Object.defineProperty(this, "_inititialized", {
-      configurable: true,
-      enumerable: true,
-      writable: true,
-      value: false
-    });
-    Object.defineProperty(this, "_initPromise", {
-      configurable: true,
-      enumerable: true,
-      writable: true,
-      value: void 0
-    });
-    Object.defineProperty(this, "_readyResolve", {
-      configurable: true,
-      enumerable: true,
-      writable: true,
-      value: void 0
-    });
-    Object.defineProperty(this, "_readyReject", {
-      configurable: true,
-      enumerable: true,
-      writable: true,
-      value: void 0
-    });
-    Object.defineProperty(this, "_currentState", {
-      configurable: true,
-      enumerable: true,
-      writable: true,
-      value: 'unknown'
-    });
-    Object.defineProperty(this, "_hasError", {
-      configurable: true,
-      enumerable: true,
-      writable: true,
-      value: false
-    });
-    Object.defineProperty(this, "_hasLoaded", {
-      configurable: true,
-      enumerable: true,
-      writable: true,
-      value: false
-    });
-    Object.defineProperty(this, "_currentItem", {
-      configurable: true,
-      enumerable: true,
-      writable: true,
-      value: null
-    });
-    Object.defineProperty(this, "ready", {
-      configurable: true,
-      enumerable: true,
-      writable: true,
-      value: function value() {
-        return _this._initPromise;
-      }
-    });
-    Object.defineProperty(this, "initialize", {
-      configurable: true,
-      enumerable: true,
-      writable: true,
-      value: function value() {
-        // Initialize the plugin to send and receive messages
-        // channel.createSticky('onRmxAudioPlayerReady');
-        // channel.waitForInitialization('onRmxAudioPlayerReady');
-        var onNativeStatus = function onNativeStatus(msg) {
-          // better or worse, we got an answer back from native, so we resolve.
-          _this._inititialized = true;
+    _defineProperty(this, "handlers", {});
 
-          _this._readyResolve(true);
-
-          if (msg.action === 'status') {
-            _this.onStatus(msg.status.trackId, msg.status.msgType, msg.status.value);
-          } else {
-            console.warn('Unknown audio player onStatus message:', msg.action);
-          }
-        }; // channel.onCordovaReady.subscribe(() => {
-
-
-        var error = function error(args) {
-          var message = 'CORDOVA RMXAUDIOPLAYER: Error storing message channel:';
-          console.warn(message, args);
-
-          _this._readyReject({
-            message,
-            args
-          });
-        };
-
-        exec(onNativeStatus, error, 'RmxAudioPlayer', 'initialize', []); // channel.initializationComplete('onRmxAudioPlayerReady');
-        // });
-
-        return _this._initPromise;
-      }
+    _defineProperty(this, "options", {
+      verbose: false,
+      resetStreamOnPause: true
     });
-    Object.defineProperty(this, "setOptions", {
-      configurable: true,
-      enumerable: true,
-      writable: true,
-      value: function value(successCallback, errorCallback, options) {
-        _this.options = _objectSpread({}, _this.options, options);
-        exec(successCallback, errorCallback, 'RmxAudioPlayer', 'setOptions', [options]);
-      }
-    });
-    Object.defineProperty(this, "setPlaylistItems", {
-      configurable: true,
-      enumerable: true,
-      writable: true,
-      value: function value(successCallback, errorCallback, items, options) {
-        exec(successCallback, errorCallback, 'RmxAudioPlayer', 'setPlaylistItems', [_this.validateTracks(items), options || {}]);
-      }
-    });
-    Object.defineProperty(this, "addItem", {
-      configurable: true,
-      enumerable: true,
-      writable: true,
-      value: function value(successCallback, errorCallback, trackItem) {
-        var validTrackItem = _this.validateTrack(trackItem);
 
-        if (!validTrackItem) {
-          return errorCallback(new Error('Provided track is null or not an audio track'));
+    _defineProperty(this, "_inititialized", false);
+
+    _defineProperty(this, "_initPromise", void 0);
+
+    _defineProperty(this, "_readyResolve", void 0);
+
+    _defineProperty(this, "_readyReject", void 0);
+
+    _defineProperty(this, "_currentState", 'unknown');
+
+    _defineProperty(this, "_hasError", false);
+
+    _defineProperty(this, "_hasLoaded", false);
+
+    _defineProperty(this, "_currentItem", null);
+
+    _defineProperty(this, "ready", function () {
+      return _this._initPromise;
+    });
+
+    _defineProperty(this, "initialize", function () {
+      // Initialize the plugin to send and receive messages
+      // channel.createSticky('onRmxAudioPlayerReady');
+      // channel.waitForInitialization('onRmxAudioPlayerReady');
+      var onNativeStatus = function onNativeStatus(msg) {
+        // better or worse, we got an answer back from native, so we resolve.
+        _this._inititialized = true;
+
+        _this._readyResolve(true);
+
+        if (msg.action === 'status') {
+          _this.onStatus(msg.status.trackId, msg.status.msgType, msg.status.value);
+        } else {
+          console.warn('Unknown audio player onStatus message:', msg.action);
         }
+      }; // channel.onCordovaReady.subscribe(() => {
 
-        exec(successCallback, errorCallback, 'RmxAudioPlayer', 'addItem', [validTrackItem]);
-      }
-    });
-    Object.defineProperty(this, "addAllItems", {
-      configurable: true,
-      enumerable: true,
-      writable: true,
-      value: function value(successCallback, errorCallback, items) {
-        exec(successCallback, errorCallback, 'RmxAudioPlayer', 'addAllItems', [_this.validateTracks(items)]);
-      }
-    });
-    Object.defineProperty(this, "removeItem", {
-      configurable: true,
-      enumerable: true,
-      writable: true,
-      value: function value(successCallback, errorCallback, removeItem) {
-        if (!removeItem) {
-          return errorCallback(new Error('Track removal spec is empty'));
-        }
 
-        if (!removeItem.trackId && !removeItem.trackIndex) {
-          return errorCallback(new Error('Track removal spec is invalid'));
-        }
+      var error = function error(args) {
+        var message = 'CORDOVA RMXAUDIOPLAYER: Error storing message channel:';
+        console.warn(message, args);
 
-        exec(successCallback, errorCallback, 'RmxAudioPlayer', 'removeItem', [removeItem.trackIndex, removeItem.trackId]);
-      }
+        _this._readyReject({
+          message,
+          args
+        });
+      };
+
+      exec(onNativeStatus, error, 'RmxAudioPlayer', 'initialize', []); // channel.initializationComplete('onRmxAudioPlayerReady');
+      // });
+
+      return _this._initPromise;
     });
-    Object.defineProperty(this, "removeItems", {
-      configurable: true,
-      enumerable: true,
-      writable: true,
-      value: function value(successCallback, errorCallback, items) {
-        exec(successCallback, errorCallback, 'RmxAudioPlayer', 'removeItems', [items]);
-      }
+
+    _defineProperty(this, "setOptions", function (successCallback, errorCallback, options) {
+      _this.options = _objectSpread({}, _this.options, options);
+      exec(successCallback, errorCallback, 'RmxAudioPlayer', 'setOptions', [options]);
     });
-    Object.defineProperty(this, "clearAllItems", {
-      configurable: true,
-      enumerable: true,
-      writable: true,
-      value: function value(successCallback, errorCallback) {
-        exec(successCallback, errorCallback, 'RmxAudioPlayer', 'clearAllItems', []);
-      }
+
+    _defineProperty(this, "setPlaylistItems", function (successCallback, errorCallback, items, options) {
+      exec(successCallback, errorCallback, 'RmxAudioPlayer', 'setPlaylistItems', [_this.validateTracks(items), options || {}]);
     });
-    Object.defineProperty(this, "play", {
-      configurable: true,
-      enumerable: true,
-      writable: true,
-      value: function value(successCallback, errorCallback) {
-        exec(successCallback, errorCallback, 'RmxAudioPlayer', 'play', []);
+
+    _defineProperty(this, "addItem", function (successCallback, errorCallback, trackItem) {
+      var validTrackItem = _this.validateTrack(trackItem);
+
+      if (!validTrackItem) {
+        return errorCallback(new Error('Provided track is null or not an audio track'));
       }
+
+      exec(successCallback, errorCallback, 'RmxAudioPlayer', 'addItem', [validTrackItem]);
     });
-    Object.defineProperty(this, "playTrackByIndex", {
-      configurable: true,
-      enumerable: true,
-      writable: true,
-      value: function value(successCallback, errorCallback, index) {
-        exec(successCallback, errorCallback, 'RmxAudioPlayer', 'playTrackByIndex', [index]);
+
+    _defineProperty(this, "addAllItems", function (successCallback, errorCallback, items) {
+      exec(successCallback, errorCallback, 'RmxAudioPlayer', 'addAllItems', [_this.validateTracks(items)]);
+    });
+
+    _defineProperty(this, "removeItem", function (successCallback, errorCallback, removeItem) {
+      if (!removeItem) {
+        return errorCallback(new Error('Track removal spec is empty'));
       }
-    });
-    Object.defineProperty(this, "playTrackById", {
-      configurable: true,
-      enumerable: true,
-      writable: true,
-      value: function value(successCallback, errorCallback, trackId) {
-        exec(successCallback, errorCallback, 'RmxAudioPlayer', 'playTrackById', [trackId]);
+
+      if (!removeItem.trackId && !removeItem.trackIndex) {
+        return errorCallback(new Error('Track removal spec is invalid'));
       }
+
+      exec(successCallback, errorCallback, 'RmxAudioPlayer', 'removeItem', [removeItem.trackIndex, removeItem.trackId]);
     });
-    Object.defineProperty(this, "pause", {
-      configurable: true,
-      enumerable: true,
-      writable: true,
-      value: function value(successCallback, errorCallback) {
-        exec(successCallback, errorCallback, 'RmxAudioPlayer', 'pause', []);
-      }
+
+    _defineProperty(this, "removeItems", function (successCallback, errorCallback, items) {
+      exec(successCallback, errorCallback, 'RmxAudioPlayer', 'removeItems', [items]);
     });
-    Object.defineProperty(this, "skipForward", {
-      configurable: true,
-      enumerable: true,
-      writable: true,
-      value: function value(successCallback, errorCallback) {
-        exec(successCallback, errorCallback, 'RmxAudioPlayer', 'skipForward', []);
-      }
+
+    _defineProperty(this, "clearAllItems", function (successCallback, errorCallback) {
+      exec(successCallback, errorCallback, 'RmxAudioPlayer', 'clearAllItems', []);
     });
-    Object.defineProperty(this, "skipBack", {
-      configurable: true,
-      enumerable: true,
-      writable: true,
-      value: function value(successCallback, errorCallback) {
-        exec(successCallback, errorCallback, 'RmxAudioPlayer', 'skipBack', []);
-      }
+
+    _defineProperty(this, "play", function (successCallback, errorCallback) {
+      exec(successCallback, errorCallback, 'RmxAudioPlayer', 'play', []);
     });
-    Object.defineProperty(this, "seekTo", {
-      configurable: true,
-      enumerable: true,
-      writable: true,
-      value: function value(successCallback, errorCallback, position) {
-        exec(successCallback, errorCallback, 'RmxAudioPlayer', 'seekTo', [position]);
-      }
+
+    _defineProperty(this, "playTrackByIndex", function (successCallback, errorCallback, index) {
+      exec(successCallback, errorCallback, 'RmxAudioPlayer', 'playTrackByIndex', [index]);
     });
-    Object.defineProperty(this, "seekToQueuePosition", {
-      configurable: true,
-      enumerable: true,
-      writable: true,
-      value: function value(successCallback, errorCallback, position) {
-        exec(successCallback, errorCallback, 'RmxAudioPlayer', 'seekToQueuePosition', [position]);
-      }
+
+    _defineProperty(this, "playTrackById", function (successCallback, errorCallback, trackId) {
+      exec(successCallback, errorCallback, 'RmxAudioPlayer', 'playTrackById', [trackId]);
     });
-    Object.defineProperty(this, "setPlaybackRate", {
-      configurable: true,
-      enumerable: true,
-      writable: true,
-      value: function value(successCallback, errorCallback, rate) {
-        exec(successCallback, errorCallback, 'RmxAudioPlayer', 'setPlaybackRate', [rate]);
-      }
+
+    _defineProperty(this, "pause", function (successCallback, errorCallback) {
+      exec(successCallback, errorCallback, 'RmxAudioPlayer', 'pause', []);
     });
-    Object.defineProperty(this, "setVolume", {
-      configurable: true,
-      enumerable: true,
-      writable: true,
-      value: function value(successCallback, errorCallback, volume) {
-        exec(successCallback, errorCallback, 'RmxAudioPlayer', 'setPlaybackVolume', [volume]);
-      }
+
+    _defineProperty(this, "skipForward", function (successCallback, errorCallback) {
+      exec(successCallback, errorCallback, 'RmxAudioPlayer', 'skipForward', []);
     });
-    Object.defineProperty(this, "setLoop", {
-      configurable: true,
-      enumerable: true,
-      writable: true,
-      value: function value(successCallback, errorCallback, loop) {
-        exec(successCallback, errorCallback, 'RmxAudioPlayer', 'setLoopAll', [!!loop]);
-      }
+
+    _defineProperty(this, "skipBack", function (successCallback, errorCallback) {
+      exec(successCallback, errorCallback, 'RmxAudioPlayer', 'skipBack', []);
     });
-    Object.defineProperty(this, "getPlaybackRate", {
-      configurable: true,
-      enumerable: true,
-      writable: true,
-      value: function value(successCallback, errorCallback) {
-        exec(successCallback, errorCallback, 'RmxAudioPlayer', 'getPlaybackRate', []);
-      }
+
+    _defineProperty(this, "seekTo", function (successCallback, errorCallback, position) {
+      exec(successCallback, errorCallback, 'RmxAudioPlayer', 'seekTo', [position]);
     });
-    Object.defineProperty(this, "getVolume", {
-      configurable: true,
-      enumerable: true,
-      writable: true,
-      value: function value(successCallback, errorCallback) {
-        exec(successCallback, errorCallback, 'RmxAudioPlayer', 'getPlaybackVolume', []);
-      }
+
+    _defineProperty(this, "seekToQueuePosition", function (successCallback, errorCallback, position) {
+      exec(successCallback, errorCallback, 'RmxAudioPlayer', 'seekToQueuePosition', [position]);
     });
-    Object.defineProperty(this, "getPosition", {
-      configurable: true,
-      enumerable: true,
-      writable: true,
-      value: function value(successCallback, errorCallback) {
-        exec(successCallback, errorCallback, 'RmxAudioPlayer', 'getPlaybackPosition', []);
-      }
+
+    _defineProperty(this, "setPlaybackRate", function (successCallback, errorCallback, rate) {
+      exec(successCallback, errorCallback, 'RmxAudioPlayer', 'setPlaybackRate', [rate]);
     });
-    Object.defineProperty(this, "getCurrentBuffer", {
-      configurable: true,
-      enumerable: true,
-      writable: true,
-      value: function value(successCallback, errorCallback) {
-        exec(successCallback, errorCallback, 'RmxAudioPlayer', 'getCurrentBuffer', []);
-      }
+
+    _defineProperty(this, "setVolume", function (successCallback, errorCallback, volume) {
+      exec(successCallback, errorCallback, 'RmxAudioPlayer', 'setPlaybackVolume', [volume]);
     });
-    Object.defineProperty(this, "getTotalDuration", {
-      configurable: true,
-      enumerable: true,
-      writable: true,
-      value: function value(successCallback, errorCallback) {
-        exec(successCallback, errorCallback, 'RmxAudioPlayer', 'getTotalDuration', []);
-      }
+
+    _defineProperty(this, "setLoop", function (successCallback, errorCallback, loop) {
+      exec(successCallback, errorCallback, 'RmxAudioPlayer', 'setLoopAll', [!!loop]);
     });
-    Object.defineProperty(this, "getQueuePosition", {
-      configurable: true,
-      enumerable: true,
-      writable: true,
-      value: function value(successCallback, errorCallback) {
-        exec(successCallback, errorCallback, 'RmxAudioPlayer', 'getQueuePosition', []);
-      }
+
+    _defineProperty(this, "getPlaybackRate", function (successCallback, errorCallback) {
+      exec(successCallback, errorCallback, 'RmxAudioPlayer', 'getPlaybackRate', []);
     });
+
+    _defineProperty(this, "getVolume", function (successCallback, errorCallback) {
+      exec(successCallback, errorCallback, 'RmxAudioPlayer', 'getPlaybackVolume', []);
+    });
+
+    _defineProperty(this, "getPosition", function (successCallback, errorCallback) {
+      exec(successCallback, errorCallback, 'RmxAudioPlayer', 'getPlaybackPosition', []);
+    });
+
+    _defineProperty(this, "getCurrentBuffer", function (successCallback, errorCallback) {
+      exec(successCallback, errorCallback, 'RmxAudioPlayer', 'getCurrentBuffer', []);
+    });
+
+    _defineProperty(this, "getQueuePosition", function (successCallback, errorCallback) {
+      exec(successCallback, errorCallback, 'RmxAudioPlayer', 'getQueuePosition', []);
+    });
+
     this.handlers = {};
     this._initPromise = new Promise(function (resolve, reject) {
       _this._readyResolve = resolve;
