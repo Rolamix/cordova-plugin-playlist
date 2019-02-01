@@ -71,6 +71,7 @@
     <source-file src="src/android/java/data/AudioTrack.java" target-dir="src/com/rolamix/plugins/audioplayer/data/" />
     <source-file src="src/android/java/manager/PlaylistManager.java" target-dir="src/com/rolamix/plugins/audioplayer/manager/" />
     <source-file src="src/android/java/manager/MediaControlsListener.java" target-dir="src/com/rolamix/plugins/audioplayer/manager/" />
+    <source-file src="src/android/java/notification/PlaylistNotificationProvider.java" target-dir="src/com/rolamix/plugins/audioplayer/notification/" />
     <source-file src="src/android/java/playlist/AudioApi.java" target-dir="src/com/rolamix/plugins/audioplayer/playlist/" />
     <source-file src="src/android/java/playlist/AudioPlaylistHandler.java" target-dir="src/com/rolamix/plugins/audioplayer/playlist/" />
     <source-file src="src/android/java/playlist/BaseMediaApi.java" target-dir="src/com/rolamix/plugins/audioplayer/playlist/" />
