@@ -838,9 +838,9 @@ static char kPlayerItemTimeRangesContext;
         _updatedNowPlayingInfo = [NSMutableDictionary dictionaryWithDictionary:nowPlayingInfo];
     }
 
-    for (NSString* val in _updatedNowPlayingInfo.allKeys) {
-        NSLog(@"%@ ==> %@", val, _updatedNowPlayingInfo[val]);
-    }
+    // for (NSString* val in _updatedNowPlayingInfo.allKeys) {
+    //     NSLog(@"%@ ==> %@", val, _updatedNowPlayingInfo[val]);
+    // }
 
     float currentTime = CMTimeGetSeconds(currentItem.currentTime);
     float duration = CMTimeGetSeconds(currentItem.duration);
