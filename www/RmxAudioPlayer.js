@@ -293,6 +293,27 @@ function () {
       exec(successCallback, errorCallback, 'RmxAudioPlayer', 'getQueuePosition', []);
     });
 
+    _defineProperty(this, "validateTracks", function (items) {
+      if (!items || !Array.isArray(items)) {
+        return [];
+      }
+
+      return items.map(_this.validateTrack).filter(function (x) {
+        return x;
+      }); // may produce an empty array!
+    });
+
+    _defineProperty(this, "validateTrack", function (track) {
+      if (!track) {
+        return null;
+      } // For now we will rely on TS to do the heavy lifting, but we can add a validation here
+      // that all the required fields are valid. For now we just take care of the unique ID.
+
+
+      track.trackId = track.trackId || _this.generateUUID();
+      return track;
+    });
+
     this.handlers = {};
     this._initPromise = new Promise(function (resolve, reject) {
       _this._readyResolve = resolve;
@@ -432,41 +453,11 @@ function () {
      */
 
   }, {
-    key: "validateTracks",
-    value: function validateTracks(items) {
-      if (!items || !Array.isArray(items)) {
-        return [];
-      }
+    key: "generateUUID",
 
-      return items.map(this.validateTrack).filter(function (x) {
-        return x;
-      }); // may produce an empty array!
-    }
-    /**
-     * Validate a single track and ensure it is valid for playback.
-     * Used internally but you can call this if you need to :)
-     *
-     * @param track The AudioTrack to validate
-     */
-
-  }, {
-    key: "validateTrack",
-    value: function validateTrack(track) {
-      if (!track) {
-        return null;
-      } // For now we will rely on TS to do the heavy lifting, but we can add a validation here
-      // that all the required fields are valid. For now we just take care of the unique ID.
-
-
-      track.trackId = track.trackId || this.generateUUID();
-      return track;
-    }
     /**
      * Generate a v4 UUID for use as a unique trackId. Used internally, but you can use this to generate track ID's if you want.
      */
-
-  }, {
-    key: "generateUUID",
     value: function generateUUID() {
       // Doesn't need to be perfect or secure, just good enough to give each item an ID.
       var d = new Date().getTime();

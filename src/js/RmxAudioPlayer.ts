@@ -469,7 +469,7 @@ export class RmxAudioPlayer {
    *
    * @param items The AudioTrack items to validate
    */
-  validateTracks(items: AudioTrack[]) {
+  validateTracks = (items: AudioTrack[]) => {
     if (!items || !Array.isArray(items)) { return []; }
     return items.map(this.validateTrack).filter(x => x); // may produce an empty array!
   }
@@ -480,7 +480,7 @@ export class RmxAudioPlayer {
    *
    * @param track The AudioTrack to validate
    */
-  validateTrack(track: AudioTrack) {
+  validateTrack = (track: AudioTrack) => {
     if (!track) { return null; }
     // For now we will rely on TS to do the heavy lifting, but we can add a validation here
     // that all the required fields are valid. For now we just take care of the unique ID.

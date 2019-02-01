@@ -219,14 +219,14 @@ export declare class RmxAudioPlayer {
      *
      * @param items The AudioTrack items to validate
      */
-    validateTracks(items: AudioTrack[]): (AudioTrack | null)[];
+    validateTracks: (items: AudioTrack[]) => (AudioTrack | null)[];
     /**
      * Validate a single track and ensure it is valid for playback.
      * Used internally but you can call this if you need to :)
      *
      * @param track The AudioTrack to validate
      */
-    validateTrack(track: AudioTrack): AudioTrack | null;
+    validateTrack: (track: AudioTrack) => AudioTrack | null;
     /**
      * Generate a v4 UUID for use as a unique trackId. Used internally, but you can use this to generate track ID's if you want.
      */
