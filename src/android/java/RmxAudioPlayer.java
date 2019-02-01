@@ -313,7 +313,9 @@ public class RmxAudioPlayer implements PlaybackStatusListener<AudioTrack>,
             lastBufferPercent = progress.getBufferPercent();
         }
 
-        if (playbackState == PlaybackState.PLAYING || playbackState == PlaybackState.SEEKING || playbackState == PlaybackState.PREPARING) {
+        // dont send on prepare, if null
+        if (playbackState == PlaybackState.PLAYING || playbackState == PlaybackState.SEEKING
+          || (playbackState == PlaybackState.PREPARING && progress.getDuration() == 0)) {
             onStatus(RmxAudioStatusMessage.RMXSTATUS_PLAYBACK_POSITION, currentItem.getTrackId(), trackStatus);
         }
       }
