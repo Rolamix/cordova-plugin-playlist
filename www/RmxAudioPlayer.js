@@ -25,7 +25,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 var exec = typeof cordova !== 'undefined' ? cordova.require('cordova/exec') : null; // const channel = typeof cordova !== 'undefined' ? cordova.require('cordova/channel') : null;
 
 var log = console;
-var itemStatusChangeTypes = [_Constants.RmxAudioStatusMessage.RMXSTATUS_PLAYBACK_POSITION, _Constants.RmxAudioStatusMessage.RMXSTATUS_DURATION, _Constants.RmxAudioStatusMessage.RMXSTATUS_BUFFERING, _Constants.RmxAudioStatusMessage.RMXSTATUS_CANPLAY, _Constants.RmxAudioStatusMessage.RMXSTATUS_LOADING, _Constants.RmxAudioStatusMessage.RMXSTATUS_LOADED, _Constants.RmxAudioStatusMessage.RMXSTATUS_COMPLETED, _Constants.RmxAudioStatusMessage.RMXSTATUS_ERROR];
+var itemStatusChangeTypes = [_Constants.RmxAudioStatusMessage.RMXSTATUS_PLAYBACK_POSITION, _Constants.RmxAudioStatusMessage.RMXSTATUS_DURATION, _Constants.RmxAudioStatusMessage.RMXSTATUS_BUFFERING, _Constants.RmxAudioStatusMessage.RMXSTATUS_CANPLAY, _Constants.RmxAudioStatusMessage.RMXSTATUS_LOADING, _Constants.RmxAudioStatusMessage.RMXSTATUS_LOADED, _Constants.RmxAudioStatusMessage.RMXSTATUS_PAUSE, _Constants.RmxAudioStatusMessage.RMXSTATUS_COMPLETED, _Constants.RmxAudioStatusMessage.RMXSTATUS_ERROR];
 /**
  * AudioPlayer class implementation. A singleton of this class is exported for use by Cordova,
  * but nothing stops you from creating another instance. Keep in mind that the native players
@@ -233,12 +233,12 @@ function () {
       exec(successCallback, errorCallback, 'RmxAudioPlayer', 'play', []);
     });
 
-    _defineProperty(this, "playTrackByIndex", function (successCallback, errorCallback, index) {
-      exec(successCallback, errorCallback, 'RmxAudioPlayer', 'playTrackByIndex', [index]);
+    _defineProperty(this, "playTrackByIndex", function (successCallback, errorCallback, index, position) {
+      exec(successCallback, errorCallback, 'RmxAudioPlayer', 'playTrackByIndex', [index, position || 0]);
     });
 
-    _defineProperty(this, "playTrackById", function (successCallback, errorCallback, trackId) {
-      exec(successCallback, errorCallback, 'RmxAudioPlayer', 'playTrackById', [trackId]);
+    _defineProperty(this, "playTrackById", function (successCallback, errorCallback, trackId, position) {
+      exec(successCallback, errorCallback, 'RmxAudioPlayer', 'playTrackById', [trackId, position || 0]);
     });
 
     _defineProperty(this, "pause", function (successCallback, errorCallback) {
@@ -349,7 +349,7 @@ function () {
       };
 
       if (this.options.verbose) {
-        log.log(`RmxAudioPlayer.onStatus: ${_Constants.RmxAudioStatusMessageDescriptions[type]}(${type}) [${trackId}]: `, value);
+        log.log("RmxAudioPlayer.onStatus: " + _Constants.RmxAudioStatusMessageDescriptions[type] + "(" + type + ") [" + trackId + "]: ", value);
       }
 
       if (status.type === _Constants.RmxAudioStatusMessage.RMXSTATUS_TRACK_CHANGED) {

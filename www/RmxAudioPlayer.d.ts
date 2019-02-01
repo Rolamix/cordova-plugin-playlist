@@ -114,11 +114,11 @@ export declare class RmxAudioPlayer {
     /**
      * Play the track at the given index. If the track does not exist, this has no effect.
      */
-    playTrackByIndex: (successCallback: SuccessCallback, errorCallback: ErrorCallback, index: number) => void;
+    playTrackByIndex: (successCallback: SuccessCallback, errorCallback: ErrorCallback, index: number, position?: number | undefined) => void;
     /**
      * Play the track matching the given trackId. If the track does not exist, this has no effect.
      */
-    playTrackById: (successCallback: SuccessCallback, errorCallback: ErrorCallback, trackId: string) => void;
+    playTrackById: (successCallback: SuccessCallback, errorCallback: ErrorCallback, trackId: string, position?: number | undefined) => void;
     /**
      * Pause playback
      */

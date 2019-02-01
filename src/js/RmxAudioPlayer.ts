@@ -34,6 +34,7 @@ const itemStatusChangeTypes = [
   RmxAudioStatusMessage.RMXSTATUS_PLAYBACK_POSITION, RmxAudioStatusMessage.RMXSTATUS_DURATION,
   RmxAudioStatusMessage.RMXSTATUS_BUFFERING, RmxAudioStatusMessage.RMXSTATUS_CANPLAY,
   RmxAudioStatusMessage.RMXSTATUS_LOADING, RmxAudioStatusMessage.RMXSTATUS_LOADED,
+  RmxAudioStatusMessage.RMXSTATUS_PAUSE,
   RmxAudioStatusMessage.RMXSTATUS_COMPLETED,
   RmxAudioStatusMessage.RMXSTATUS_ERROR,
 ];
@@ -50,7 +51,7 @@ export class RmxAudioPlayer {
 
   private _inititialized: boolean = false;
   private _initPromise: Promise<boolean>;
-  private _readyResolve: any;;
+  private _readyResolve: any;
   private _readyReject: any;
 
   private _currentState: 'unknown' | 'ready' | 'error' | 'playing' | 'loading' | 'paused' | 'stopped' = 'unknown';
@@ -251,15 +252,15 @@ export class RmxAudioPlayer {
   /**
    * Play the track at the given index. If the track does not exist, this has no effect.
    */
-  playTrackByIndex = (successCallback: SuccessCallback, errorCallback: ErrorCallback, index: number) => {
-    exec(successCallback, errorCallback, 'RmxAudioPlayer', 'playTrackByIndex', [index]);
+  playTrackByIndex = (successCallback: SuccessCallback, errorCallback: ErrorCallback, index: number, position?: number) => {
+    exec(successCallback, errorCallback, 'RmxAudioPlayer', 'playTrackByIndex', [index, position || 0]);
   }
 
   /**
    * Play the track matching the given trackId. If the track does not exist, this has no effect.
    */
-  playTrackById = (successCallback: SuccessCallback, errorCallback: ErrorCallback, trackId: string) => {
-    exec(successCallback, errorCallback, 'RmxAudioPlayer', 'playTrackById', [trackId]);
+  playTrackById = (successCallback: SuccessCallback, errorCallback: ErrorCallback, trackId: string, position?: number) => {
+    exec(successCallback, errorCallback, 'RmxAudioPlayer', 'playTrackById', [trackId, position || 0]);
   }
 
   /**

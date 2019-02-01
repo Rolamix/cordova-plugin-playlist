@@ -45,6 +45,11 @@ export interface PlaylistItemOptions {
      */
     playFromPosition?: number;
     /**
+     * If retainPosition is true, this value will tell the plugin the uid of the "current" item to start from,
+     * rather than letting the plugin decide based on current playback.
+     */
+    playFromId?: number;
+    /**
      * If playback should immediately begin when calling setPlaylistItems on the plugin.
      * Default is false;
      */
