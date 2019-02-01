@@ -11,7 +11,6 @@ import android.util.Log;
 import com.devbrackets.android.playlistcore.api.PlaylistItem;
 import com.devbrackets.android.playlistcore.api.MediaPlayerApi;
 import com.devbrackets.android.playlistcore.data.MediaProgress;
-import com.devbrackets.android.playlistcore.data.PlaybackState;
 import com.devbrackets.android.playlistcore.manager.BasePlaylistManager;
 import com.devbrackets.android.playlistcore.components.audiofocus.AudioFocusProvider;
 import com.devbrackets.android.playlistcore.components.audiofocus.DefaultAudioFocusProvider;
@@ -20,8 +19,6 @@ import com.devbrackets.android.playlistcore.components.mediacontrols.DefaultMedi
 import com.devbrackets.android.playlistcore.components.mediacontrols.MediaControlsProvider;
 import com.devbrackets.android.playlistcore.components.mediasession.DefaultMediaSessionProvider;
 import com.devbrackets.android.playlistcore.components.mediasession.MediaSessionProvider;
-import com.devbrackets.android.playlistcore.components.notification.DefaultPlaylistNotificationProvider;
-import com.devbrackets.android.playlistcore.components.notification.PlaylistNotificationProvider;
 import com.devbrackets.android.playlistcore.components.playlisthandler.DefaultPlaylistHandler;
 
 
@@ -36,7 +33,7 @@ public class AudioPlaylistHandler<I extends PlaylistItem, M extends BasePlaylist
             Class<? extends Service> serviceClass,
             M playlistManager,
             ImageProvider<I> imageProvider,
-            PlaylistNotificationProvider notificationProvider,
+            com.devbrackets.android.playlistcore.components.notification.PlaylistNotificationProvider notificationProvider,
             MediaSessionProvider mediaSessionProvider,
             MediaControlsProvider mediaControlsProvider,
             AudioFocusProvider<I> audioFocusProvider,
@@ -156,7 +153,7 @@ public class AudioPlaylistHandler<I extends PlaylistItem, M extends BasePlaylist
         M playlistManager;
         ImageProvider<I> imageProvider;
 
-        PlaylistNotificationProvider notificationProvider = null;
+        com.devbrackets.android.playlistcore.components.notification.PlaylistNotificationProvider notificationProvider = null;
         MediaSessionProvider mediaSessionProvider = null;
         MediaControlsProvider mediaControlsProvider = null;
         AudioFocusProvider<I> audioFocusProvider = null;
@@ -176,7 +173,7 @@ public class AudioPlaylistHandler<I extends PlaylistItem, M extends BasePlaylist
                 serviceClass,
                 playlistManager,
                 imageProvider,
-                notificationProvider != null ? notificationProvider : new DefaultPlaylistNotificationProvider(context),
+                notificationProvider != null ? notificationProvider : new PlaylistNotificationProvider(context),
                 mediaSessionProvider != null ? mediaSessionProvider : new DefaultMediaSessionProvider(context, serviceClass),
                 mediaControlsProvider != null ? mediaControlsProvider : new DefaultMediaControlsProvider(context),
                 audioFocusProvider != null ? audioFocusProvider : new DefaultAudioFocusProvider<>(context),
