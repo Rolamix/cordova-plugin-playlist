@@ -33,7 +33,6 @@
 -(BOOL)isAtEnd;
 -(BOOL)isPlaying;
 
--(CMTime)estimatedTotalDuration;
 -(CMTime)currentTimeOffsetInQueue;
 -(void)seekToTimeInQueue:(CMTime)time completionHandler:(void (^)(BOOL))completionHandler;
 -(void)setCurrentIndex:(NSUInteger)currentIndex completionHandler:(void (^)(BOOL)) completionHandler;

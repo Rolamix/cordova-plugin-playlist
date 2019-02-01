@@ -55,7 +55,6 @@
 - (void) getPlaybackVolume:(CDVInvokedUrlCommand *) command;
 - (void) getPlaybackPosition:(CDVInvokedUrlCommand *) command;
 - (void) getCurrentBuffer:(CDVInvokedUrlCommand *) command;
-- (void) getTotalDuration:(CDVInvokedUrlCommand *) command;
 - (void) getQueuePosition:(CDVInvokedUrlCommand *) command;
 
 // Cleanup

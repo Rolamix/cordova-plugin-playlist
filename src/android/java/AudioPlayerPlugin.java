@@ -312,15 +312,6 @@ public class AudioPlayerPlugin extends CordovaPlugin implements RmxConstants, On
       return true;
     }
 
-    if (GET_TOTAL_DURATION.equals(action)) {
-      // Not yet implemented on android. I'm not sure how to, since the tracks haven't loaded yet.
-      // On iOS, the AVQueuePlayer gets the metadata for all tracks immediately, that's why that works there.
-      float totalDuration = 0f;
-      PluginResult result = new PluginResult(PluginResult.Status.OK, totalDuration);
-      new PluginCallback(callbackContext).send(result);
-      return true;
-    }
-
     if (GET_QUEUE_POSITION.equals(action)) {
       // Not yet implemented on android. I'm not sure how to, since the tracks haven't loaded yet.
       // On iOS, the AVQueuePlayer gets the metadata for all tracks immediately, that's why that works there.

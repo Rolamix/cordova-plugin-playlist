@@ -34,7 +34,6 @@ public interface RmxConstants {
   String GET_PLAYBACK_VOLUME    = "getPlaybackVolume";
   String GET_PLAYBACK_POSITION  = "getPlaybackPosition";
   String GET_BUFFER_STATUS      = "getCurrentBuffer";
-  String GET_TOTAL_DURATION     = "getTotalDuration";
   String GET_QUEUE_POSITION     = "getQueuePosition";
 
   String RELEASE = "release";

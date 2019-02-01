@@ -29,7 +29,6 @@ static char kPlayerItemTimeRangesContext;
 @property (nonatomic) BOOL isAtEnd;
 @property (nonatomic) BOOL isAtBeginning;
 @property (nonatomic) BOOL isPlaying;
-@property (nonatomic) float estimatedDuration;
 @property (nonatomic) float queuePosition;
 @end
 
@@ -370,15 +369,6 @@ static char kPlayerItemTimeRangesContext;
     NSLog(@"RmxAudioPlayer.execute=getCurrentBuffer, %@", trackStatus);
 
     CDVPluginResult* result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary:trackStatus];
-    [self.commandDelegate sendPluginResult:result callbackId:command.callbackId];
-}
-
-
-- (void) getTotalDuration:(CDVInvokedUrlCommand *) command {
-    float duration = self.estimatedDuration;
-    NSLog(@"RmxAudioPlayer.execute=getTotalDuration, %f", duration);
-
-    CDVPluginResult* result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDouble:duration];
     [self.commandDelegate sendPluginResult:result callbackId:command.callbackId];
 }
 
@@ -1183,10 +1173,6 @@ static char kPlayerItemTimeRangesContext;
 
 - (BOOL) isPlaying {
     return [self avQueuePlayer].isPlaying;
-}
-
-- (float) estimatedDuration {
-    return CMTimeGetSeconds([self avQueuePlayer].estimatedTotalDuration);
 }
 
 - (float) queuePosition {
