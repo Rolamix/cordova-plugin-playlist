@@ -13,7 +13,7 @@
 
 @implementation AVBidirectionalQueuePlayer {
     NSMutableArray * _itemsForPlayer;
-    CMTime _estimatedDuration;
+    // CMTime _estimatedDuration;
 }
 
 -(NSMutableArray *)itemsForPlayer {
@@ -36,7 +36,7 @@
     self = [super init];
     if (self) {
         self.itemsForPlayer = [NSMutableArray new];
-        _estimatedDuration = kCMTimeZero;
+        // _estimatedDuration = kCMTimeZero;
     }
     return self;
 }
@@ -47,7 +47,7 @@
     self = [super initWithItems:items];
     if (self){
         self.itemsForPlayer = [NSMutableArray arrayWithArray:items];
-        _estimatedDuration = kCMTimeInvalid;
+        // _estimatedDuration = kCMTimeInvalid;
     }
     return self;
 }
@@ -185,7 +185,7 @@
 {
     // This does the same thing as the normal AVQueuePlayer removeAllItems, but clears our collection copy
     [super removeAllItems];
-    _estimatedDuration = kCMTimeZero;
+    // _estimatedDuration = kCMTimeZero;
     [_itemsForPlayer removeAllObjects];
 
     [[NSNotificationCenter defaultCenter] postNotificationName:AVBidirectionalQueueCleared object:self userInfo:nil];
@@ -200,9 +200,9 @@
     // array before the current value.
     [super removeItem:item];
 
-    if (CMTIME_IS_VALID(item.duration)) {
-        _estimatedDuration = CMTimeSubtract(_estimatedDuration, item.duration);
-    }
+    // if (CMTIME_IS_VALID(item.duration)) {
+    //     _estimatedDuration = CMTimeSubtract(_estimatedDuration, item.duration);
+    // }
 
     [_itemsForPlayer removeObject:item];
     [[NSNotificationCenter defaultCenter] postNotificationName:AVBidirectionalQueueRemovedItem object:self  userInfo:@{@"item":item}];
@@ -214,13 +214,18 @@
     // proper location in the itemsForPlayer array and increments the nowPlayingIndex if necessary.
     [super insertItem:item afterItem:afterItem];
 
-    if (CMTIME_IS_NUMERIC(item.duration)) {
-        NSLog(@"duration: %5.2f", (double) CMTimeGetSeconds(item.duration));
-        if (CMTimeCompare(_estimatedDuration, kCMTimeZero) == 0)
-            _estimatedDuration = item.duration;
-        else
-            _estimatedDuration = CMTimeAdd(_estimatedDuration, item.duration);
-    }
+    // https://github.com/Rolamix/cordova-plugin-playlist/issues/19
+    // This causes some pretty bad performance so I am going to remove it for now.
+    // You should be maintaining a database of your tracks, not using their metadata characteristics
+    // at load time to decide what their duration is..
+
+    // if (CMTIME_IS_NUMERIC(item.duration)) {
+    //     NSLog(@"duration: %5.2f", (double) CMTimeGetSeconds(item.duration));
+    //     if (CMTimeCompare(_estimatedDuration, kCMTimeZero) == 0)
+    //         _estimatedDuration = item.duration;
+    //     else
+    //         _estimatedDuration = CMTimeAdd(_estimatedDuration, item.duration);
+    // }
 
     if ([_itemsForPlayer containsObject:afterItem]){ // AfterItem is non-nil
         if ([_itemsForPlayer indexOfObject:afterItem] < [_itemsForPlayer count] - 1){
@@ -244,16 +249,17 @@
 }
 
 -(CMTime)estimatedTotalDuration {
-    if (!CMTIME_IS_VALID(self->_estimatedDuration)) {
-        //NSTimeInterval dur  = 0.0;
-        CMTime duration = kCMTimeZero;
-        for (AVPlayerItem * item in _itemsForPlayer) {
-            if (CMTIME_IS_VALID(item.duration))
-                duration = CMTimeAdd(duration, item.duration);
-        }
-        self->_estimatedDuration = duration;
-    }
-    return self->_estimatedDuration;
+    // if (!CMTIME_IS_VALID(self->_estimatedDuration)) {
+    //     //NSTimeInterval dur  = 0.0;
+    //     CMTime duration = kCMTimeZero;
+    //     for (AVPlayerItem * item in _itemsForPlayer) {
+    //         if (CMTIME_IS_VALID(item.duration))
+    //             duration = CMTimeAdd(duration, item.duration);
+    //     }
+    //     self->_estimatedDuration = duration;
+    // }
+    // return self->_estimatedDuration;
+    return kCMTimeZero;
 }
 
 -(CMTime)currentTimeOffsetInQueue {
