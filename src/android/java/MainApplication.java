@@ -40,7 +40,7 @@ public class MainApplication extends Application {
         ExoMedia.setDataSourceFactoryProvider(new ExoMedia.DataSourceFactoryProvider() {
             @NonNull
             @Override
-            public DataSource.Factory provide(@NonNull String userAgent, @Nullable TransferListener<? super DataSource> listener) {
+            public DataSource.Factory provide(@NonNull String userAgent, @Nullable TransferListener listener) {
                 // Updates the network data source to use the OKHttp implementation and allows it to follow redirects
                 OkHttpClient httpClient = new OkHttpClient().newBuilder().followRedirects(true).followSslRedirects(true).build();
                 DataSource.Factory upstreamFactory = new OkHttpDataSourceFactory(httpClient, userAgent, listener);
