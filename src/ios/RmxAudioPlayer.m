@@ -1461,10 +1461,12 @@ static char kPlayerItemTimeRangesContext;
     // override to remove caches, etc
     [super onMemoryWarning];
 
+    // We can't really safely do this without alot of other changes to expect
+    // the playlist to be empty.
     // Well, we've just destroyed everything, but ok.
-    [self removeAllTracks:YES];
-    NSLog(@"RmxAudioPlayer, queuePlayerCleared, MEMORY_WARNING");
-    [self onStatus:RMXSTATUS_PLAYLIST_CLEARED trackId:@"INVALID" param:@{@"reason": @"memory-warning"}];
+    // [self removeAllTracks:YES];
+    // NSLog(@"RmxAudioPlayer, queuePlayerCleared, MEMORY_WARNING");
+    // [self onStatus:RMXSTATUS_PLAYLIST_CLEARED trackId:@"INVALID" param:@{@"reason": @"memory-warning"}];
 }
 
 - (void) onReset
