@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <plugin xmlns="http://apache.org/cordova/ns/plugins/1.0" xmlns:android="http://schemas.android.com/apk/res/android"
 	id="cordova-plugin-playlist"
-	version="0.8.1">
+	version="0.9.1">
 	<name>AudioPlayer</name>
 	<keywords>cordova,music,controller,controls,media,plugin,notification,lockscreen,now,playing,playlist</keywords>
 	<repo>https://github.com/Rolamix/cordova-plugin-playlist</repo>
