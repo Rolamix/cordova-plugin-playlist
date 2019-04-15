@@ -2,6 +2,7 @@ package com.rolamix.plugins.audioplayer.playlist;
 
 import com.rolamix.plugins.audioplayer.data.AudioTrack;
 import com.rolamix.plugins.audioplayer.manager.PlaylistManager;
+import com.rolamix.plugins.audioplayer.notification.PlaylistNotificationProvider;
 
 import android.support.annotation.Nullable;
 import android.app.Service;
