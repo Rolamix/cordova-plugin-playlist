@@ -6,7 +6,7 @@ export declare enum RmxAudioErrorType {
     RMXERR_ABORTED = 1,
     RMXERR_NETWORK = 2,
     RMXERR_DECODE = 3,
-    RMXERR_NONE_SUPPORTED = 4,
+    RMXERR_NONE_SUPPORTED = 4
 }
 /**
  * String descriptions corresponding to the RmxAudioErrorType values
@@ -131,7 +131,7 @@ export declare enum RmxAudioStatusMessage {
     /**
      * Just for testing.. you don't need this and in fact can never receive it, the plugin is destroyed before it can be raised.
      */
-    RMXSTATUS_VIEWDISAPPEAR = 200,
+    RMXSTATUS_VIEWDISAPPEAR = 200
 }
 /**
  * String descriptions corresponding to the RmxAudioStatusMessage values

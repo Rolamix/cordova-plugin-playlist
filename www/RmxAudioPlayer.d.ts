@@ -22,7 +22,7 @@ export declare class RmxAudioPlayer {
      * because they properly interpret the range of these values, but this field is exposed if you wish to observe
      * or interrogate it.
      */
-    readonly currentState: "error" | "paused" | "playing" | "unknown" | "ready" | "loading" | "stopped";
+    readonly currentState: "error" | "paused" | "loading" | "playing" | "unknown" | "ready" | "stopped";
     /**
      * True if the plugin has been initialized. You'll likely never see this state; it is handled internally.
      */
@@ -157,6 +157,8 @@ export declare class RmxAudioPlayer {
      * Sets a flag indicating whether the playlist should loop back to the beginning once it reaches the end.
      */
     setLoop: (successCallback: SuccessCallback, errorCallback: ErrorCallback, loop: boolean) => void;
+    setOutputAudioPortToSpeaker: (successCallback: SuccessCallback, errorCallback: ErrorCallback) => void;
+    setOutputAudioPortToReceiver: (successCallback: SuccessCallback, errorCallback: ErrorCallback) => void;
     /**
      * Get accessors
      */
@@ -238,5 +240,8 @@ export declare class RmxAudioPlayer {
     generateUUID(): string;
 }
 declare const playerInstance: RmxAudioPlayer;
+/*!
+ * AudioPlayer Plugin instance.
+ */
 export declare const AudioPlayer: RmxAudioPlayer;
 export default playerInstance;
