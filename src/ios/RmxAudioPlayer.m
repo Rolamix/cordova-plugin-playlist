@@ -342,6 +342,50 @@ static char kPlayerItemTimeRangesContext;
 }
 
 
+- (void) setOutputAudioPortToSpeaker:(CDVInvokedUrlCommand*) command {
+    NSLog(@"RmxAudioPlayer.execute=setOutputAudioPortToSpeaker");
+
+    AVAudioSession* session = [AVAudioSession sharedInstance];
+    BOOL success;
+    NSError* error;
+    success = [session overrideOutputAudioPort:AVAudioSessionPortOverrideSpeaker error:&error];
+
+    if (success)
+    {
+        CDVPluginResult* result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
+        [self.commandDelegate sendPluginResult:result callbackId:command.callbackId];
+    }
+    else
+    {
+        NSLog(@"Can't set audio output to speaker: %@", error);
+        CDVPluginResult* result = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"Can't set audio output to speaker"];
+        [self.commandDelegate sendPluginResult:result callbackId:command.callbackId];
+    }
+}
+
+
+- (void) setOutputAudioPortToReceiver:(CDVInvokedUrlCommand*) command {
+    NSLog(@"RmxAudioPlayer.execute=setOutputAudioPortToReceiver");
+
+    AVAudioSession* session = [AVAudioSession sharedInstance];
+    BOOL success;
+    NSError* error;
+    success = [session overrideOutputAudioPort:AVAudioSessionPortOverrideNone error:&error];
+
+    if (success)
+    {
+        CDVPluginResult* result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
+        [self.commandDelegate sendPluginResult:result callbackId:command.callbackId];
+    }
+    else
+    {
+        NSLog(@"Can't set audio output to receiver: %@", error);
+        CDVPluginResult* result = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"Can't set audio output to receiver"];
+        [self.commandDelegate sendPluginResult:result callbackId:command.callbackId];
+    }
+}
+
+
 - (void) getPlaybackRate:(CDVInvokedUrlCommand *) command {
     NSLog(@"RmxAudioPlayer.execute=getPlaybackRate, %f", self.rate);
     float rate = self.rate;
@@ -494,7 +538,7 @@ static char kPlayerItemTimeRangesContext;
         NSString * action = @"music-controls-play";
         NSLog(@"%@", action);
     }
-    
+
     [_prox setPlaying:[self avQueuePlayer].isPlaying];
 }
 
@@ -521,7 +565,7 @@ static char kPlayerItemTimeRangesContext;
         NSString * action = @"music-controls-pause";
         NSLog(@"%@", action);
     }
-    
+
     [_prox setPlaying:[self avQueuePlayer].isPlaying];
 }
 
@@ -732,7 +776,7 @@ static char kPlayerItemTimeRangesContext;
 
     NSDictionary* trackStatus = [self getPlayerStatusItem:playerItem];
     [self onStatus:RMXSTATUS_COMPLETED trackId:playerItem.trackId param:trackStatus];
-    
+
     // 次のトラックに移動する
     [self playNext:NO];
 }
@@ -1449,7 +1493,7 @@ static char kPlayerItemTimeRangesContext;
     _avQueuePlayer = nil;
 
     _playbackTimeObserver = nil;
-    
+
     [_prox removeAudioRouteObserver];
 }
 
