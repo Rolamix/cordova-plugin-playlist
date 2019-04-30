@@ -137,9 +137,9 @@ export class RmxAudioPlayer {
    * Player interface
    */
 
-   /**
-    * Returns a promise that resolves when the plugin is ready.
-    */
+  /**
+   * Returns a promise that resolves when the plugin is ready.
+   */
   ready = () => {
     return this._initPromise;
   }
@@ -168,17 +168,17 @@ export class RmxAudioPlayer {
     };
 
     exec(onNativeStatus, error, 'RmxAudioPlayer', 'initialize', []);
-      // channel.initializationComplete('onRmxAudioPlayerReady');
+    // channel.initializationComplete('onRmxAudioPlayerReady');
     // });
 
     return this._initPromise;
   }
 
-   /**
-    * Sets the player options. This can be called at any time and is not required before playback can be initiated.
-    */
+  /**
+   * Sets the player options. This can be called at any time and is not required before playback can be initiated.
+   */
   setOptions = (successCallback: SuccessCallback, errorCallback: ErrorCallback, options: AudioPlayerOptions) => {
-    this.options = {...this.options, ...options};
+    this.options = { ...this.options, ...options };
     exec(successCallback, errorCallback, 'RmxAudioPlayer', 'setOptions', [options]);
   }
 
@@ -186,13 +186,13 @@ export class RmxAudioPlayer {
    * Playlist item management
    */
 
-   /**
-    * Sets the entire list of tracks to be played by the playlist.
-    * This will clear all previous items from the playlist.
-    * If you pass options.retainPosition = true, the current playback position will be
-    * recorded and used when playback restarts. This can be used, for example, to set the
-    * playlist to a new set of tracks, but retain the currently-playing item to avoid skipping.
-    */
+  /**
+   * Sets the entire list of tracks to be played by the playlist.
+   * This will clear all previous items from the playlist.
+   * If you pass options.retainPosition = true, the current playback position will be
+   * recorded and used when playback restarts. This can be used, for example, to set the
+   * playlist to a new set of tracks, but retain the currently-playing item to avoid skipping.
+   */
   setPlaylistItems = (successCallback: SuccessCallback, errorCallback: ErrorCallback, items: AudioTrack[], options?: PlaylistItemOptions) => {
     exec(successCallback, errorCallback, 'RmxAudioPlayer', 'setPlaylistItems', [this.validateTracks(items), options || {}]);
   }
@@ -241,9 +241,9 @@ export class RmxAudioPlayer {
    * Playback management
    */
 
-   /**
-    * Begin playback. If no tracks have been added, this has no effect.
-    */
+  /**
+   * Begin playback. If no tracks have been added, this has no effect.
+   */
   play = (successCallback: SuccessCallback, errorCallback: ErrorCallback) => {
     exec(successCallback, errorCallback, 'RmxAudioPlayer', 'play', []);
   }
@@ -324,13 +324,21 @@ export class RmxAudioPlayer {
     exec(successCallback, errorCallback, 'RmxAudioPlayer', 'setLoopAll', [!!loop]);
   }
 
+  setOutputAudioPortToSpeaker = (successCallback: SuccessCallback, errorCallback: ErrorCallback) => {
+    exec(successCallback, errorCallback, 'RmxAudioPlayer', 'setOutputAudioPortToSpeaker');
+  }
+
+  setOutputAudioPortToReceiver = (successCallback: SuccessCallback, errorCallback: ErrorCallback) => {
+    exec(successCallback, errorCallback, 'RmxAudioPlayer', 'setOutputAudioPortToReceiver');
+  }
+
   /**
    * Get accessors
    */
 
-   /**
-    * Reports the current playback rate.
-    */
+  /**
+   * Reports the current playback rate.
+   */
   getPlaybackRate = (successCallback: SuccessCallback, errorCallback: ErrorCallback) => {
     exec(successCallback, errorCallback, 'RmxAudioPlayer', 'getPlaybackRate', []);
   }
@@ -379,11 +387,11 @@ export class RmxAudioPlayer {
    * Status event handling
    */
 
-   /**
-    * @internal
-    * Call this function to emit an onStatus event via the on('status') handler.
-    * Internal use only, to raise events received from the native interface.
-    */
+  /**
+   * @internal
+   * Call this function to emit an onStatus event via the on('status') handler.
+   * Internal use only, to raise events received from the native interface.
+   */
   protected onStatus(trackId: string, type: RmxAudioStatusMessage, value: OnStatusCallbackUpdateData | OnStatusTrackChangedData | OnStatusErrorCallbackData) {
     const status = { type, trackId, value };
     if (this.options.verbose) {
