@@ -2,17 +2,24 @@
 
 @interface Proximity : NSObject {
   BOOL isPlaying;
+  BOOL isSpeakerEnabled;
 }
 @end
 
 @implementation Proximity
 - (void)initialize {
   isPlaying = false;
+  isSpeakerEnabled = false;
 }
 
 - (void)setPlaying:(BOOL) _isPlaying {
   isPlaying = _isPlaying;
   [self changeSensorState];
+}
+
+- (void)setSpeakerEnabled:(BOOL) _isSpeakerEnabled {
+    isSpeakerEnabled = _isSpeakerEnabled;
+    [self changeSensorState];
 }
 
 - (void)addAudioRouteObserver {
@@ -27,13 +34,13 @@
                                           object:nil];
 }
 
-// ヘッドフォンが繋がれていたら近接センサーの無効化
-// 繋がれていない場合で、かつ再生中なら有効化
+// ヘッドフォンが繋がれているorスピーカーモードなら近接センサーの無効化
+// 繋がれていない場合で、かつ再生中かつスピーカー出力でないなら有効化
 // 繋がれていない場合で、再生中でないなら無効化
 - (void)changeSensorState {
-    if ([self isHeadsetPluggedIn]) {
+    if ([self isHeadsetPluggedIn] || isSpeakerEnabled) {
         [self inactivateSensor];
-    } else if (isPlaying == YES) {
+    } else if (isPlaying == YES && !isSpeakerEnabled) {
         [self activateSensor];
     } else {
         [self inactivateSensor];

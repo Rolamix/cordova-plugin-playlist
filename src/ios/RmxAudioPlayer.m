@@ -354,6 +354,7 @@ static char kPlayerItemTimeRangesContext;
     {
         CDVPluginResult* result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
         [self.commandDelegate sendPluginResult:result callbackId:command.callbackId];
+        [_prox setSpeakerEnabled: true];
     }
     else
     {
@@ -376,6 +377,7 @@ static char kPlayerItemTimeRangesContext;
     {
         CDVPluginResult* result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
         [self.commandDelegate sendPluginResult:result callbackId:command.callbackId];
+        [_prox setSpeakerEnabled: false];
     }
     else
     {
