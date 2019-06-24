@@ -28,6 +28,8 @@ public interface RmxConstants {
   String SET_PLAYBACK_RATE      = "setPlaybackRate";
   String SET_PLAYBACK_VOLUME    = "setPlaybackVolume";
   String SET_LOOP_ALL           = "setLoopAll";
+  String SET_OUTPUT_AUDIO_PORT_TO_SPEAKER = "setOutputAudioPortToSpeaker";
+  String SET_OUTPUT_AUDIO_PORT_TO_RECEIVER = "setOutputAudioPortToReceiver";
 
   // Getters, should almost always be unneeded since the status is continually reported.
   String GET_PLAYBACK_RATE      = "getPlaybackRate";
