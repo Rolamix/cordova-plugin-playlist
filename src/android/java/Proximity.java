@@ -41,9 +41,9 @@ public class Proximity implements SensorEventListener {
   }
 
   private void changeSensorState() {
-    if (isHeadsetPluggedIn()) {
+    if (isHeadsetPluggedIn() || isSpeakerEnabled()) {
       inactiveSensor();
-    } else if (isPlaying == true) {
+    } else if (isPlaying == true && !isSpeakerEnabled()) {
       activeSensor();
     } else {
       inactiveSensor();
@@ -77,6 +77,10 @@ public class Proximity implements SensorEventListener {
   public boolean isHeadsetPluggedIn() {
     AudioDeviceInfo[] devices = audioManager.getDevices(AudioManager.GET_DEVICES_OUTPUTS);
     return isContainsHeadphone(devices);
+  }
+
+  public boolean isSpeakerEnabled() {
+    return audioManager.isSpeakerphoneOn();
   }
 
   public void updateDevices(boolean isNewDevices, AudioDeviceInfo[] devices) {
