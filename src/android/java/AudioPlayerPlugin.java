@@ -289,7 +289,6 @@ public class AudioPlayerPlugin extends CordovaPlugin implements RmxConstants, On
 
     if (SET_OUTPUT_AUDIO_PORT_TO_SPEAKER.equals(action)) {
       Log.i(TAG, "enabling speakerphone");
-      //audioManager.setMode(AudioManager.MODE_IN_COMMUNICATION);
       audioManager.setSpeakerphoneOn(true);
       new PluginCallback(callbackContext).send(PluginResult.Status.OK);
       return true;
