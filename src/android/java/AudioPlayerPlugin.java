@@ -14,6 +14,9 @@ import org.apache.cordova.PluginResult;
 import com.devbrackets.android.playlistcore.data.MediaProgress;
 import com.rolamix.plugins.audioplayer.data.AudioTrack;
 
+import android.content.Context;
+import android.media.AudioManager;
+
 /**
  *
  * The core Cordova interface for the audio player
@@ -34,9 +37,12 @@ public class AudioPlayerPlugin extends CordovaPlugin implements RmxConstants, On
 
   private boolean resetStreamOnPause = true;
 
+  private AudioManager audioManager;
+
   @Override
   public void pluginInitialize() {
     audioPlayerImpl = new RmxAudioPlayer(this, cordova);
+    audioManager = (AudioManager)cordova.getActivity().getApplicationContext().getSystemService(Context.AUDIO_SERVICE);
   }
 
   @Override
@@ -277,6 +283,20 @@ public class AudioPlayerPlugin extends CordovaPlugin implements RmxConstants, On
     if (SET_LOOP_ALL.equals(action)) {
       boolean loop = args.optBoolean(0, audioPlayerImpl.getPlaylistManager().getLoop());
       audioPlayerImpl.getPlaylistManager().setLoop(loop);
+      new PluginCallback(callbackContext).send(PluginResult.Status.OK);
+      return true;
+    }
+
+    if (SET_OUTPUT_AUDIO_PORT_TO_SPEAKER.equals(action)) {
+      Log.i(TAG, "enabling speakerphone");
+      audioManager.setSpeakerphoneOn(true);
+      new PluginCallback(callbackContext).send(PluginResult.Status.OK);
+      return true;
+    }
+
+    if (SET_OUTPUT_AUDIO_PORT_TO_RECEIVER.equals(action)) {
+      Log.i(TAG, "disabling speakerphone");
+      audioManager.setSpeakerphoneOn(false);
       new PluginCallback(callbackContext).send(PluginResult.Status.OK);
       return true;
     }
