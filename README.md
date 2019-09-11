@@ -69,6 +69,13 @@ Android normally will give you ~2-3 minutes of background playback before killin
 
 iOS will immediately stop playback when the app goes into the background if you do not include the `audio` `UIBackgroundMode`. iOS has an additional requirement that audio playback must never stop; when it does, the audio session will be terminated and playback cannot continue without user interaction.
 
+### Android notification icon
+To show a better notification icon in Android Lollipop (API 21) and above, create a transparent (silhouette) icon and name the file as "ic_notification.png". Then in your config.xml, inside `<platform name="android">`:
+
+```
+<resource-file src="src/assets/img/ic_notification.png" target="/app/src/main/res/drawable/ic_notification.png" />
+```
+
 ## 3. Usage
 
 Be sure to check out the examples folder, where you can find an Angular5/Ionic implementation of the Cordova plugin.

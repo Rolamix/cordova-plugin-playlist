@@ -26,6 +26,10 @@ public class FakeR {
 		packageName = context.getPackageName();
 	}
 
+	public Context getContext() {
+		return context;
+	}
+
 	public int getId(String group, String key) {
 		return context.getResources().getIdentifier(key, group, packageName);
 	}

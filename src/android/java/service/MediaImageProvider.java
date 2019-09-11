@@ -3,6 +3,7 @@ package com.rolamix.plugins.audioplayer.service;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.os.Build;
 import android.support.annotation.NonNull;
 
 import com.bumptech.glide.Glide;
@@ -95,10 +96,11 @@ public class MediaImageProvider implements ImageProvider<AudioTrack> {
     private int getMipmapIcon() {
         // return R.mipmap.icon; // this comes from cordova itself.
         if (notificationIconId <= 0) {
-            notificationIconId = fakeR.getId("mipmap", "icon");
-            // API 28 moves the reference to this.
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                notificationIconId = fakeR.getId("drawable", "ic_notification");
+            }
             if (notificationIconId <= 0) {
-                notificationIconId = fakeR.getId("mipmap", "ic_launcher");
+                notificationIconId = fakeR.getContext().getApplicationInfo().icon; //fakeR.getId("mipmap", "icon");
             }
         }
         return notificationIconId;
