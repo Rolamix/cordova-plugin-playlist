@@ -78,7 +78,7 @@
     "eslint": "^4.19.1",
     "eslint-config-airbnb-base": "^12.1.0",
     "eslint-plugin-import": "^2.9.0",
-    "jasmine-node": "^1.14.5",
+    "jasmine-node": "^3.0.0",
     "nodemon": "^1.17.2",
     "pluginpub": "^0.0.9",
     "typescript": "^2.8.1"
