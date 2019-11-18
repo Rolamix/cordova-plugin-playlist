@@ -14,6 +14,9 @@ import org.apache.cordova.PluginResult;
 import com.devbrackets.android.playlistcore.data.MediaProgress;
 import com.rolamix.plugins.audioplayer.data.AudioTrack;
 
+import android.content.Context;
+import android.media.AudioManager;
+
 /**
  *
  * The core Cordova interface for the audio player
@@ -34,9 +37,12 @@ public class AudioPlayerPlugin extends CordovaPlugin implements RmxConstants, On
 
   private boolean resetStreamOnPause = true;
 
+  private AudioManager audioManager;
+
   @Override
   public void pluginInitialize() {
     audioPlayerImpl = new RmxAudioPlayer(this, cordova);
+    audioManager = (AudioManager)cordova.getActivity().getApplicationContext().getSystemService(Context.AUDIO_SERVICE);
   }
 
   @Override
@@ -284,6 +290,20 @@ public class AudioPlayerPlugin extends CordovaPlugin implements RmxConstants, On
       return true;
     }
 
+    if (SET_OUTPUT_AUDIO_PORT_TO_SPEAKER.equals(action)) {
+      Log.i(TAG, "enabling speakerphone");
+      audioManager.setSpeakerphoneOn(true);
+      new PluginCallback(callbackContext).send(PluginResult.Status.OK);
+      return true;
+    }
+
+    if (SET_OUTPUT_AUDIO_PORT_TO_RECEIVER.equals(action)) {
+      Log.i(TAG, "disabling speakerphone");
+      audioManager.setSpeakerphoneOn(false);
+      new PluginCallback(callbackContext).send(PluginResult.Status.OK);
+      return true;
+    }
+
     // Getters
     if (GET_PLAYBACK_RATE.equals(action)) {
       float speed = audioPlayerImpl.getPlaylistManager().getPlaybackSpeed();
@@ -320,6 +340,13 @@ public class AudioPlayerPlugin extends CordovaPlugin implements RmxConstants, On
       // On iOS, the AVQueuePlayer gets the metadata for all tracks immediately, that's why that works there.
       float queuePosition = 0f;
       PluginResult result = new PluginResult(PluginResult.Status.OK, queuePosition);
+      new PluginCallback(callbackContext).send(result);
+      return true;
+    }
+
+    if (IS_ROUTED_TO_EARPHONE.equals(action)) {
+      boolean ret =  audioPlayerImpl.isRoutedToEarphone();
+      PluginResult result = new PluginResult(PluginResult.Status.OK, ret);
       new PluginCallback(callbackContext).send(result);
       return true;
     }

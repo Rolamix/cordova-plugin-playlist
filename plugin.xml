@@ -44,8 +44,10 @@
     <config-file target="AndroidManifest.xml" parent="/manifest">
       <uses-permission android:name="android.permission.INTERNET"/>
       <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+      <uses-permission android:name="android.permission.WAKE_LOCK"/>
       <!-- <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" /> -->
       <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+      <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
     </config-file>
 
     <config-file target="AndroidManifest.xml" parent="/manifest/application">
@@ -59,8 +61,6 @@
          Due to a bug in Cordova, this cannot be added via plugin.xml using <edit-config>; instead
          the plugin install/uninstall scripts manages this.
     -->
-
-    <dependency id="cordova-support-google-services" version="~1.2.0"/>
 
     <framework src="com.android.support:support-v4:27.+" />
     <framework src="com.android.support:support-media-compat:27.+" />
@@ -86,6 +86,7 @@
     <source-file src="src/android/java/OnStatusReportListener.java" target-dir="src/com/rolamix/plugins/audioplayer/" />
     <source-file src="src/android/java/PluginCallback.java" target-dir="src/com/rolamix/plugins/audioplayer/" />
     <source-file src="src/android/java/PlaylistItemOptions.java" target-dir="src/com/rolamix/plugins/audioplayer/" />
+    <source-file src="src/android/java/Proximity.java" target-dir="src/com/rolamix/plugins/audioplayer/" />
     <source-file src="src/android/java/RmxAudioPlayer.java" target-dir="src/com/rolamix/plugins/audioplayer/" />
 		<source-file src="src/android/java/RmxConstants.java" target-dir="src/com/rolamix/plugins/audioplayer/" />
     <source-file src="src/android/java/RmxAudioErrorType.java" target-dir="src/com/rolamix/plugins/audioplayer/" />
@@ -109,11 +110,13 @@
     <header-file src="src/ios/AVBidirectionalQueuePlayer.h" />
     <header-file src="src/ios/Constants.h" />
 		<header-file src="src/ios/MainViewController+RmxAudioPlayer.h" />
+		<header-file src="src/ios/Proximity.h" />
 		<header-file src="src/ios/RmxAudioPlayer.h" />
 
 		<source-file src="src/ios/AudioTrack.m" />
     <source-file src="src/ios/AVBidirectionalQueuePlayer.m" />
 		<source-file src="src/ios/MainViewController+RmxAudioPlayer.m" />
+		<source-file src="src/ios/Proximity.m" />
 		<source-file src="src/ios/RmxAudioPlayer.m" />
 	</platform>
 

@@ -28,6 +28,8 @@ public interface RmxConstants {
   String SET_PLAYBACK_RATE      = "setPlaybackRate";
   String SET_PLAYBACK_VOLUME    = "setPlaybackVolume";
   String SET_LOOP_ALL           = "setLoopAll";
+  String SET_OUTPUT_AUDIO_PORT_TO_SPEAKER = "setOutputAudioPortToSpeaker";
+  String SET_OUTPUT_AUDIO_PORT_TO_RECEIVER = "setOutputAudioPortToReceiver";
 
   // Getters, should almost always be unneeded since the status is continually reported.
   String GET_PLAYBACK_RATE      = "getPlaybackRate";
@@ -35,6 +37,8 @@ public interface RmxConstants {
   String GET_PLAYBACK_POSITION  = "getPlaybackPosition";
   String GET_BUFFER_STATUS      = "getCurrentBuffer";
   String GET_QUEUE_POSITION     = "getQueuePosition";
+
+  String IS_ROUTED_TO_EARPHONE  = "isRoutedToEarphone";
 
   String RELEASE = "release";
 }

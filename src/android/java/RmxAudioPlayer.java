@@ -13,6 +13,7 @@ import __PACKAGE_NAME__.MainApplication;
 import com.rolamix.plugins.audioplayer.data.AudioTrack;
 import com.rolamix.plugins.audioplayer.manager.PlaylistManager;
 import com.rolamix.plugins.audioplayer.manager.MediaControlsListener;
+import com.rolamix.plugins.audioplayer.Proximity;
 
 import com.devbrackets.android.playlistcore.data.MediaProgress;
 import com.devbrackets.android.playlistcore.data.PlaybackState;
@@ -41,6 +42,7 @@ public class RmxAudioPlayer implements PlaybackStatusListener<AudioTrack>,
   private CordovaInterface cordova;
   private PlaylistManager playlistManager;
   private OnStatusReportListener statusListener;
+  private Proximity proximity;
 
   private int lastBufferPercent = 0;
   private boolean trackDuration = false;
@@ -62,6 +64,8 @@ public class RmxAudioPlayer implements PlaybackStatusListener<AudioTrack>,
     playlistManager.setPlaybackStatusListener(this);
     playlistManager.setOnErrorListener(this);
     playlistManager.setMediaControlsListener(this);
+
+    proximity = new Proximity(cordova.getActivity().getApplicationContext());
   }
 
   public PlaylistManager getPlaylistManager() {
@@ -261,11 +265,13 @@ public class RmxAudioPlayer implements PlaybackStatusListener<AudioTrack>,
                     trackLoaded = true;
                   }
                   onStatus(RmxAudioStatusMessage.RMXSTATUS_PLAYING, currentItem.getTrackId(), trackStatus);
+                  proximity.setPlaying(true);
               }
               break;
           case PAUSED:
               if (currentItem != null && currentItem.getTrackId() != null) {
                   onStatus(RmxAudioStatusMessage.RMXSTATUS_PAUSE, currentItem.getTrackId(), trackStatus);
+                proximity.setPlaying(false);
               }
               break;
           // we'll handle error in the listener. ExoMedia only raises this in the case of catastrophic player failure.
@@ -394,6 +400,10 @@ public class RmxAudioPlayer implements PlaybackStatusListener<AudioTrack>,
     registerPlaylistListeners();
     //Makes sure to retrieve the current playback information
     updateCurrentPlaybackInformation();
+  }
+
+  public boolean isRoutedToEarphone() {
+    return proximity.isHeadsetPluggedIn();
   }
 
   private void updateCurrentPlaybackInformation() {

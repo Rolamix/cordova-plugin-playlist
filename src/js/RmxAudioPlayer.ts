@@ -325,6 +325,14 @@ export class RmxAudioPlayer {
     exec(successCallback, errorCallback, 'RmxAudioPlayer', 'setLoopAll', [!!loop]);
   }
 
+  setOutputAudioPortToSpeaker = (successCallback: SuccessCallback, errorCallback: ErrorCallback) => {
+    exec(successCallback, errorCallback, 'RmxAudioPlayer', 'setOutputAudioPortToSpeaker');
+  }
+
+  setOutputAudioPortToReceiver = (successCallback: SuccessCallback, errorCallback: ErrorCallback) => {
+    exec(successCallback, errorCallback, 'RmxAudioPlayer', 'setOutputAudioPortToReceiver');
+  }
+
   /**
    * Get accessors
    */
@@ -357,6 +365,14 @@ export class RmxAudioPlayer {
    */
   getCurrentBuffer = (successCallback: SuccessCallback, errorCallback: ErrorCallback) => {
     exec(successCallback, errorCallback, 'RmxAudioPlayer', 'getCurrentBuffer', []);
+  }
+
+  /**
+   * (iOS only): Reports the duration of the entire playlist, in seconds (e.g. 4500 seconds for the entire playlist)
+   * Not implemented on Android since durations are not known ahead of time.
+   */
+  getTotalDuration = (successCallback: SuccessCallback, errorCallback: ErrorCallback) => {
+    exec(successCallback, errorCallback, 'RmxAudioPlayer', 'getTotalDuration', []);
   }
 
   /**

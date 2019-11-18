@@ -21,32 +21,34 @@
 @interface RmxAudioPlayer : CDVPlugin
 
 // structural methods
-- (void) pluginInitialize;
-- (void) setOptions:(CDVInvokedUrlCommand*) command;
-- (void) initialize:(CDVInvokedUrlCommand*) command;
+- (void)pluginInitialize;
+- (void)setOptions:(CDVInvokedUrlCommand *)command;
+- (void)initialize:(CDVInvokedUrlCommand *)command;
 
 // public API
 
 // Item management
-- (void) setPlaylistItems:(CDVInvokedUrlCommand *) command;
-- (void) addItem:(CDVInvokedUrlCommand *) command;
-- (void) addAllItems:(CDVInvokedUrlCommand *) command;
-- (void) removeItem:(CDVInvokedUrlCommand *) command;
-- (void) removeItems:(CDVInvokedUrlCommand *) command;
-- (void) clearAllItems:(CDVInvokedUrlCommand*) command;
+- (void)setPlaylistItems:(CDVInvokedUrlCommand *)command;
+- (void)addItem:(CDVInvokedUrlCommand *)command;
+- (void)addAllItems:(CDVInvokedUrlCommand *)command;
+- (void)removeItem:(CDVInvokedUrlCommand *)command;
+- (void)removeItems:(CDVInvokedUrlCommand *)command;
+- (void)clearAllItems:(CDVInvokedUrlCommand *)command;
 
 // Playback management
-- (void) play:(CDVInvokedUrlCommand *) command;
-- (void) playTrackByIndex:(CDVInvokedUrlCommand *) command;
-- (void) playTrackById:(CDVInvokedUrlCommand *) command;
-- (void) pause:(CDVInvokedUrlCommand *) command;
-- (void) skipForward:(CDVInvokedUrlCommand *) command;
-- (void) skipBack:(CDVInvokedUrlCommand *) command;
-- (void) seekTo:(CDVInvokedUrlCommand *) command;
-- (void) seekToQueuePosition:(CDVInvokedUrlCommand *) command;
-- (void) setPlaybackRate:(CDVInvokedUrlCommand *) command;
-- (void) setPlaybackVolume:(CDVInvokedUrlCommand *) command;
-- (void) setLoopAll:(CDVInvokedUrlCommand *) command;
+- (void)play:(CDVInvokedUrlCommand *)command;
+- (void)playTrackByIndex:(CDVInvokedUrlCommand *)command;
+- (void)playTrackById:(CDVInvokedUrlCommand *)command;
+- (void)pause:(CDVInvokedUrlCommand *)command;
+- (void)skipForward:(CDVInvokedUrlCommand *)command;
+- (void)skipBack:(CDVInvokedUrlCommand *)command;
+- (void)seekTo:(CDVInvokedUrlCommand *)command;
+- (void)seekToQueuePosition:(CDVInvokedUrlCommand *)command;
+- (void)setPlaybackRate:(CDVInvokedUrlCommand *)command;
+- (void)setPlaybackVolume:(CDVInvokedUrlCommand *)command;
+- (void)setLoopAll:(CDVInvokedUrlCommand *)command;
+- (void)setOutputAudioPortToSpeaker:(CDVInvokedUrlCommand *)command;
+- (void)setOutputAudioPortToReceiver:(CDVInvokedUrlCommand *)command;
 
 // Get accessors to manually update values. Note:
 // these values are reported anyway via the onStatus event
@@ -55,10 +57,11 @@
 - (void) getPlaybackVolume:(CDVInvokedUrlCommand *) command;
 - (void) getPlaybackPosition:(CDVInvokedUrlCommand *) command;
 - (void) getCurrentBuffer:(CDVInvokedUrlCommand *) command;
+- (void) getTotalDuration:(CDVInvokedUrlCommand *) command;
 - (void) getQueuePosition:(CDVInvokedUrlCommand *) command;
 
 // Cleanup
-- (void) release:(CDVInvokedUrlCommand*) command;
+- (void)release:(CDVInvokedUrlCommand *)command;
 
 @end
 

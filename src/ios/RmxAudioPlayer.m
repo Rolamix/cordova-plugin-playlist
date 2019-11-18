@@ -1,5 +1,6 @@
 
 #import "RmxAudioPlayer.h"
+#import "Proximity.h"
 #import "AVBidirectionalQueuePlayer.h"
 
 static char kAvQueuePlayerContext;
@@ -18,6 +19,7 @@ static char kPlayerItemTimeRangesContext;
     float _volume;
     BOOL _isReplacingItems;
     BOOL _isWaitingToStartPlayback;
+    Proximity* _prox;
 }
 @property () NSString* statusCallbackId;
 @property (nonatomic, strong) AVBidirectionalQueuePlayer* avQueuePlayer;
@@ -43,6 +45,7 @@ static char kPlayerItemTimeRangesContext;
     _resetStreamOnPause = YES;
     _isReplacingItems = NO;
     _isWaitingToStartPlayback = NO;
+    _prox = [[Proximity alloc] init];
     self.rate = 1.0f;
     self.volume = 1.0f;
     self.loop = false;
@@ -72,6 +75,7 @@ static char kPlayerItemTimeRangesContext;
     NSLog(@"RmxAudioPlayer.execute=initialize");
     self.statusCallbackId = command.callbackId;
     [self onStatus:RMXSTATUS_REGISTER trackId:@"INIT" param:nil];
+    [_prox addAudioRouteObserver];
 }
 
 - (void) setOptions:(CDVInvokedUrlCommand*) command {
@@ -358,6 +362,52 @@ static char kPlayerItemTimeRangesContext;
 }
 
 
+- (void) setOutputAudioPortToSpeaker:(CDVInvokedUrlCommand*) command {
+    NSLog(@"RmxAudioPlayer.execute=setOutputAudioPortToSpeaker");
+
+    AVAudioSession* session = [AVAudioSession sharedInstance];
+    BOOL success;
+    NSError* error;
+    success = [session overrideOutputAudioPort:AVAudioSessionPortOverrideSpeaker error:&error];
+
+    if (success)
+    {
+        CDVPluginResult* result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
+        [self.commandDelegate sendPluginResult:result callbackId:command.callbackId];
+        [_prox setSpeakerEnabled: true];
+    }
+    else
+    {
+        NSLog(@"Can't set audio output to speaker: %@", error);
+        CDVPluginResult* result = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"Can't set audio output to speaker"];
+        [self.commandDelegate sendPluginResult:result callbackId:command.callbackId];
+    }
+}
+
+
+- (void) setOutputAudioPortToReceiver:(CDVInvokedUrlCommand*) command {
+    NSLog(@"RmxAudioPlayer.execute=setOutputAudioPortToReceiver");
+
+    AVAudioSession* session = [AVAudioSession sharedInstance];
+    BOOL success;
+    NSError* error;
+    success = [session overrideOutputAudioPort:AVAudioSessionPortOverrideNone error:&error];
+
+    if (success)
+    {
+        CDVPluginResult* result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
+        [self.commandDelegate sendPluginResult:result callbackId:command.callbackId];
+        [_prox setSpeakerEnabled: false];
+    }
+    else
+    {
+        NSLog(@"Can't set audio output to receiver: %@", error);
+        CDVPluginResult* result = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"Can't set audio output to receiver"];
+        [self.commandDelegate sendPluginResult:result callbackId:command.callbackId];
+    }
+}
+
+
 - (void) getPlaybackRate:(CDVInvokedUrlCommand *) command {
     NSLog(@"RmxAudioPlayer.execute=getPlaybackRate, %f", self.rate);
     float rate = self.rate;
@@ -393,6 +443,13 @@ static char kPlayerItemTimeRangesContext;
     [self.commandDelegate sendPluginResult:result callbackId:command.callbackId];
 }
 
+- (void) getTotalDuration:(CDVInvokedUrlCommand *) command {
+    float duration = self.estimatedDuration;
+    NSLog(@"RmxAudioPlayer.execute=getTotalDuration, %f", duration);
+
+    CDVPluginResult* result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDouble:duration];
+    [self.commandDelegate sendPluginResult:result callbackId:command.callbackId];
+}
 
 - (void) getQueuePosition:(CDVInvokedUrlCommand *) command {
     float position = self.queuePosition;
@@ -501,6 +558,8 @@ static char kPlayerItemTimeRangesContext;
         NSString * action = @"music-controls-play";
         NSLog(@"%@", action);
     }
+
+    [_prox setPlaying:[self avQueuePlayer].isPlaying];
 }
 
 - (void) pauseCommand:(BOOL)isCommand
@@ -526,6 +585,8 @@ static char kPlayerItemTimeRangesContext;
         NSString * action = @"music-controls-pause";
         NSLog(@"%@", action);
     }
+
+    [_prox setPlaying:[self avQueuePlayer].isPlaying];
 }
 
 - (void) playPrevious:(BOOL)isCommand
@@ -671,28 +732,33 @@ static char kPlayerItemTimeRangesContext;
  *
  */
 
-- (void) playEvent:(MPRemoteCommandEvent *)event {
+- (MPRemoteCommandHandlerStatus) playEvent:(MPRemoteCommandEvent *)event {
     [self playCommand:YES];
+    return MPRemoteCommandHandlerStatusSuccess;
 }
 
-- (void) pauseEvent:(MPRemoteCommandEvent *)event {
+- (MPRemoteCommandHandlerStatus) pauseEvent:(MPRemoteCommandEvent *)event {
     [self pauseCommand:YES];
+    return MPRemoteCommandHandlerStatusSuccess;
 }
 
-- (void) togglePlayPauseTrackEvent:(MPRemoteCommandEvent *)event {
+- (MPRemoteCommandHandlerStatus) togglePlayPauseTrackEvent:(MPRemoteCommandEvent *)event {
     if ([self avQueuePlayer].isPlaying) {
         [self pauseCommand:YES];
     } else {
         [self playCommand:YES];
     }
+    return MPRemoteCommandHandlerStatusSuccess;
 }
 
-- (void) prevTrackEvent:(MPRemoteCommandEvent *)event {
+- (MPRemoteCommandHandlerStatus) prevTrackEvent:(MPRemoteCommandEvent *)event {
     [self playPrevious:YES];
+    return MPRemoteCommandHandlerStatusSuccess;
 }
 
-- (void) nextTrackEvent:(MPRemoteCommandEvent *)event {
+- (MPRemoteCommandHandlerStatus) nextTrackEvent:(MPRemoteCommandEvent *)event {
     [self playNext:YES];
+    return MPRemoteCommandHandlerStatusSuccess;
 }
 
 - (MPRemoteCommandHandlerStatus) changedThumbSliderOnLockScreen:(MPChangePlaybackPositionCommandEvent *)event {
@@ -735,6 +801,9 @@ static char kPlayerItemTimeRangesContext;
 
     NSDictionary* trackStatus = [self getPlayerStatusItem:playerItem];
     [self onStatus:RMXSTATUS_COMPLETED trackId:playerItem.trackId param:trackStatus];
+
+    // 次のトラックに移動する
+    [self playNext:NO];
 }
 
 - (void) handleAudioSessionInterruption:(NSNotification*)interruptionNotification
@@ -941,7 +1010,7 @@ static char kPlayerItemTimeRangesContext;
 
     if (playerItem != nil) {
         // When an item starts, immediately scrub it back to the beginning
-        [playerItem seekToTime:kCMTimeZero toleranceBefore:kCMTimeZero toleranceAfter:kCMTimeZero completionHandler:nil];
+        //[playerItem seekToTime:kCMTimeZero toleranceBefore:kCMTimeZero toleranceAfter:kCMTimeZero completionHandler:nil];
         // Update the command center
         [self updateNowPlayingTrackInfo:playerItem updateTrackData:YES];
     }
@@ -1253,7 +1322,7 @@ static char kPlayerItemTimeRangesContext;
         NSArray* queue = @[];
 
         _avQueuePlayer = [[AVBidirectionalQueuePlayer alloc] initWithItems:queue];
-        _avQueuePlayer.actionAtItemEnd = AVPlayerActionAtItemEndAdvance;
+        _avQueuePlayer.actionAtItemEnd = AVPlayerActionAtItemEndPause;
         [_avQueuePlayer addObserver:self forKeyPath:@"currentItem" options:NSKeyValueObservingOptionNew context:&kAvQueuePlayerContext];
         [_avQueuePlayer addObserver:self forKeyPath:@"rate" options:NSKeyValueObservingOptionNew context:&kAvQueuePlayerRateContext];
 
@@ -1338,8 +1407,7 @@ static char kPlayerItemTimeRangesContext;
     NSError *categoryError = nil;
     AVAudioSession* avSession = [AVAudioSession sharedInstance];
 
-    // If no devices are connected, play audio through the default speaker (rather than the earpiece).
-    AVAudioSessionCategoryOptions options = AVAudioSessionCategoryOptionDefaultToSpeaker;
+    AVAudioSessionCategoryOptions options = nil;
 
     // If both Bluetooth streaming options are enabled, the low quality stream is preferred; enable A2DP only.
     if (@available(iOS 10.0, *)) {
@@ -1495,6 +1563,8 @@ static char kPlayerItemTimeRangesContext;
     _avQueuePlayer = nil;
 
     _playbackTimeObserver = nil;
+
+    [_prox removeAudioRouteObserver];
 }
 
 @end

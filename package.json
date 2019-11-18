@@ -50,7 +50,7 @@
   ],
   "engines": {
     "cordovaDependencies": {
-      "0.5.0": {
+      "0.10.0": {
         "cordova": ">=7.1.0",
         "cordova-android": ">=7.1.0",
         "cordova-ios": ">=4.3.0"

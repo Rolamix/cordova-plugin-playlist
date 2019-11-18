@@ -157,6 +157,8 @@ export declare class RmxAudioPlayer {
      * Sets a flag indicating whether the playlist should loop back to the beginning once it reaches the end.
      */
     setLoop: (successCallback: SuccessCallback, errorCallback: ErrorCallback, loop: boolean) => void;
+    setOutputAudioPortToSpeaker: (successCallback: SuccessCallback, errorCallback: ErrorCallback) => void;
+    setOutputAudioPortToReceiver: (successCallback: SuccessCallback, errorCallback: ErrorCallback) => void;
     /**
      * Get accessors
      */
@@ -178,6 +180,11 @@ export declare class RmxAudioPlayer {
      * rather than this value, as this value will be stale by the time you receive it.
      */
     getCurrentBuffer: (successCallback: SuccessCallback, errorCallback: ErrorCallback) => void;
+    /**
+     * (iOS only): Reports the duration of the entire playlist, in seconds (e.g. 4500 seconds for the entire playlist)
+     * Not implemented on Android since durations are not known ahead of time.
+     */
+    getTotalDuration: (successCallback: SuccessCallback, errorCallback: ErrorCallback) => void;
     /**
      * (iOS only): Gets the overall playback position in the entire queue, in seconds (e.g. 1047 seconds).
      * Not implemented on Android since durations are not known ahead of time.
