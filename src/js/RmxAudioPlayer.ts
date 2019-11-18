@@ -368,14 +368,6 @@ export class RmxAudioPlayer {
   }
 
   /**
-   * (iOS only): Reports the duration of the entire playlist, in seconds (e.g. 4500 seconds for the entire playlist)
-   * Not implemented on Android since durations are not known ahead of time.
-   */
-  getTotalDuration = (successCallback: SuccessCallback, errorCallback: ErrorCallback) => {
-    exec(successCallback, errorCallback, 'RmxAudioPlayer', 'getTotalDuration', []);
-  }
-
-  /**
    * (iOS only): Gets the overall playback position in the entire queue, in seconds (e.g. 1047 seconds).
    * Not implemented on Android since durations are not known ahead of time.
    */

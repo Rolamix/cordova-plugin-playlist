@@ -443,13 +443,6 @@ static char kPlayerItemTimeRangesContext;
     [self.commandDelegate sendPluginResult:result callbackId:command.callbackId];
 }
 
-- (void) getTotalDuration:(CDVInvokedUrlCommand *) command {
-    float duration = self.estimatedDuration;
-    NSLog(@"RmxAudioPlayer.execute=getTotalDuration, %f", duration);
-
-    CDVPluginResult* result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDouble:duration];
-    [self.commandDelegate sendPluginResult:result callbackId:command.callbackId];
-}
 
 - (void) getQueuePosition:(CDVInvokedUrlCommand *) command {
     float position = self.queuePosition;
