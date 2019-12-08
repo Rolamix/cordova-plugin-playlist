@@ -1409,7 +1409,7 @@ static char kPlayerItemTimeRangesContext;
         options |= AVAudioSessionCategoryOptionAllowBluetooth;
     }
 
-    [avSession setCategory:AVAudioSessionCategoryPlayAndRecord withOptions:options error:&categoryError];
+    [avSession setCategory:AVAudioSessionCategoryAmbient withOptions:options error:&categoryError];
     if (categoryError) {
         NSLog(@"Error setting category! %@", [categoryError description]);
     }
