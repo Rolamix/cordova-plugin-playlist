@@ -24,6 +24,7 @@
 - (void)pluginInitialize;
 - (void)setOptions:(CDVInvokedUrlCommand *)command;
 - (void)initialize:(CDVInvokedUrlCommand *)command;
+- (void)changeAudioSessionCategory:(CDVInvokedUrlCommand *)command;
 
 // public API
 
@@ -53,11 +54,11 @@
 // Get accessors to manually update values. Note:
 // these values are reported anyway via the onStatus event
 // stream, you don't normally need to read these directly.
-- (void) getPlaybackRate:(CDVInvokedUrlCommand *) command;
-- (void) getPlaybackVolume:(CDVInvokedUrlCommand *) command;
-- (void) getPlaybackPosition:(CDVInvokedUrlCommand *) command;
-- (void) getCurrentBuffer:(CDVInvokedUrlCommand *) command;
-- (void) getQueuePosition:(CDVInvokedUrlCommand *) command;
+- (void)getPlaybackRate:(CDVInvokedUrlCommand *)command;
+- (void)getPlaybackVolume:(CDVInvokedUrlCommand *)command;
+- (void)getPlaybackPosition:(CDVInvokedUrlCommand *)command;
+- (void)getCurrentBuffer:(CDVInvokedUrlCommand *)command;
+- (void)getQueuePosition:(CDVInvokedUrlCommand *)command;
 
 // Cleanup
 - (void)release:(CDVInvokedUrlCommand *)command;

@@ -1426,6 +1426,20 @@ static char kPlayerItemTimeRangesContext;
     }
 }
 
+- (void) changeAudioSessionCategory:(CDVInvokedUrlCommand *) command {
+    NSLog(@"RmxAudioPlayer.execute=changeAudioSessionCategory, %@");
+
+    if ([AVAudioSession sharedInstance].otherAudioPlaying) {
+       [[AVAudioSession sharedInstance] setCategory:AVAudioSessionCategoryPlayback withOptions:AVAudioSessionCategoryOptionDuckOthers error:nil];
+    } else {
+      [[AVAudioSession sharedInstance] setCategory:AVAudioSessionCategoryPlayback error:nil];
+    }
+    [[AVAudioSession sharedInstance] setActive:YES error:nil];
+
+    CDVPluginResult* result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
+    [self.commandDelegate sendPluginResult:result callbackId:command.callbackId];
+}
+
 /**
  * Register the listener for pause and resume events.
  */
