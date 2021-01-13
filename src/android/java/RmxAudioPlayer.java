@@ -1,9 +1,9 @@
 package com.rolamix.plugins.audioplayer;
 
 import android.util.Log;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.content.Context;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import org.apache.cordova.CordovaInterface;
 import org.json.JSONException;

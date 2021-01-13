@@ -5,9 +5,9 @@ import java.util.List;
 import java.util.ArrayList;
 import android.app.Application;
 import android.util.Log;
-import android.support.annotation.FloatRange;
-import android.support.annotation.IntRange;
-import android.support.annotation.Nullable;
+import androidx.annotation.FloatRange;
+import androidx.annotation.IntRange;
+import androidx.annotation.Nullable;
 
 import com.devbrackets.android.playlistcore.api.PlaylistItem;
 import com.devbrackets.android.playlistcore.data.MediaProgress;

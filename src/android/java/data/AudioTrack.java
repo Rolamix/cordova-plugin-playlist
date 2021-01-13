@@ -4,8 +4,8 @@ import com.rolamix.plugins.audioplayer.manager.PlaylistManager;
 import com.devbrackets.android.playlistcore.annotation.SupportedMediaType;
 import com.devbrackets.android.playlistcore.api.PlaylistItem;
 
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import org.json.*;
 
