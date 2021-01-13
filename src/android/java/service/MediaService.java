@@ -1,8 +1,8 @@
 package com.rolamix.plugins.audioplayer.service;
 
 import __PACKAGE_NAME__.MainApplication;
-import android.support.annotation.NonNull;
 import android.util.Log;
+import androidx.annotation.NonNull;
 
 import com.devbrackets.android.playlistcore.api.MediaPlayerApi;
 import com.devbrackets.android.playlistcore.components.playlisthandler.PlaylistHandler;

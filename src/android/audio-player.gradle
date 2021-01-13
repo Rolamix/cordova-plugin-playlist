@@ -5,6 +5,9 @@ repositories {
 }
 
 dependencies {
+  // AndroidX Annotations
+  implementation 'androidx.annotation:annotation:1.1.0' 
+
   // ExoPlayer
   implementation "com.google.android.exoplayer:exoplayer-core:2.6.1"
   implementation "com.google.android.exoplayer:exoplayer-dash:2.6.1"
