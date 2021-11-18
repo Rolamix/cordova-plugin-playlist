@@ -206,12 +206,14 @@ static char kPlayerItemTimeRangesContext;
 }
 
 
-- (void) play:(CDVInvokedUrlCommand *) command {
+- (MPRemoteCommandHandlerStatus) play:(CDVInvokedUrlCommand *) command {
     NSLog(@"RmxAudioPlayer.execute=play");
     [self playCommand:NO];
 
     CDVPluginResult* result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
     [self.commandDelegate sendPluginResult:result callbackId:command.callbackId];
+    
+    return MPRemoteCommandHandlerStatusSuccess;
 }
 
 
