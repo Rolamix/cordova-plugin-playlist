@@ -36,7 +36,7 @@
 - (void) clearAllItems:(CDVInvokedUrlCommand*) command;
 
 // Playback management
-- (void) play:(CDVInvokedUrlCommand *) command;
+- (MPRemoteCommandHandlerStatus) play:(CDVInvokedUrlCommand *) command;
 - (void) playTrackByIndex:(CDVInvokedUrlCommand *) command;
 - (void) playTrackById:(CDVInvokedUrlCommand *) command;
 - (void) pause:(CDVInvokedUrlCommand *) command;
